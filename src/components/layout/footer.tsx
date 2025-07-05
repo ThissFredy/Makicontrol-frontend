@@ -36,7 +36,7 @@ const Footer = () => {
         "Descripción de la plataforma o modelo de negocio. Aquí puedes incluir información relevante sobre tu empresa.";
 
     return (
-        <footer className="bg-slate-800 text-slate-300">
+        <footer className="bg-[#1A2541] text-slate-300">
             <div className="container mx-auto px-6 py-10">
                 <div className="flex flex-wrap justify-between gap-10">
                     {/* Columna Izquierda: Logo y Social */}
