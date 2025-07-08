@@ -2,8 +2,7 @@ import { ApiResponse } from "@/types/apiType";
 import { getTokenCookie } from "@/utilities/loginUtility"; // Importamos la función para obtener la cookie
 
 // Obtén la URL base de la API desde las variables de entorno
-const API_BASE_URL =
-    process.env.NEXT_PUBLIC_API_URL || "http://9.169.164.229:8081/auth";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 /**
  * Realiza una petición a la API de forma genérica y tipada.
@@ -23,11 +22,9 @@ export async function apiService<T>(
         ...(options?.headers as Record<string, string>),
     };
 
-    // Si existe un token, lo añadimos a la cabecera de autorización
     if (token) {
         defaultHeaders["Authorization"] = `Bearer ${token}`;
     }
-    console.log("URL de la API:", url);
     try {
         const response = await fetch(url, {
             ...options,
@@ -36,20 +33,21 @@ export async function apiService<T>(
 
         const data = await response.json();
 
-        if (!response.ok) {
+        console.log("Respuesta de la API:", data);
+
+        if (response.status < 200 || response.status >= 300) {
+            const error = data.errors[0] || "Error en la petición";
             return {
                 success: false,
-                message:
-                    data.message ||
-                    `Error ${response.status}: ${response.statusText}`,
-                error: data.error || "Unknown error",
+                message: error,
+                error: data.message || "Unknown error",
             };
         }
 
         return {
             success: true,
             message: data.message || "Operación exitosa",
-            data: data.data as T,
+            data: data as T,
             error: "",
         };
     } catch (error) {

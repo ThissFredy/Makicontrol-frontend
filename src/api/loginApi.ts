@@ -1,5 +1,5 @@
 import { LoginCredentials, LoginResponse } from "@/types/loginType";
-import { apiService } from "./api";
+import { apiService } from "@/api/api";
 import { ApiResponse } from "@/types/apiType";
 
 /**
@@ -10,10 +10,11 @@ import { ApiResponse } from "@/types/apiType";
 export async function loginApi(
     credentials: LoginCredentials
 ): Promise<ApiResponse<LoginResponse>> {
-    const response = await apiService<LoginResponse>("/login", {
+    const response = await apiService<LoginResponse>("/auth/login", {
         method: "POST",
         body: JSON.stringify(credentials),
     });
+    console.log("Respuesta del login:", response);
 
     return response;
 }

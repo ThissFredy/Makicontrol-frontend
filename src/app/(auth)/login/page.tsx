@@ -1,7 +1,9 @@
 "use client";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { FiMail, FiLock, FiEye, FiEyeOff } from "react-icons/fi";
+import { FiLock, FiEye, FiEyeOff } from "react-icons/fi";
+import { IoPerson } from "react-icons/io5";
+
 import type { LoginCredentials } from "@/types/loginType";
 import type { ErrorFieldType } from "@/types/errorType";
 import { validateLogin } from "@/utilities/validateLogin";
@@ -13,15 +15,16 @@ const LoginForm = () => {
     const [apiError, setApiError] = useState<string | null>(null); // Estado para errores de API
     const [isLoading, setIsLoading] = useState(false); // Estado de carga
     const [loginData, setLoginData] = useState<LoginCredentials>({
-        email: "",
+        username: "",
         password: "",
     });
     const [showPassword, setShowPassword] = useState(false);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setLoginData((prev) => ({ ...prev, [name]: value }));
-        const validationErrors = validateLogin({ ...loginData, [name]: value });
+        const data = { ...loginData, [name]: value };
+        setLoginData(data);
+        const validationErrors = validateLogin(data);
         setErrors(validationErrors);
     };
 
@@ -34,20 +37,20 @@ const LoginForm = () => {
 
         setIsLoading(true);
         setApiError(null);
-
+        console.log("Datos de inicio de sesión:", loginData);
         const response = await loginService(loginData);
 
         setIsLoading(false);
 
         if (response.status) {
-            router.push("/customers");
+            router.push("/dashboard");
         } else {
             setApiError(response.message || "Error al iniciar sesión");
         }
     };
 
     return (
-        <div className="bg-slate-100 flex items-center justify-center min-h-screen">
+        <div className="bg-slate-100 flex items-center justify-center min-h-[calc(100vh-50px)]">
             <div className="bg-white p-8 sm:p-10 rounded-xl shadow-lg max-w-md w-full">
                 {/* Encabezado */}
                 <div className="text-center mb-8">
@@ -71,27 +74,28 @@ const LoginForm = () => {
                     {/* Campo de Correo Electrónico */}
                     <div className="mb-5 relative">
                         <label
-                            htmlFor="email"
+                            htmlFor="username"
                             className="block mb-2 text-sm font-medium text-slate-600"
                         >
-                            Correo Electrónico
+                            Usuario
                         </label>
-                        <FiMail
+                        <IoPerson
                             className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 mt-[14px]"
                             size={20}
                         />
                         <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            placeholder="tu@dominio.com"
+                            type="text"
+                            id="username"
+                            name="username"
+                            value={loginData.username}
+                            placeholder="Nombre de usuario"
                             className="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                             onChange={handleInputChange}
                         />
                         <span className="text-red-500 text-sm mt-1">
                             {
                                 errors.find(
-                                    (error) => error.field.name === "email"
+                                    (error) => error.field.name === "username"
                                 )?.field.value
                             }
                         </span>
@@ -113,6 +117,7 @@ const LoginForm = () => {
                             type={showPassword ? "text" : "password"}
                             id="password"
                             name="password"
+                            value={loginData.password}
                             onChange={handleInputChange}
                             placeholder="****************"
                             className="w-full pl-10 pr-10 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"

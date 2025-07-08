@@ -22,7 +22,7 @@ export async function loginService(
 
         return {
             status: false,
-            message: "No se ha podido iniciar sesión",
+            message: response.message || "Error al iniciar sesión",
             data: {},
         } as OperationType<LoginResponse>;
     } catch (error) {

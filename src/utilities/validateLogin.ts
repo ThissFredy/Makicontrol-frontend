@@ -4,20 +4,20 @@ import type { ErrorFieldType } from "@/types/errorType";
 export const validateLogin = (data: LoginCredentials) => {
     const errors: ErrorFieldType[] = [];
 
-    if (!data.email) {
+    if (!data.username) {
         errors.push({
             isError: true,
             field: {
-                name: "email",
+                name: "username",
                 value: "Este campo es obligatorio",
             },
         });
-    } else if (!/\S+@\S+\.\S+/.test(data.email)) {
+    } else if (!/^[a-zA-Z0-9._-]+$/.test(data.username)) {
         errors.push({
             isError: true,
             field: {
-                name: "email",
-                value: "El formato del correo electrónico es inválido",
+                name: "username",
+                value: "El formato del nombre de usuario es inválido",
             },
         });
     }
