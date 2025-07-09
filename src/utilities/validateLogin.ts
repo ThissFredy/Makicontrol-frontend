@@ -1,7 +1,7 @@
 import type { LoginCredentials } from "@/types/loginType";
 import type { ErrorFieldType } from "@/types/errorType";
 
-export const validateLogin = (data: LoginCredentials) => {
+export const validateLogin = (data: LoginCredentials): ErrorFieldType[] => {
     const errors: ErrorFieldType[] = [];
 
     if (!data.username) {

@@ -18,7 +18,7 @@ export default function RootLayout({
             <body className={"font-inter bg-white text-slate-900"}>
                 <div className="flex min-h-screen flex-col">
                     <Header />
-                    <main className="flex-grow bg-slate-50 min-h-[calc(100vh-200px)]">
+                    <main className="flex-grow bg-[#F0F2F5] min-h-[calc(100vh-200px)]">
                         {children}
                     </main>
                     <Footer />

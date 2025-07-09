@@ -29,6 +29,7 @@ export async function apiService<T>(
         const response = await fetch(url, {
             ...options,
             headers: defaultHeaders,
+            credentials: "include",
         });
 
         const data = await response.json();

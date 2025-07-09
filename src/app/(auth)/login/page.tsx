@@ -12,8 +12,8 @@ import { loginService } from "@/services/loginService";
 const LoginForm = () => {
     const router = useRouter();
     const [errors, setErrors] = useState<ErrorFieldType[]>([]);
-    const [apiError, setApiError] = useState<string | null>(null); // Estado para errores de API
-    const [isLoading, setIsLoading] = useState(false); // Estado de carga
+    const [apiError, setApiError] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
     const [loginData, setLoginData] = useState<LoginCredentials>({
         username: "",
         password: "",
@@ -43,14 +43,14 @@ const LoginForm = () => {
         setIsLoading(false);
 
         if (response.status) {
-            router.push("/dashboard");
+            router.push("/customers");
         } else {
             setApiError(response.message || "Error al iniciar sesión");
         }
     };
 
     return (
-        <div className="bg-slate-100 flex items-center justify-center min-h-[calc(100vh-50px)]">
+        <div className="flex items-center justify-center min-h-[calc(100vh-50px)]">
             <div className="bg-white p-8 sm:p-10 rounded-xl shadow-lg max-w-md w-full">
                 {/* Encabezado */}
                 <div className="text-center mb-8">
