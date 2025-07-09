@@ -142,7 +142,7 @@ export async function updateCustomer(
         return {
             status: false,
             message: "Error al actualizar el cliente",
-            data: {},
+            data: null,
         } as OperationType<CustomerUpdateType>;
     }
 }
