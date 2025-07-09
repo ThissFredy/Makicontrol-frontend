@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { getCustomers } from "@/api/customerApi";
+import { getCustomer } from "@/services/customerService";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { CreateClientForm } from "@/components/ui/CreateClientForm";
@@ -67,8 +67,8 @@ const ClientManagementPage = () => {
     useEffect(() => {
         const searchClients = async () => {
             if (!debouncedSearchTerm) {
-                const response = await getCustomers();
-                if (response.success) setClients(response.data);
+                const response = await getCustomer();
+                if (response.status) setClients(response.data.data);
                 return;
             }
 
@@ -92,10 +92,14 @@ const ClientManagementPage = () => {
 
     useEffect(() => {
         const fetchClients = async () => {
-            const response = await getCustomers();
-            if (response.success) {
-                setClients(response.data);
-                setLengthClients(response.data ? response.data.length : 0);
+            const response = await getCustomer();
+            if (response.status) {
+                setClients(response.data.data);
+                setLengthClients(
+                    response.data && response.data.data
+                        ? response.data.data.length
+                        : 0
+                );
             } else {
                 setError(response.message);
                 setClients([]);
