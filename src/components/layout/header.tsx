@@ -12,7 +12,7 @@ const Header = () => {
                             src="/logo.svg"
                             alt="Logo de MAKI"
                             width={150}
-                            height={0}
+                            layout="intrinsic"
                             className="h-10 md:h-12"
                         />
                     </Link>
