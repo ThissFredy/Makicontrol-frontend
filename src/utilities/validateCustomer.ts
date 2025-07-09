@@ -30,21 +30,20 @@ export function validateCreate(data: CustomerCreateType): ErrorFieldType[] {
         });
     }
 
-    // TODO: Validar largo con la base de datos
-    if (!data.nit) {
-        errors.push({
-            isError: true,
-            field: {
-                name: "nit",
-                value: "Este campo es obligatorio",
-            },
-        });
-    } else if (/[^0-9]/.test(data.nit.toString())) {
+    if (/[^0-9]/.test(data.nit.toString())) {
         errors.push({
             isError: true,
             field: {
                 name: "nit",
                 value: "El NIT no puede contener letras o caracteres especiales",
+            },
+        });
+    } else if (!data.nit) {
+        errors.push({
+            isError: true,
+            field: {
+                name: "nit",
+                value: "Este campo es obligatorio",
             },
         });
     } else if (data.nit <= 0) {
