@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 body {
-    background: var(--background);
-    color: var(--foreground);
+    background: #ffffff; /* Replaced var(--background) with white */
+    color: #000000; /* Replaced var(--foreground) with black */
     font-family: var(--font-inter);
 }
