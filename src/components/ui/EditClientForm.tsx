@@ -55,7 +55,10 @@ export const EditClientForm = ({
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        if (errors.length > 0) {
+        const validationErrors = validateCreate(dataForm);
+        setErrors(validationErrors);
+
+        if (validationErrors.length > 0) {
             return;
         }
 
