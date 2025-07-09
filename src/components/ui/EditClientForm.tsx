@@ -42,7 +42,10 @@ export const EditClientForm = ({
     const [apiError, setApiError] = React.useState<string | null>(null);
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        const data = { ...dataForm, [name]: value };
+        const data = { 
+            ...dataForm, 
+            [name]: name === "nit" ? Number(value) : value 
+        };
         setData(data);
 
         const validationErrors = validateCreate(data);
