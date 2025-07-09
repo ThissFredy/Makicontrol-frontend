@@ -16,21 +16,21 @@ export async function loginService(
             return {
                 status: true,
                 message: "Inicio de sesión exitoso",
-                data: { token: "", user: null }, // TODO: Cuando se implemente el manejo de usuario, cambiar a data: data.user
+                data: { token: "" },
             } as OperationType<LoginResponse>;
         }
 
         return {
             status: false,
             message: response.message || "Error al iniciar sesión",
-            data: { token: "", user: null },
+            data: { token: "" },
         } as OperationType<LoginResponse>;
     } catch (error) {
         console.error("Error en el servicio de login:", error);
         return {
             status: false,
             message: "Error al iniciar sesión",
-            data: { token: "", user: null },
+            data: { token: "" },
         } as OperationType<LoginResponse>;
     }
 }

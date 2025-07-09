@@ -25,6 +25,8 @@ export const Modal = ({ isOpen, onClose, children }: ModalProps) => {
     return (
         <div
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 transition-opacity"
+            role="dialog"
+            aria-modal="true"
             onClick={onClose}
         >
             <div
@@ -35,7 +37,7 @@ export const Modal = ({ isOpen, onClose, children }: ModalProps) => {
                     onClick={onClose}
                     className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 hover:cursor-pointer transition-colors"
                 >
-                    <FiX size={24}/>
+                    <FiX size={24} />
                 </button>
                 {children}
             </div>

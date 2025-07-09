@@ -131,7 +131,14 @@ export async function updateCustomer(
             return {
                 status: false,
                 message: response.message || "Error al actualizar el cliente",
-                data: {},
+                data: {
+                    id: "",
+                    nombre: "",
+                    nit: 0,
+                    direccion: "",
+                    telefono: "",
+                    correo: "",
+                },
             } as OperationType<CustomerUpdateType>;
         }
     } catch (error) {
@@ -142,7 +149,14 @@ export async function updateCustomer(
         return {
             status: false,
             message: "Error al actualizar el cliente",
-            data: {},
+            data: {
+                id: "",
+                nombre: "",
+                nit: 0,
+                direccion: "",
+                telefono: "",
+                correo: "",
+            },
         } as OperationType<CustomerUpdateType>;
     }
 }

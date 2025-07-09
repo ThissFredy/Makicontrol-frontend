@@ -24,9 +24,10 @@ export const CreateClientForm = ({
 
     const [isLoading, setIsLoading] = React.useState(false);
     const [apiError, setApiError] = React.useState<string | null>(null);
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        const parsedValue = name === "nit" ? parseFloat(value) || 0 : value;
+        const parsedValue = name === "nit" ? parseFloat(value) || "" : value;
         const data = { ...dataForm, [name]: parsedValue };
         setData(data);
 
@@ -85,9 +86,10 @@ export const CreateClientForm = ({
                         NIT
                     </label>
                     <input
-                        type="number"
+                        type="text"
                         id="nit"
                         name="nit"
+                        value={dataForm.nit}
                         onChange={handleChange}
                         className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     />
