@@ -27,7 +27,6 @@ export const Modal = ({ isOpen, onClose, children }: ModalProps) => {
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 transition-opacity"
             role="dialog"
             aria-modal="true"
-            onClick={onClose}
         >
             <div
                 className="relative w-full max-w-lg transform rounded-xl bg-white p-6 shadow-xl transition-all"
