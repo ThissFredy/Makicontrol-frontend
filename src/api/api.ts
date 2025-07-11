@@ -22,6 +22,8 @@ export async function apiService<T>(
         ...(options?.headers as Record<string, string>),
     };
 
+    console.log("Llamando a la API:", url, "con opciones:", options);
+
     if (token) {
         defaultHeaders["Authorization"] = `Bearer ${token}`;
     }
