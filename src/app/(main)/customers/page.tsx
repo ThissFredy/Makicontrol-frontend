@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { getCustomer } from "@/services/customerService";
+import { getCustomersService as getCustomers } from "@/services/customerService";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { CreateClientForm } from "@/components/ui/CreateClientForm";
@@ -10,6 +10,7 @@ import { useDebounce } from "@/utilities/useDebounce";
 import { searchCustomerByNameOrNIT } from "@/services/customerService";
 import { CustomerType } from "@/types/customerType";
 import { FiPlus, FiSearch, FiEye, FiEdit } from "react-icons/fi";
+import { toast } from "react-hot-toast";
 
 const ClientManagementPage = () => {
     const [clients, setClients] = React.useState<CustomerType[]>();
@@ -27,11 +28,9 @@ const ClientManagementPage = () => {
         telefono: "",
         correo: "",
     });
-    const [error, setError] = React.useState<string | null>(null);
+
     const [searchTerm, setSearchTerm] = React.useState<string>("");
-    const [successMessage, setSuccessMessage] = React.useState<string | null>(
-        null
-    );
+
     const totalClients = lengthClients || 0;
 
     const handleOpenModal = () => setIsModalOpen(true);
@@ -48,12 +47,12 @@ const ClientManagementPage = () => {
     const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
     const handleCreationSuccess = (message: string, data: CustomerType) => {
-        setSuccessMessage(message);
+        toast.success(message);
         setClients((prevClients) => [...(prevClients || []), data]);
     };
 
     const handleEditationSuccess = (message: string, data: CustomerType) => {
-        setSuccessMessage(message);
+        toast.success(message);
         setClients((prevClients) => {
             if (!prevClients) return prevClients;
 
@@ -67,7 +66,7 @@ const ClientManagementPage = () => {
     useEffect(() => {
         const searchClients = async () => {
             if (!debouncedSearchTerm) {
-                const response = await getCustomer();
+                const response = await getCustomers();
                 if (response.status) setClients(response.data.data);
                 return;
             }
@@ -80,7 +79,7 @@ const ClientManagementPage = () => {
             if (response.status) {
                 console.log("Clientes encontrados:", response);
                 setClients(response.data.data);
-                setError(null);
+                toast.error("No se encontraron clientes");
             } else {
                 setClients([]);
             }
@@ -92,7 +91,7 @@ const ClientManagementPage = () => {
 
     useEffect(() => {
         const fetchClients = async () => {
-            const response = await getCustomer();
+            const response = await getCustomers();
             if (response.status) {
                 setClients(response.data.data);
                 setLengthClients(
@@ -101,7 +100,7 @@ const ClientManagementPage = () => {
                         : 0
                 );
             } else {
-                setError(response.message);
+                toast.error(response.message);
                 setClients([]);
             }
             setLoading(false);
@@ -118,17 +117,6 @@ const ClientManagementPage = () => {
             ) : (
                 <div>
                     <div className="max-w-7xl mx-auto">
-                        {error && (
-                            <div className="bg-red-100 text-red-800 p-4 rounded-lg mb-6">
-                                <p>{error}</p>
-                            </div>
-                        )}
-                        {successMessage && (
-                            <div className="bg-green-100 text-green-800 p-4 rounded-lg mb-6">
-                                <p>{successMessage}</p>
-                            </div>
-                        )}
-                        {/* Título y Botón de Nuevo Cliente */}
                         <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8">
                             <div>
                                 <h1 className="text-3xl font-bold text-slate-800">
@@ -197,7 +185,13 @@ const ClientManagementPage = () => {
                                                 scope="col"
                                                 className="px-6 py-3"
                                             >
-                                                Correo Electrónico
+                                                NIT
+                                            </th>
+                                            <th
+                                                scope="col"
+                                                className="px-6 py-3"
+                                            >
+                                                Dirección
                                             </th>
                                             <th
                                                 scope="col"
@@ -209,13 +203,7 @@ const ClientManagementPage = () => {
                                                 scope="col"
                                                 className="px-6 py-3"
                                             >
-                                                NIT
-                                            </th>
-                                            <th
-                                                scope="col"
-                                                className="px-6 py-3"
-                                            >
-                                                Dirección
+                                                Correo Electrónico
                                             </th>
                                             <th
                                                 scope="col"
@@ -259,17 +247,18 @@ const ClientManagementPage = () => {
                                                     {client.nombre}
                                                 </td>
                                                 <td className="px-6 py-4 text-[#000000]">
-                                                    {client.correo}
-                                                </td>
-                                                <td className="px-6 py-4 text-[#000000]">
-                                                    {client.telefono}
-                                                </td>
-                                                <td className="px-6 py-4 text-[#000000]">
                                                     {client.nit}
                                                 </td>
                                                 <td className="px-6 py-4 text-[#000000]">
                                                     {client.direccion}
                                                 </td>
+                                                <td className="px-6 py-4 text-[#000000]">
+                                                    {client.telefono}
+                                                </td>
+                                                <td className="px-6 py-4 text-[#000000]">
+                                                    {client.correo}
+                                                </td>
+
                                                 <td className="px-6 py-4">
                                                     <div className="flex items-center gap-4">
                                                         <button className="text-slate-500 hover:text-indigo-600">

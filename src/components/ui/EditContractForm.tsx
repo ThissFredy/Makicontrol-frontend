@@ -3,13 +3,19 @@ import { useEffect } from "react";
 import type { ContractType, Canon, CanonGroup } from "@/types/contractType";
 import { validateCreate } from "@/utilities/validateContract";
 import type { ErrorFieldType } from "@/types/errorType";
-import { updateCustomerService } from "@/services/contractService";
+import {
+    updateCustomerService,
+    getTypesOfContractsService,
+} from "@/services/contractService";
 
 interface EditContractFormProps {
     onClose: () => void;
     onSuccess: (message: string, data: ContractType) => void;
     initialData: ContractType;
 }
+
+// TODO: Add period options collected from api
+// TODO: Add validation for canon groups and values
 
 export const EditContractForm = ({
     onClose,
@@ -19,8 +25,8 @@ export const EditContractForm = ({
     const [dataForm, setData] = React.useState<ContractType>({
         clienteNit: 0,
         tipoContrato: "CANON_FIJO",
-        valorCanon: 0,
-        valorBaseEquipo: 0,
+        valorCanon: "",
+        valorBaseEquipo: "",
         periodo: "MENSUAL",
         fechaInicio: "",
         fechaFin: null,
@@ -49,12 +55,27 @@ export const EditContractForm = ({
     const [isLoading, setIsLoading] = React.useState(false);
     const [apiError, setApiError] = React.useState<string | null>(null);
 
-    const [tipoContratos] = React.useState<string[]>([
-        "CANON_FIJO",
-        "CANON_VARIABLE",
-        "CANON_FIJO_CON_DESCUENTO",
-        "CANON_VARIABLE_CON_DESCUENTO",
+    const [tipoContratos, setTipoContratos] = React.useState<string[]>([
+        "ERROR AL OBTENER TIPOS DE CONTRATO",
     ]);
+
+    useEffect(() => {
+        const fetchTiposContratos = async () => {
+            const response = await getTypesOfContractsService();
+            if (response.status) {
+                setTipoContratos(response.data);
+            } else {
+                console.error(
+                    "Error al obtener tipos de contrato:",
+                    response.message
+                );
+            }
+        };
+
+        fetchTiposContratos();
+    }, []);
+
+    // TODO: Replace with api call to get canon groups
     const [canonGroups] = React.useState<CanonGroup[]>([
         "BN",
         "COLOR",
@@ -133,7 +154,10 @@ export const EditContractForm = ({
     };
 
     return (
-        <form onSubmit={handleSubmit} className="max-h-[80vh] overflow-y-auto">
+        <form
+            onSubmit={handleSubmit}
+            className="max-h-[80vh] overflow-y-auto space-y-3"
+        >
             <div className="mb-6">
                 <h2 className="text-2xl font-bold text-slate-800">
                     Editar Contrato

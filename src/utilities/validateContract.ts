@@ -1,7 +1,6 @@
 import type { ContractCreateType } from "@/types/contractType";
 import type { ErrorFieldType } from "@/types/errorType";
 
-
 export function validateCreate(data: ContractCreateType): ErrorFieldType[] {
     const errors: ErrorFieldType[] = [];
 
@@ -57,7 +56,15 @@ export function validateCreate(data: ContractCreateType): ErrorFieldType[] {
         });
     }
 
-    if (data.valorCanon < 0) {
+    if (isNaN(Number(data.valorCanon))) {
+        errors.push({
+            isError: true,
+            field: {
+                name: "valorCanon",
+                value: "El valor del canon debe ser un número",
+            },
+        });
+    } else if (Number(data.valorCanon) < 0) {
         errors.push({
             isError: true,
             field: {
@@ -65,43 +72,30 @@ export function validateCreate(data: ContractCreateType): ErrorFieldType[] {
                 value: "El valor del canon no puede ser negativo",
             },
         });
-    } else if (data.valorCanon === undefined || data.valorCanon === null) {
+    } else if (data.valorCanon.toString().length > 11) {
         errors.push({
             isError: true,
             field: {
                 name: "valorCanon",
-                value: "Este campo es obligatorio",
+                value: "El valor del canon no puede tener más de 11 dígitos",
             },
         });
-    } else if (data.valorCanon.toString().length > 11) {
-        if (data.valorBaseEquipo < 0) {
-            errors.push({
-                isError: true,
-                field: {
-                    name: "valorCanon",
-                    value: "El valor del canon no puede tener más de 11 dígitos",
-                },
-            });
-        }
     }
 
-    if (data.valorBaseEquipo < 0) {
+    if (isNaN(Number(data.valorBaseEquipo))) {
+        errors.push({
+            isError: true,
+            field: {
+                name: "valorBaseEquipo",
+                value: "El valor base del equipo debe ser un número",
+            },
+        });
+    } else if (Number(data.valorBaseEquipo) < 0) {
         errors.push({
             isError: true,
             field: {
                 name: "valorBaseEquipo",
                 value: "El valor base del equipo no puede ser negativo",
-            },
-        });
-    } else if (
-        data.valorBaseEquipo === undefined ||
-        data.valorBaseEquipo === null
-    ) {
-        errors.push({
-            isError: true,
-            field: {
-                name: "valorBaseEquipo",
-                value: "Este campo es obligatorio",
             },
         });
     } else if (data.valorBaseEquipo.toString().length > 11) {

@@ -13,8 +13,8 @@ export interface ContractGetResponseType<ContractType> {
 export interface ContractType {
     clienteNit: number;
     tipoContrato: string;
-    valorCanon: number;
-    valorBaseEquipo: number;
+    valorCanon: string;
+    valorBaseEquipo: string;
     periodo: string;
     fechaInicio: string;
     fechaFin: string | null;
@@ -25,8 +25,8 @@ export interface ContractType {
 export interface ContractCreateType {
     clienteNit: number;
     tipoContrato: string;
-    valorCanon: number;
-    valorBaseEquipo: number;
+    valorCanon: string;
+    valorBaseEquipo: string;
     periodo: string;
     fechaInicio: string;
     fechaFin?: string | null;
@@ -36,8 +36,8 @@ export interface ContractCreateType {
 export interface ContractCreateCanonType {
     clienteNit: number;
     tipoContrato: string;
-    valorCanon: number;
-    valorBaseEquipo: number;
+    valorCanon: string;
+    valorBaseEquipo: string;
     periodo: string;
     fechaInicio: string;
     fechaFin?: string | null;
