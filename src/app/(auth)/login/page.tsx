@@ -8,11 +8,11 @@ import type { LoginCredentials } from "@/types/loginType";
 import type { ErrorFieldType } from "@/types/errorType";
 import { validateLogin } from "@/utilities/validateLogin";
 import { loginService } from "@/services/loginService";
+import { toast } from "react-hot-toast";
 
 const LoginForm = () => {
     const router = useRouter();
     const [errors, setErrors] = useState<ErrorFieldType[]>([]);
-    const [apiError, setApiError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [loginData, setLoginData] = useState<LoginCredentials>({
         username: "",
@@ -36,7 +36,6 @@ const LoginForm = () => {
         }
 
         setIsLoading(true);
-        setApiError(null);
         console.log("Datos de inicio de sesión:", loginData);
         const response = await loginService(loginData);
 
@@ -44,8 +43,10 @@ const LoginForm = () => {
 
         if (response.status) {
             router.push("/customers");
+            toast.success(response.message || "Inicio de sesión exitoso");
         } else {
-            setApiError(response.message || "Error al iniciar sesión");
+            toast.error(response.message || "Error al iniciar sesión");
+            console.log("Toast2");
         }
     };
 
@@ -64,13 +65,6 @@ const LoginForm = () => {
 
                 {/* Formulario */}
                 <form onSubmit={handleSubmit}>
-                    {/* Mensaje de error de la API */}
-                    {apiError && (
-                        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
-                            {apiError}
-                        </div>
-                    )}
-
                     {/* Campo de Correo Electrónico */}
                     <div className="mb-5 relative">
                         <label

@@ -11,7 +11,7 @@ import type { ContractType } from "@/types/contractType";
 import { searchCustomerByNitAndStatusService } from "@/services/contractService";
 import { getContractsService } from "@/services/contractService";
 import { FiPlus, FiSearch, FiEye, FiEdit } from "react-icons/fi";
-
+import { toast } from "react-hot-toast";
 
 const Contracts = () => {
     const [contracts, setContracts] = React.useState<ContractType[]>();
@@ -20,7 +20,7 @@ const Contracts = () => {
     );
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalEditOpen, setIsModalEditOpen] = useState(false);
-        const [buscarEstado] = useState<string>("ACTIVO");
+    const [buscarEstado] = useState<string>("ACTIVO");
     const [loading, setLoading] = React.useState<boolean>(true);
     const [loadingContracts, setLoadingContracts] =
         React.useState<boolean>(false);
@@ -28,19 +28,15 @@ const Contracts = () => {
         React.useState<ContractType>({
             clienteNit: 0,
             tipoContrato: "CANON_FIJO",
-            valorCanon: 0,
-            valorBaseEquipo: 0,
+            valorCanon: "",
+            valorBaseEquipo: "",
             periodo: "MENSUAL",
             fechaInicio: "",
             fechaFin: null,
             estado: "ACTIVO",
             canones: [],
         });
-    const [error, setError] = React.useState<string | null>(null);
     const [searchTerm, setSearchTerm] = React.useState<string>("");
-    const [successMessage, setSuccessMessage] = React.useState<string | null>(
-        null
-    );
     const totalContracts = lengthContracts || 0;
 
     const handleOpenModal = () => setIsModalOpen(true);
@@ -54,19 +50,19 @@ const Contracts = () => {
         setIsModalEditOpen(false);
     };
 
-    const formatNumber = (value: number): string => {
-        return new Intl.NumberFormat("es-CO").format(value);
+    const formatNumber = (value: string): string => {
+        return new Intl.NumberFormat("es-CO").format(Number(value));
     };
 
     const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
     const handleCreationSuccess = (message: string, data: ContractType) => {
-        setSuccessMessage(message);
+        toast.success(message);
         setContracts((prevContracts) => [...(prevContracts || []), data]);
     };
 
     const handleEditationSuccess = (message: string, data: ContractType) => {
-        setSuccessMessage(message);
+        toast.success(message);
         setContracts((prevContracts) => {
             if (!prevContracts) return prevContracts;
 
@@ -93,7 +89,7 @@ const Contracts = () => {
 
             if (response.status) {
                 setContracts(response.data);
-                setError(null);
+                toast.success("Contratos cargados exitosamente");
             } else {
                 setContracts([]);
             }
@@ -114,7 +110,7 @@ const Contracts = () => {
                         : 0
                 );
             } else {
-                setError(response.message);
+                toast.error(response.message);
                 setContracts([]);
             }
             setLoading(false);
@@ -131,16 +127,6 @@ const Contracts = () => {
             ) : (
                 <div>
                     <div className="max-w-7xl mx-auto">
-                        {error && (
-                            <div className="bg-red-100 text-red-800 p-4 rounded-lg mb-6">
-                                <p>{error}</p>
-                            </div>
-                        )}
-                        {successMessage && (
-                            <div className="bg-green-100 text-green-800 p-4 rounded-lg mb-6">
-                                <p>{successMessage}</p>
-                            </div>
-                        )}
                         {/* Título y Botón de Nuevo Cliente */}
                         <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8">
                             <div>
@@ -336,9 +322,9 @@ const Contracts = () => {
                                                                           }
                                                                       </div>
                                                                       <div className="text-slate-500 font-bold text-sm">
-                                                                          {formatNumber(
+                                                                          {
                                                                               canon.valorCanon
-                                                                          )}
+                                                                          }
                                                                       </div>
                                                                   </div>
                                                               )

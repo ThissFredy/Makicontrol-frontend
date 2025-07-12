@@ -42,7 +42,7 @@ export async function apiService<T>(
             const error = data.errors[0] || "Error en la petición";
             return {
                 success: false,
-                message: error,
+                message: data.message ? data.message : error,
                 error: data.message || "Unknown error",
             };
         }
@@ -54,11 +54,8 @@ export async function apiService<T>(
             error: "",
         };
     } catch (error) {
-        console.error("Error en la llamada a la API:", error);
-        const errorMessage =
-            error instanceof Error
-                ? error.message
-                : "Error de red o de conexión";
+        console.error(error);
+        const errorMessage = "Error de red o servidor";
         return {
             success: false,
             message: errorMessage,

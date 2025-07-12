@@ -1,6 +1,7 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { validateCreate } from "@/utilities/validateContract";
 import type { ErrorFieldType } from "@/types/errorType";
+import { toast } from "react-hot-toast";
 import {
     createContractService,
     getTypesOfContractsService,
@@ -12,6 +13,9 @@ interface CreateContractFormProps {
     onSuccess: (message: string, data: ContractType) => void;
 }
 
+// TODO: Add period options collected from api
+// TODO: Add validation for canon groups and values
+
 export const CreateContractForm = ({
     onClose,
     onSuccess,
@@ -19,8 +23,8 @@ export const CreateContractForm = ({
     const [dataForm, setData] = React.useState<ContractType>({
         clienteNit: 0,
         tipoContrato: "CANON_FIJO",
-        valorCanon: 0,
-        valorBaseEquipo: 0,
+        valorCanon: "",
+        valorBaseEquipo: "",
         periodo: "MENSUAL",
         fechaInicio: "",
         fechaFin: null,
@@ -57,7 +61,6 @@ export const CreateContractForm = ({
     const [errors, setErrors] = React.useState<ErrorFieldType[]>([]);
 
     const [isLoading, setIsLoading] = React.useState(false);
-    const [apiError, setApiError] = React.useState<string | null>(null);
 
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -66,23 +69,6 @@ export const CreateContractForm = ({
         const parsedValue = name === "nit" ? parseFloat(value) || "" : value;
 
         const data = { ...dataForm, [name]: parsedValue };
-        setData(data);
-
-        const validationErrors = validateCreate(data);
-        setErrors(validationErrors);
-    };
-
-    const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-
-        // Remover todos los caracteres no numéricos excepto puntos
-        const numericValue = value.replace(/[^\d]/g, "");
-
-        // Convertir a número
-        const numberValue = parseInt(numericValue) || 0;
-
-        // Actualizar el estado con el número
-        const data = { ...dataForm, [name]: numberValue };
         setData(data);
 
         const validationErrors = validateCreate(data);
@@ -121,10 +107,6 @@ export const CreateContractForm = ({
         });
     };
 
-    const formatNumber = (value: number): string => {
-        return new Intl.NumberFormat("es-CO").format(value);
-    };
-
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
@@ -136,7 +118,6 @@ export const CreateContractForm = ({
         }
 
         setIsLoading(true);
-        setApiError(null);
         const response = await createContractService(dataForm);
 
         setIsLoading(false);
@@ -147,12 +128,15 @@ export const CreateContractForm = ({
             onSuccess(response.message, dataForm);
             onClose();
         } else {
-            setApiError(response.message || "Error al crear cliente");
+            toast.error(response.message || "Error al crear cliente");
         }
     };
 
     return (
-        <form onSubmit={handleSubmit} className="max-h-[80vh] overflow-y-auto">
+        <form
+            onSubmit={handleSubmit}
+            className="max-h-[80vh] overflow-y-auto space-y-3"
+        >
             <div className="mb-6">
                 <h2 className="text-2xl font-bold text-slate-800">
                     Crear Nuevo Contrato
@@ -162,13 +146,7 @@ export const CreateContractForm = ({
                 </p>
             </div>
 
-            <div className="space-y-4">
-                {apiError && (
-                    <div className="bg-red-100 text-red-800 p-4 rounded-lg mb-6">
-                        <p>{apiError}</p>
-                    </div>
-                )}
-            </div>
+            <div className="space-y-4"></div>
 
             <div>
                 <label
@@ -221,14 +199,14 @@ export const CreateContractForm = ({
                     htmlFor="valorCanon"
                     className="block text-sm font-medium text-slate-600 mb-1"
                 >
-                    Valor del Canon
+                    Valor del Canon (opcional)
                 </label>
                 <input
                     type="text"
                     id="valorCanon"
                     name="valorCanon"
-                    value={formatNumber(dataForm.valorCanon)}
-                    onChange={handlePriceChange}
+                    value={dataForm.valorCanon}
+                    onChange={handleChange}
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
                 <span className="text-red-500 text-sm">
@@ -245,14 +223,14 @@ export const CreateContractForm = ({
                     htmlFor="valorBaseEquipo"
                     className="block text-sm font-medium text-slate-600 mb-1"
                 >
-                    Valor Base del Equipo
+                    Valor Base del Equipo (opcional)
                 </label>
                 <input
                     type="text"
                     id="valorBaseEquipo"
                     name="valorBaseEquipo"
-                    value={formatNumber(dataForm.valorBaseEquipo)}
-                    onChange={handlePriceChange}
+                    value={dataForm.valorBaseEquipo}
+                    onChange={handleChange}
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
                 <span className="text-red-500 text-sm">

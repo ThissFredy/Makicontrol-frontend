@@ -13,7 +13,7 @@ import { getCustomerByNIT, getCustomerByName } from "@/api/customerApi";
  * @throws An error if the API call fails.
  */
 
-export async function getCustomer(): Promise<
+export async function getCustomersService(): Promise<
     OperationType<CustomerGetResponseType<CustomerType>>
 > {
     try {
