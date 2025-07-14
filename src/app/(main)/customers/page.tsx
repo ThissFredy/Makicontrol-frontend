@@ -4,12 +4,13 @@ import { getCustomersService as getCustomers } from "@/services/customerService"
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { CreateClientForm } from "@/components/ui/CreateClientForm";
+import { CreateClientFromFile } from "@/components/ui/CreateClientFromFile";
 import { EditClientForm } from "@/components/ui/EditClientForm";
 import { StatCard } from "@/components/ui/StatCard";
 import { useDebounce } from "@/utilities/useDebounce";
 import { searchCustomerByNameOrNIT } from "@/services/customerService";
 import { CustomerType } from "@/types/customerType";
-import { FiPlus, FiSearch, FiEye, FiEdit } from "react-icons/fi";
+import { FiPlus, FiSearch, FiEye, FiEdit, FiFile } from "react-icons/fi";
 import { toast } from "react-hot-toast";
 
 const ClientManagementPage = () => {
@@ -19,6 +20,7 @@ const ClientManagementPage = () => {
     );
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalEditOpen, setIsModalEditOpen] = useState(false);
+    const [isModalOpenFile, setIsModalOpenFile] = useState(false);
     const [loading, setLoading] = React.useState<boolean>(true);
     const [loadingClients, setLoadingClients] = React.useState<boolean>(false);
     const [selectedClient, setSelectedClient] = React.useState<CustomerType>({
@@ -35,6 +37,9 @@ const ClientManagementPage = () => {
 
     const handleOpenModal = () => setIsModalOpen(true);
     const handleCloseModal = () => setIsModalOpen(false);
+
+    const handleOpenModalFile = () => setIsModalOpenFile(true);
+    const handleCloseModalFile = () => setIsModalOpenFile(false);
 
     const handleOpenModalEdit = (client: CustomerType) => {
         setSelectedClient(client);
@@ -60,6 +65,11 @@ const ClientManagementPage = () => {
                 client.nit === data.nit ? data : client
             );
         });
+    };
+
+    const handleFileUploadSuccess = (message: string) => {
+        toast.success(message);
+        fetchClients();
     };
 
     // * For searching clients by name or NIT
@@ -90,23 +100,24 @@ const ClientManagementPage = () => {
     }, [debouncedSearchTerm]);
 
     useEffect(() => {
-        const fetchClients = async () => {
-            const response = await getCustomers();
-            if (response.status) {
-                setClients(response.data.data);
-                setLengthClients(
-                    response.data && response.data.data
-                        ? response.data.data.length
-                        : 0
-                );
-            } else {
-                toast.error(response.message);
-                setClients([]);
-            }
-            setLoading(false);
-        };
         fetchClients();
     }, []);
+
+    const fetchClients = async () => {
+        const response = await getCustomers();
+        if (response.status) {
+            setClients(response.data.data);
+            setLengthClients(
+                response.data && response.data.data
+                    ? response.data.data.length
+                    : 0
+            );
+        } else {
+            toast.error(response.message);
+            setClients([]);
+        }
+        setLoading(false);
+    };
 
     return (
         <div className="min-h-screen p-4 sm:p-8">
@@ -126,10 +137,18 @@ const ClientManagementPage = () => {
                                     Administra y organiza tu base de clientes
                                 </p>
                             </div>
-                            <div className="mt-4 sm:mt-0">
+                            <div className="flex gap-4 mt-4 sm:mt-0">
+                                <Button
+                                    onClick={handleOpenModalFile}
+                                    icon={<FiFile size={20} />}
+                                    className="hover:cursor-pointer"
+                                >
+                                    Agregar plantilla de clientes
+                                </Button>
                                 <Button
                                     onClick={handleOpenModal}
                                     icon={<FiPlus size={20} />}
+                                    className="hover:cursor-pointer"
                                 >
                                     Nuevo Cliente
                                 </Button>
@@ -298,6 +317,15 @@ const ClientManagementPage = () => {
                             onClose={handleCloseModalEdit}
                             onSuccess={handleEditationSuccess}
                             initialData={selectedClient}
+                        />
+                    </Modal>
+                    <Modal
+                        isOpen={isModalOpenFile}
+                        onClose={handleCloseModalFile}
+                    >
+                        <CreateClientFromFile
+                            onClose={handleCloseModalFile}
+                            onSuccess={handleFileUploadSuccess}
                         />
                     </Modal>
                 </div>

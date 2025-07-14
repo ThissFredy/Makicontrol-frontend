@@ -11,7 +11,7 @@ export interface ContractGetResponseType<ContractType> {
 }
 
 export interface ContractType {
-    clienteNit: number;
+    clienteNit: string;
     tipoContrato: string;
     valorCanon: string;
     valorBaseEquipo: string;
@@ -23,7 +23,7 @@ export interface ContractType {
 }
 
 export interface ContractCreateType {
-    clienteNit: number;
+    clienteNit: string;
     tipoContrato: string;
     valorCanon: string;
     valorBaseEquipo: string;

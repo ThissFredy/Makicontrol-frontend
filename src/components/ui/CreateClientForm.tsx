@@ -3,6 +3,7 @@ import type { CustomerCreateType, CustomerType } from "@/types/customerType";
 import { validateCreate } from "@/utilities/validateCustomer";
 import type { ErrorFieldType } from "@/types/errorType";
 import { createCustomer } from "@/services/customerService";
+import { toast } from "react-hot-toast";
 
 interface CreateClientFormProps {
     onClose: () => void;
@@ -23,7 +24,6 @@ export const CreateClientForm = ({
     const [errors, setErrors] = React.useState<ErrorFieldType[]>([]);
 
     const [isLoading, setIsLoading] = React.useState(false);
-    const [apiError, setApiError] = React.useState<string | null>(null);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -46,7 +46,6 @@ export const CreateClientForm = ({
         }
 
         setIsLoading(true);
-        setApiError(null);
         const response = await createCustomer(dataForm);
 
         setIsLoading(false);
@@ -57,7 +56,7 @@ export const CreateClientForm = ({
             onSuccess(response.message, dataForm);
             onClose();
         } else {
-            setApiError(response.message || "Error al crear cliente");
+            toast.error(response.message || "Error al crear cliente");
         }
     };
 
@@ -73,11 +72,6 @@ export const CreateClientForm = ({
             </div>
 
             <div className="space-y-4">
-                {apiError && (
-                    <div className="bg-red-100 text-red-800 p-4 rounded-lg mb-6">
-                        <p>{apiError}</p>
-                    </div>
-                )}
                 <div>
                     <label
                         htmlFor="nit"

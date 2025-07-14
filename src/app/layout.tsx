@@ -22,13 +22,13 @@ export default function RootLayout({
                     <main className="flex-grow bg-[#F0F2F5] min-h-[calc(100vh-200px)]">
                         {children}
                         <Toaster
-                            position="top-center"
+                            position="top-right"
                             toastOptions={{
                                 style: {
                                     background: "#363636",
                                     color: "#fff",
                                     padding: "30px",
-                                    fontSize: "20px",
+                                    fontSize: "15px",
                                     borderRadius: "8px",
                                     minWidth: "350px",
                                 },

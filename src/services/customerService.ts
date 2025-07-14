@@ -4,7 +4,7 @@ import type { CustomerUpdateType } from "@/types/customerType";
 import type { CustomerType } from "@/types/customerType";
 import { getCustomers } from "@/api/customerApi";
 import { createCustomerApi } from "@/api/customerApi";
-import { updateCustomerApi } from "@/api/customerApi";
+import { updateCustomerApi, uploadCustomersFileApi } from "@/api/customerApi";
 import { OperationType } from "@/types/operationType";
 import { getCustomerByNIT, getCustomerByName } from "@/api/customerApi";
 /**
@@ -158,5 +158,34 @@ export async function updateCustomer(
                 correo: "",
             },
         } as OperationType<CustomerUpdateType>;
+    }
+}
+
+export async function uploadCustomersFileService(
+    formData: FormData
+): Promise<OperationType<null>> {
+    try {
+        const response = await uploadCustomersFileApi(formData);
+
+        if (!response.success) {
+            return {
+                status: false,
+                message: response.message || "Error al procesar el archivo",
+                data: null,
+            } as OperationType<null>;
+        }
+
+        return {
+            status: response.success,
+            message: response.message || "Archivo procesado exitosamente",
+            data: null,
+        } as OperationType<null>;
+    } catch (error) {
+        console.error("Error en el servicio de subida de archivo:", error);
+        return {
+            status: false,
+            message: "Error al procesar el archivo",
+            data: null,
+        } as OperationType<null>;
     }
 }

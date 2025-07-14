@@ -1,6 +1,6 @@
 import type { ContractCreateType, ContractType } from "@/types/contractType";
 import type { ApiResponse } from "@/types/apiType";
-import { apiService } from "@/api/api";
+import { apiService, apiServiceFile } from "@/api/api";
 
 /**
  * Llama al endpoint de contratos de la API y devuelve una lista de contratos.
@@ -77,6 +77,13 @@ export async function getContractsKindsApi(): Promise<ApiResponse<string[]>> {
     return response;
 }
 
+export async function getCanonKindsApi(): Promise<ApiResponse<string[]>> {
+    const response = await apiService<string[]>("/api/contratos/grupos-canon", {
+        method: "GET",
+    });
+    return response;
+}
+
 export async function getTypesOfContractsApi(): Promise<ApiResponse<string[]>> {
     const response = await apiService<string[]>(
         "/api/contratos/tipos-contrato",
@@ -84,6 +91,31 @@ export async function getTypesOfContractsApi(): Promise<ApiResponse<string[]>> {
             method: "GET",
         }
     );
+
+    return response;
+}
+
+export async function getContractByIdApi(
+    id: string
+): Promise<ApiResponse<ContractType>> {
+    const response = await apiService<ContractType>(
+        `/api/contratos/search/nit?nit=${id}`,
+        {
+            method: "GET",
+        }
+    );
+
+    return response;
+}
+
+export async function uploadContractsFileApi(
+    file: FormData
+): Promise<ApiResponse<string>> {
+    console.log("Subiendo archivo de contratos:", file);
+    const response = await apiServiceFile<string>("/api/contratos/upload", {
+        method: "POST",
+        body: file,
+    });
 
     return response;
 }

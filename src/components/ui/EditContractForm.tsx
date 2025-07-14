@@ -23,7 +23,7 @@ export const EditContractForm = ({
     initialData,
 }: EditContractFormProps) => {
     const [dataForm, setData] = React.useState<ContractType>({
-        clienteNit: 0,
+        clienteNit: "",
         tipoContrato: "CANON_FIJO",
         valorCanon: "",
         valorBaseEquipo: "",
@@ -83,7 +83,7 @@ export const EditContractForm = ({
         "ESCANER",
     ]);
 
-    const handleChange = (
+    const handleChange = async (
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
     ) => {
         const { name, value } = e.target;
@@ -93,7 +93,7 @@ export const EditContractForm = ({
         };
         setData(data);
 
-        const validationErrors = validateCreate(data);
+        const validationErrors = await validateCreate(data);
         setErrors(validationErrors);
     };
 
@@ -132,7 +132,7 @@ export const EditContractForm = ({
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        const validationErrors = validateCreate(dataForm);
+        const validationErrors = await validateCreate(dataForm);
         setErrors(validationErrors);
 
         if (validationErrors.length > 0) {

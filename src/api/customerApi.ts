@@ -1,6 +1,6 @@
 import type { CustomerType } from "@/types/customerType";
 import type { ApiResponse } from "@/types/apiType";
-import { apiService } from "@/api/api";
+import { apiService, apiServiceFile } from "@/api/api";
 
 /**
  * Llama al endpoint de clientes de la API y devuelve una lista de clientes.
@@ -61,6 +61,18 @@ export async function updateCustomerApi(
             body: JSON.stringify(data),
         }
     );
+
+    return response;
+}
+
+export async function uploadCustomersFileApi(
+    file: FormData
+): Promise<ApiResponse<string>> {
+    console.log("Subiendo archivo de clientes:", file);
+    const response = await apiServiceFile<string>("/api/clientes/upload", {
+        method: "POST",
+        body: file,
+    });
 
     return response;
 }
