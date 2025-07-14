@@ -1,5 +1,6 @@
 import { ApiResponse } from "@/types/apiType";
 import { getTokenCookie } from "@/utilities/loginUtility"; // Importamos la función para obtener la cookie
+import { removeTokenCookie } from "@/utilities/loginUtility";
 
 // Obtén la URL base de la API desde las variables de entorno
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -19,6 +20,64 @@ export async function apiService<T>(
 
     const defaultHeaders: Record<string, string> = {
         "Content-Type": "application/json",
+        ...(options?.headers as Record<string, string>),
+    };
+
+    console.log("Llamando a la API:", url, "con opciones:", options);
+
+    if (token) {
+        defaultHeaders["Authorization"] = `Bearer ${token}`;
+    }
+    try {
+        const response = await fetch(url, {
+            ...options,
+            headers: defaultHeaders,
+            credentials: "include",
+        });
+
+        // Si la respuesta es 401 (Unauthorized), eliminamos el token y redirigimos al login
+        if (response.status === 401 || response.status === 403) {
+            removeTokenCookie();
+            window.location.href = "/login"; // Redirigir al login
+        }
+        const data = await response.json();
+
+        console.log("Respuesta de la API:", data);
+
+        if (response.status < 200 || response.status >= 300) {
+            const error = data.errors[0] || "Error en la petición";
+            return {
+                success: false,
+                message: data.message ? data.message : error,
+                error: data.message || "Unknown error",
+            };
+        }
+
+        return {
+            success: true,
+            message: data.message || "Operación exitosa",
+            data: data as T,
+            error: "",
+        };
+    } catch (error) {
+        console.error(error);
+        const errorMessage = "Error de red o servidor";
+        return {
+            success: false,
+            message: errorMessage,
+            error: "NetworkError",
+        };
+    }
+}
+
+export async function apiServiceFile<T>(
+    endpoint: string,
+    options?: RequestInit
+): Promise<ApiResponse<T>> {
+    const url = `${API_BASE_URL}${endpoint}`;
+    const token = getTokenCookie();
+
+    const defaultHeaders: Record<string, string> = {
         ...(options?.headers as Record<string, string>),
     };
 

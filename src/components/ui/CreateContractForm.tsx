@@ -5,8 +5,9 @@ import { toast } from "react-hot-toast";
 import {
     createContractService,
     getTypesOfContractsService,
+    getTypesOfCanonService,
 } from "@/services/contractService";
-import type { ContractType, Canon, CanonGroup } from "@/types/contractType";
+import type { ContractType, Canon } from "@/types/contractType";
 
 interface CreateContractFormProps {
     onClose: () => void;
@@ -21,7 +22,7 @@ export const CreateContractForm = ({
     onSuccess,
 }: CreateContractFormProps) => {
     const [dataForm, setData] = React.useState<ContractType>({
-        clienteNit: 0,
+        clienteNit: "",
         tipoContrato: "CANON_FIJO",
         valorCanon: "",
         valorBaseEquipo: "",
@@ -34,6 +35,10 @@ export const CreateContractForm = ({
 
     const [tipoContratos, setTipoContratos] = React.useState<string[]>([
         "ERROR AL OBTENER TIPOS DE CONTRATO",
+    ]);
+
+    const [tiposCanon, setTiposCanon] = React.useState<string[]>([
+        "ERROR AL OBTENER TIPOS DE CANON",
     ]);
 
     useEffect(() => {
@@ -52,17 +57,27 @@ export const CreateContractForm = ({
         fetchTiposContratos();
     }, []);
 
-    const [canonGroups] = React.useState<CanonGroup[]>([
-        "BN",
-        "COLOR",
-        "ZEBRA",
-        "ESCANER",
-    ]);
+    useEffect(() => {
+        const fetchTiposCanon = async () => {
+            const response = await getTypesOfCanonService();
+            if (response.status) {
+                setTiposCanon(response.data);
+            } else {
+                console.error(
+                    "Error al obtener tipos de canon:",
+                    response.message
+                );
+            }
+        };
+
+        fetchTiposCanon();
+    }, []);
+
     const [errors, setErrors] = React.useState<ErrorFieldType[]>([]);
 
     const [isLoading, setIsLoading] = React.useState(false);
 
-    const handleChange = (
+    const handleChange = async (
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
     ) => {
         const { name, value } = e.target;
@@ -71,7 +86,7 @@ export const CreateContractForm = ({
         const data = { ...dataForm, [name]: parsedValue };
         setData(data);
 
-        const validationErrors = validateCreate(data);
+        const validationErrors = await validateCreate(data);
         setErrors(validationErrors);
     };
 
@@ -110,7 +125,7 @@ export const CreateContractForm = ({
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        const validationErrors = validateCreate(dataForm);
+        const validationErrors = await validateCreate(dataForm);
         setErrors(validationErrors);
 
         if (validationErrors.length > 0) {
@@ -358,7 +373,7 @@ export const CreateContractForm = ({
                             }
                             className="w-full px-3 py-2 border border-slate-300 rounded-lg"
                         >
-                            {canonGroups.map((group) => (
+                            {tiposCanon.map((group) => (
                                 <option key={group} value={group}>
                                     {group}
                                 </option>
