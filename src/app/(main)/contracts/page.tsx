@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { CreateContractForm } from "@/components/ui/CreateContractForm";
@@ -8,6 +8,9 @@ import { StatCard } from "@/components/ui/StatCard";
 import { useDebounce } from "@/utilities/useDebounce";
 import type { ContractType } from "@/types/contractType";
 import { CreateContractsFromFile } from "@/components/ui/CreateContractFromFile";
+import { CreateDetailsFromFile } from "@/components/ui/CreateDetailsFromFile";
+import { useSearchParams } from "next/navigation";
+import { Tooltip } from "@/components/ui/Tooltip";
 
 import {
     searchCustomerByNitAndStatusService,
@@ -23,15 +26,19 @@ import {
     FiFile,
 } from "react-icons/fi";
 import { toast } from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
-const Contracts = () => {
-    const [contracts, setContracts] = React.useState<ContractType[]>();
-    const [lengthContracts, setLengthContracts] = React.useState<number>(
+const ContractsPage = () => {
+    const [contracts, setContracts] = useState<ContractType[]>();
+    const [lengthContracts, setLengthContracts] = useState<number>(
         contracts?.length || 0
     );
+    const [activeContracts, setActiveContracts] = useState<number>(0);
+    const [inactiveContracts, setInactiveContracts] = useState<number>(0);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalEditOpen, setIsModalEditOpen] = useState(false);
     const [isModalOpenFile, setIsModalOpenFile] = useState(false);
+    const [isModalOpenDetailsFile, setIsModalOpenDetailsFile] = useState(false);
     const [loading, setLoading] = React.useState<boolean>(true);
     const [loadingContracts, setLoadingContracts] =
         React.useState<boolean>(false);
@@ -51,12 +58,17 @@ const Contracts = () => {
         [key: string]: string;
     }>({});
     const totalContracts = lengthContracts || 0;
+    const searchParams = useSearchParams();
 
     const handleOpenModal = () => setIsModalOpen(true);
     const handleCloseModal = () => setIsModalOpen(false);
 
     const handleOpenModalFile = () => setIsModalOpenFile(true);
     const handleCloseModalFile = () => setIsModalOpenFile(false);
+
+    // Details
+    const handleOpenModalDetailsFile = () => setIsModalOpenDetailsFile(true);
+    const handleCloseModalDetailsFile = () => setIsModalOpenDetailsFile(false);
 
     const handleOpenModalEdit = (contract: ContractType) => {
         setSelectedContract(contract);
@@ -88,10 +100,33 @@ const Contracts = () => {
         });
     };
 
+    // * Search params
+    useEffect(() => {
+        const searchQuery = searchParams.get("search");
+
+        if (searchQuery) {
+            setSearchTerms((prevTerms) => ({
+                ...prevTerms,
+                query: searchQuery,
+            }));
+        }
+    }, [searchParams]);
+
+    // * Router
+    const router = useRouter();
+    const handleViewDetails = (clienteNit: string) => {
+        router.push(`/contracts/${clienteNit}`);
+    };
+
     // * Handle file upload success */
     const handleFileUploadSuccess = (message: string) => {
         toast.success(message);
         fetchContracts();
+    };
+
+    // * Handle file upload success */
+    const handleFileDetailsUploadSuccess = (message: string) => {
+        toast.success(message);
     };
 
     // * For searching contracts by Nit and Status
@@ -157,6 +192,14 @@ const Contracts = () => {
             setLengthContracts(
                 response.data && response.data.length ? response.data.length : 0
             );
+            const activeCount = response.data.filter(
+                (contract) => contract.estado === "ACTIVO"
+            ).length;
+            const inactiveCount = response.data.filter(
+                (contract) => contract.estado === "INACTIVO"
+            ).length;
+            setActiveContracts(activeCount);
+            setInactiveContracts(inactiveCount);
         } else {
             toast.error(response.message);
             setContracts([]);
@@ -183,13 +226,20 @@ const Contracts = () => {
                                     Administra y organiza tu base de contratos
                                 </p>
                             </div>
-                            <div className="flex gap-4 mt-4 sm:mt-0">
+                            <div className="flex gap-4 mt-4 sm:mt-0 flex-wrap">
                                 <Button
                                     onClick={handleOpenModalFile}
                                     icon={<FiFile size={20} />}
                                     className="hover:cursor-pointer"
                                 >
-                                    Agregar plantilla de contratos
+                                    Agregar archivo de contratos
+                                </Button>
+                                <Button
+                                    onClick={handleOpenModalDetailsFile}
+                                    icon={<FiFile size={20} />}
+                                    className="hover:cursor-pointer"
+                                >
+                                    Agregar archivo detalles de contratos
                                 </Button>
                                 <Button
                                     onClick={handleOpenModal}
@@ -200,6 +250,7 @@ const Contracts = () => {
                                 </Button>
                             </div>
                         </header>
+
                         {/* Tarjetas de Estadísticas */}
                         <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <StatCard
@@ -207,7 +258,20 @@ const Contracts = () => {
                                 value={totalContracts}
                                 description="Contratos registrados"
                             />
+                            <StatCard
+                                title="Contratos Activos"
+                                value={activeContracts}
+                                description="Contratos en estado activo"
+                                color="text-green-800"
+                            />
+                            <StatCard
+                                title="Contratos Inactivos"
+                                value={inactiveContracts}
+                                description="Contratos en estado inactivo"
+                                color="text-red-800"
+                            />
                         </section>
+
                         {/* Sección de Filtros y Búsqueda */}
                         <main className="mt-8 bg-white p-6 rounded-lg shadow-sm border border-slate-200">
                             <div className="flex flex-col sm:flex-row items-center justify-between mb-6">
@@ -411,9 +475,9 @@ const Contracts = () => {
                                                                           }
                                                                       </div>
                                                                       <div className="text-slate-500 font-bold text-sm">
-                                                                          {
-                                                                              canon.valorCanon
-                                                                          }
+                                                                          {formatNumber(
+                                                                              canon.valorCanon.toString()
+                                                                          )}
                                                                       </div>
                                                                   </div>
                                                               )
@@ -422,19 +486,34 @@ const Contracts = () => {
                                                 </td>
                                                 <td className="px-6 py-4">
                                                     <div className="flex items-center gap-4">
-                                                        <button className="text-slate-500 hover:text-indigo-600">
-                                                            <FiEye size={18} />
-                                                        </button>
-                                                        <button
-                                                            className="text-slate-500 hover:text-blue-600"
-                                                            onClick={() => {
-                                                                handleOpenModalEdit(
-                                                                    contract
-                                                                );
-                                                            }}
-                                                        >
-                                                            <FiEdit size={18} />
-                                                        </button>
+                                                        <Tooltip text="Ver Detalles">
+                                                            <button
+                                                                className="text-slate-500 hover:text-indigo-600 hover:cursor-pointer"
+                                                                onClick={() =>
+                                                                    handleViewDetails(
+                                                                        contract.clienteNit
+                                                                    )
+                                                                }
+                                                            >
+                                                                <FiEye
+                                                                    size={18}
+                                                                />
+                                                            </button>
+                                                        </Tooltip>
+                                                        <Tooltip text="Editar">
+                                                            <button
+                                                                className="text-slate-500 hover:text-blue-600 hover:cursor-pointer"
+                                                                onClick={() => {
+                                                                    handleOpenModalEdit(
+                                                                        contract
+                                                                    );
+                                                                }}
+                                                            >
+                                                                <FiEdit
+                                                                    size={18}
+                                                                />
+                                                            </button>
+                                                        </Tooltip>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -444,7 +523,6 @@ const Contracts = () => {
                             </div>
                         </main>
                     </div>
-                    {/* 👇 Renderiza el Modal aquí, fuera del flujo principal */}
                     <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
                         <CreateContractForm
                             onClose={handleCloseModal}
@@ -470,9 +548,32 @@ const Contracts = () => {
                             onSuccess={handleFileUploadSuccess}
                         />
                     </Modal>
+                    <Modal
+                        isOpen={isModalOpenDetailsFile}
+                        onClose={handleCloseModalDetailsFile}
+                    >
+                        <CreateDetailsFromFile
+                            onClose={handleCloseModalDetailsFile}
+                            onSuccess={handleFileDetailsUploadSuccess}
+                        />
+                    </Modal>
                 </div>
             )}
         </div>
+    );
+};
+
+const Contracts = () => {
+    return (
+        <Suspense
+            fallback={
+                <div className="flex items-center justify-center h-64">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-blue-500"></div>
+                </div>
+            }
+        >
+            <ContractsPage />
+        </Suspense>
     );
 };
 

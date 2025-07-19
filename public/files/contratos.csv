@@ -1,0 +1,7 @@
+﻿clienteNit;tipoOperacion;limiteIncluido;valorUnitario;valorBase;modoCobro
+890303093;IMPRESION_BN;0;35;0;ilimitado
+890303093;COPIA_BN;0;35;0;ilimitado
+890303093;IMPRESION_COLOR;0;220;0;ilimitado
+890303093;COPIA_COLOR;0;220;0;ilimitado
+890303093;ESCANER;0;15;0;ilimitado
+890303093;CARNET;0;30;0;ilimitado

@@ -59,3 +59,22 @@ export interface ContractUpdateType {
     fechaFin?: string | null;
     estado?: ContractStatus;
 }
+
+export interface ContractDetailType {
+    id: number;
+    clienteNit: string;
+    tipoOperacion: string;
+    limiteIncluido: number;
+    valorUnitario: number;
+    valorBase: number;
+    modoCobro: string;
+}
+
+export interface CreateContractDetailType {
+    clienteNit: string;
+    tipoOperacion: string;
+    limiteIncluido: number;
+    valorUnitario: number;
+    valorBase: number;
+    modoCobro: string;
+}

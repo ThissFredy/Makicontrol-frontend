@@ -106,21 +106,29 @@ export function validateCreate(data: CustomerCreateType): ErrorFieldType[] {
                 value: "Este campo es obligatorio",
             },
         });
-        // Phone can be (322) 45678913 or 32245678913
     } else {
-        // Limpiar el teléfono de caracteres especiales para validar solo números
         const cleanPhone = data.telefono.replace(/[\s\-\(\)\.]/g, "");
 
-        // Validar que contenga solo números después de limpiar
-        if (!/^\d+$/.test(cleanPhone)) {
+        // Validar longitud mínima del teléfono original (sin limpiar)
+        if (data.telefono.length < 7) {
             errors.push({
                 isError: true,
                 field: {
                     name: "telefono",
-                    value: "El teléfono solo puede contener números, espacios, guiones y paréntesis",
+                    value: "El teléfono debe tener al menos 7 caracteres",
+                },
+            });
+        } else if (data.telefono.length > 20) {
+            // ← Aumentar límite para permitir formato
+            errors.push({
+                isError: true,
+                field: {
+                    name: "telefono",
+                    value: "El teléfono no puede tener más de 20 caracteres",
                 },
             });
         } else if (cleanPhone.length < 7) {
+            // ← Validar que tenga al menos 7 dígitos
             errors.push({
                 isError: true,
                 field: {
@@ -128,12 +136,13 @@ export function validateCreate(data: CustomerCreateType): ErrorFieldType[] {
                     value: "El teléfono debe tener al menos 7 dígitos",
                 },
             });
-        } else if (cleanPhone.length > 15) {
+        } else if (!/^[\d\s\-\(\)\.\+]+$/.test(data.telefono)) {
+            // ← Permitir más caracteres
             errors.push({
                 isError: true,
                 field: {
                     name: "telefono",
-                    value: "El teléfono no puede tener más de 15 dígitos",
+                    value: "El teléfono solo puede contener números, espacios, guiones, paréntesis, puntos y el signo +",
                 },
             });
         }

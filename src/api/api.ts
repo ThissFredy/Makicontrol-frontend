@@ -49,7 +49,7 @@ export async function apiService<T>(
             return {
                 success: false,
                 message: data.message ? data.message : error,
-                error: data.message || "Unknown error",
+                error: data.errors || "Unknown error",
             };
         }
 
