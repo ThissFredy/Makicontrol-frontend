@@ -1,5 +1,9 @@
 import type { ContractCreateType } from "@/types/contractType";
 import type { ErrorFieldType } from "@/types/errorType";
+import type {
+    ContractDetailType,
+    CreateContractDetailType,
+} from "@/types/contractType";
 import { getCustomerByNIT } from "@/api/customerApi";
 
 export async function validateCreate(
@@ -68,7 +72,18 @@ export async function validateCreate(
         });
     }
 
-    if (isNaN(Number(data.valorCanon))) {
+    if (
+        data.valorCanon.toString().includes(",") ||
+        data.valorCanon.toString().includes(".")
+    ) {
+        errors.push({
+            isError: true,
+            field: {
+                name: "valorCanon",
+                value: "El valor del canon no puede contener caracteres especiales como comas o puntos",
+            },
+        });
+    } else if (isNaN(Number(data.valorCanon))) {
         errors.push({
             isError: true,
             field: {
@@ -94,7 +109,18 @@ export async function validateCreate(
         });
     }
 
-    if (isNaN(Number(data.valorBaseEquipo))) {
+    if (
+        data.valorBaseEquipo.toString().includes(",") ||
+        data.valorBaseEquipo.toString().includes(".")
+    ) {
+        errors.push({
+            isError: true,
+            field: {
+                name: "valorBaseEquipo",
+                value: "El valor base del equipo no puede contener caracteres especiales como comas o puntos",
+            },
+        });
+    } else if (isNaN(Number(data.valorBaseEquipo))) {
         errors.push({
             isError: true,
             field: {
@@ -252,7 +278,18 @@ export async function validateEdit(
         });
     }
 
-    if (isNaN(Number(data.valorCanon))) {
+    if (
+        data.valorCanon.toString().includes(",") ||
+        data.valorCanon.toString().includes(".")
+    ) {
+        errors.push({
+            isError: true,
+            field: {
+                name: "valorCanon",
+                value: "El valor del canon no puede contener caracteres especiales como comas o puntos",
+            },
+        });
+    } else if (isNaN(Number(data.valorCanon))) {
         errors.push({
             isError: true,
             field: {
@@ -278,7 +315,18 @@ export async function validateEdit(
         });
     }
 
-    if (isNaN(Number(data.valorBaseEquipo))) {
+    if (
+        data.valorBaseEquipo.toString().includes(",") ||
+        data.valorBaseEquipo.toString().includes(".")
+    ) {
+        errors.push({
+            isError: true,
+            field: {
+                name: "valorBaseEquipo",
+                value: "El valor base del equipo no puede contener caracteres especiales como comas o puntos",
+            },
+        });
+    } else if (isNaN(Number(data.valorBaseEquipo))) {
         errors.push({
             isError: true,
             field: {
@@ -372,6 +420,330 @@ export async function validateEdit(
             field: {
                 name: "estado",
                 value: "Este campo es obligatorio",
+            },
+        });
+    }
+
+    return errors;
+}
+
+export async function validateDetailsContract(data: ContractDetailType) {
+    const errors: ErrorFieldType[] = [];
+
+    if (!data.clienteNit) {
+        errors.push({
+            isError: true,
+            field: {
+                name: "clienteNit",
+                value: "Este campo es obligatorio",
+            },
+        });
+    }
+
+    if (!data.tipoOperacion) {
+        errors.push({
+            isError: true,
+            field: {
+                name: "tipoOperacion",
+                value: "Este campo es obligatorio",
+            },
+        });
+    }
+
+    if (
+        data.limiteIncluido.toString().includes(",") ||
+        data.limiteIncluido.toString().includes(".")
+    ) {
+        errors.push({
+            isError: true,
+            field: {
+                name: "limiteIncluido",
+                value: "El valor del límite incluido no puede contener caracteres especiales como comas o puntos",
+            },
+        });
+    } else if (data.limiteIncluido == 0) {
+        errors.push({
+            isError: true,
+            field: {
+                name: "limiteIncluido",
+                value: "Este campo es obligatorio",
+            },
+        });
+    }
+    if (isNaN(Number(data.limiteIncluido))) {
+        errors.push({
+            isError: true,
+            field: {
+                name: "limiteIncluido",
+                value: "El límite incluido debe ser un número",
+            },
+        });
+    }
+    if (Number(data.limiteIncluido) < 0) {
+        errors.push({
+            isError: true,
+            field: {
+                name: "limiteIncluido",
+                value: "El límite incluido no puede ser negativo",
+            },
+        });
+    }
+
+    if (
+        data.valorUnitario.toString().includes(",") ||
+        data.valorUnitario.toString().includes(".")
+    ) {
+        errors.push({
+            isError: true,
+            field: {
+                name: "valorUnitario",
+                value: "El valor unitario no puede contener caracteres especiales como comas o puntos",
+            },
+        });
+    } else if (data.valorUnitario == 0) {
+        errors.push({
+            isError: true,
+            field: {
+                name: "valorUnitario",
+                value: "Este campo es obligatorio",
+            },
+        });
+    }
+    if (isNaN(Number(data.valorUnitario))) {
+        errors.push({
+            isError: true,
+            field: {
+                name: "valorUnitario",
+                value: "El valor unitario debe ser un número",
+            },
+        });
+    }
+    if (Number(data.valorUnitario) < 0) {
+        errors.push({
+            isError: true,
+            field: {
+                name: "valorUnitario",
+                value: "El valor unitario no puede ser negativo",
+            },
+        });
+    }
+
+    if (
+        data.valorBase.toString().includes(",") ||
+        data.valorBase.toString().includes(".")
+    ) {
+        errors.push({
+            isError: true,
+            field: {
+                name: "valorBase",
+                value: "El valor base no puede contener caracteres especiales como comas o puntos",
+            },
+        });
+    } else if (data.valorBase == 0) {
+        errors.push({
+            isError: true,
+            field: {
+                name: "valorBase",
+                value: "Este campo es obligatorio",
+            },
+        });
+    }
+    if (isNaN(Number(data.valorBase))) {
+        errors.push({
+            isError: true,
+            field: {
+                name: "valorBase",
+                value: "El valor base debe ser un número",
+            },
+        });
+    }
+    if (Number(data.valorBase) < 0) {
+        errors.push({
+            isError: true,
+            field: {
+                name: "valorBase",
+                value: "El valor base no puede ser negativo",
+            },
+        });
+    }
+
+    if (!data.modoCobro) {
+        errors.push({
+            isError: true,
+            field: {
+                name: "modoCobro",
+                value: "Este campo es obligatorio",
+            },
+        });
+    } else if (data.modoCobro.toString().length > 25) {
+        errors.push({
+            isError: true,
+            field: {
+                name: "modoCobro",
+                value: "El modo de cobro no puede tener más de 25 caracteres",
+            },
+        });
+    }
+
+    return errors;
+}
+
+export async function validateCreateDetailsContract(
+    data: CreateContractDetailType
+) {
+    const errors: ErrorFieldType[] = [];
+
+    if (!data.clienteNit) {
+        errors.push({
+            isError: true,
+            field: {
+                name: "clienteNit",
+                value: "Este campo es obligatorio",
+            },
+        });
+    }
+
+    if (!data.tipoOperacion) {
+        errors.push({
+            isError: true,
+            field: {
+                name: "tipoOperacion",
+                value: "Este campo es obligatorio",
+            },
+        });
+    }
+
+    if (
+        data.limiteIncluido.toString().includes(",") ||
+        data.limiteIncluido.toString().includes(".")
+    ) {
+        errors.push({
+            isError: true,
+            field: {
+                name: "limiteIncluido",
+                value: "El límite incluido no puede contener caracteres especiales como comas o puntos",
+            },
+        });
+    } else if (data.limiteIncluido == 0) {
+        errors.push({
+            isError: true,
+            field: {
+                name: "limiteIncluido",
+                value: "Este campo es obligatorio",
+            },
+        });
+    }
+    if (isNaN(Number(data.limiteIncluido))) {
+        errors.push({
+            isError: true,
+            field: {
+                name: "limiteIncluido",
+                value: "El límite incluido debe ser un número",
+            },
+        });
+    }
+    if (Number(data.limiteIncluido) < 0) {
+        errors.push({
+            isError: true,
+            field: {
+                name: "limiteIncluido",
+                value: "El límite incluido no puede ser negativo",
+            },
+        });
+    }
+
+    if (
+        data.valorUnitario.toString().includes(",") ||
+        data.valorUnitario.toString().includes(".")
+    ) {
+        errors.push({
+            isError: true,
+            field: {
+                name: "valorUnitario",
+                value: "El valor unitario no puede contener caracteres especiales como comas o puntos",
+            },
+        });
+    } else if (data.valorUnitario == 0) {
+        errors.push({
+            isError: true,
+            field: {
+                name: "valorUnitario",
+                value: "Este campo es obligatorio",
+            },
+        });
+    }
+    if (isNaN(Number(data.valorUnitario))) {
+        errors.push({
+            isError: true,
+            field: {
+                name: "valorUnitario",
+                value: "El valor unitario debe ser un número",
+            },
+        });
+    }
+    if (Number(data.valorUnitario) < 0) {
+        errors.push({
+            isError: true,
+            field: {
+                name: "valorUnitario",
+                value: "El valor unitario no puede ser negativo",
+            },
+        });
+    }
+
+    if (
+        data.valorBase.toString().includes(",") ||
+        data.valorBase.toString().includes(".")
+    ) {
+        errors.push({
+            isError: true,
+            field: {
+                name: "valorBase",
+                value: "El valor base no puede contener caracteres especiales como comas o puntos",
+            },
+        });
+    } else if (data.valorBase == 0) {
+        errors.push({
+            isError: true,
+            field: {
+                name: "valorBase",
+                value: "Este campo es obligatorio",
+            },
+        });
+    }
+    if (isNaN(Number(data.valorBase))) {
+        errors.push({
+            isError: true,
+            field: {
+                name: "valorBase",
+                value: "El valor base debe ser un número",
+            },
+        });
+    }
+    if (Number(data.valorBase) < 0) {
+        errors.push({
+            isError: true,
+            field: {
+                name: "valorBase",
+                value: "El valor base no puede ser negativo",
+            },
+        });
+    }
+
+    if (!data.modoCobro) {
+        errors.push({
+            isError: true,
+            field: {
+                name: "modoCobro",
+                value: "Este campo es obligatorio",
+            },
+        });
+    } else if (data.modoCobro.toString().length > 25) {
+        errors.push({
+            isError: true,
+            field: {
+                name: "modoCobro",
+                value: "El modo de cobro no puede tener más de 25 caracteres",
             },
         });
     }

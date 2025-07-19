@@ -1,4 +1,9 @@
-import type { ContractCreateType, ContractType } from "@/types/contractType";
+import type {
+    ContractCreateType,
+    ContractType,
+    ContractDetailType,
+    CreateContractDetailType,
+} from "@/types/contractType";
 import type { ApiResponse } from "@/types/apiType";
 import { apiService, apiServiceFile } from "@/api/api";
 
@@ -115,6 +120,70 @@ export async function uploadContractsFileApi(
     const response = await apiServiceFile<string>("/api/contratos/upload", {
         method: "POST",
         body: file,
+    });
+
+    return response;
+}
+
+export async function uploadDetailsContractsFileApi(
+    file: FormData
+): Promise<ApiResponse<string>> {
+    console.log("Subiendo archivo de detalles de contratos:", file);
+    const response = await apiServiceFile<string>(
+        "/api/detalleContrato/upload",
+        {
+            method: "POST",
+            body: file,
+        }
+    );
+
+    return response;
+}
+
+export async function getContractDetailsApi(
+    id: number
+): Promise<ApiResponse<ContractDetailType>> {
+    const response = await apiService<ContractDetailType>(
+        `/api/detalleContrato/search/clienteNit?clienteNit=${id}`,
+        {
+            method: "GET",
+        }
+    );
+
+    return response;
+}
+
+export async function getOperationsTypesApi(): Promise<ApiResponse<string[]>> {
+    const response = await apiService<string[]>(
+        "/api/contadores/tipos-operacion",
+        {
+            method: "GET",
+        }
+    );
+
+    return response;
+}
+
+export async function updateContractDetailsApi(
+    data: ContractDetailType
+): Promise<ApiResponse<ContractDetailType>> {
+    const response = await apiService<ContractDetailType>(
+        `/api/detalleContrato/id/${data.id}`,
+        {
+            method: "PUT",
+            body: JSON.stringify(data),
+        }
+    );
+
+    return response;
+}
+
+export async function createContractDetailsApi(
+    data: CreateContractDetailType
+): Promise<ApiResponse<null>> {
+    const response = await apiService<null>("/api/detalleContrato", {
+        method: "POST",
+        body: JSON.stringify(data),
     });
 
     return response;

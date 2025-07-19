@@ -1,14 +1,24 @@
-import type { ContractType, ContractCreateType } from "@/types/contractType";
+import type {
+    ContractType,
+    ContractCreateType,
+    CreateContractDetailType,
+    ContractDetailType,
+} from "@/types/contractType";
 
 import {
     getContractsApi,
     getContractByIdApi,
+    getContractDetailsApi,
     createContractApi,
     getContractByNitAndStatusApi,
     updateContractApi,
+    createContractDetailsApi,
     getCanonKindsApi,
     getTypesOfContractsApi,
     uploadContractsFileApi,
+    uploadDetailsContractsFileApi,
+    updateContractDetailsApi,
+    getOperationsTypesApi,
 } from "@/api/contractApi";
 
 import { getCustomerByNIT } from "@/api/customerApi";
@@ -272,5 +282,167 @@ export async function uploadContractsFileService(
             message: "Error al procesar el archivo",
             data: null,
         } as OperationType<null>;
+    }
+}
+
+export async function uploadDetailsContractsFileService(
+    formData: FormData
+): Promise<OperationType<null>> {
+    try {
+        const response = await uploadDetailsContractsFileApi(formData);
+        console.log("Response from uploadDetailsContractsFileApi:", response);
+
+        if (!response.success) {
+            return {
+                status: false,
+                message: response.message || "Error al procesar el archivo",
+                data: null,
+            } as OperationType<null>;
+        }
+
+        return {
+            status: response.success,
+            message: response.message || "Archivo procesado exitosamente",
+            data: null,
+        } as OperationType<null>;
+    } catch (error) {
+        console.error("Error en el servicio de subida de archivo:", error);
+        return {
+            status: false,
+            message: "Error al procesar el archivo",
+            data: null,
+        } as OperationType<null>;
+    }
+}
+
+export async function getContractDetailsByIdService(
+    id: number
+): Promise<OperationType<ContractDetailType[]>> {
+    try {
+        const response = await getContractDetailsApi(id);
+        if (response.success) {
+            return {
+                status: true,
+                message: "Contrato obtenido correctamente",
+                data: Array.isArray(response.data) ? response.data : [],
+            } as OperationType<ContractDetailType[]>;
+        } else {
+            return {
+                status: false,
+                message:
+                    Array.isArray(response.error) && response.error.length > 0
+                        ? response.error
+                        : "Error al obtener el contrato",
+                data: [],
+            } as OperationType<ContractDetailType[]>;
+        }
+    } catch (error) {
+        console.error(
+            "Error en el servicio de obtención de contrato por ID:",
+            error
+        );
+        return {
+            status: false,
+            message: "Error al obtener el contrato",
+            data: [],
+            error: error,
+        } as OperationType<ContractDetailType[]>;
+    }
+}
+
+export async function getOperationsTypesService(): Promise<
+    OperationType<string[]>
+> {
+    try {
+        const response = await getOperationsTypesApi();
+        if (response.success) {
+            return {
+                status: true,
+                message: "Operaciones obtenidas correctamente",
+                data: Array.isArray(response.data) ? response.data : [],
+            } as OperationType<string[]>;
+        } else {
+            return {
+                status: false,
+                message: response.message || "Error al obtener las operaciones",
+                data: [],
+            } as OperationType<string[]>;
+        }
+    } catch (error) {
+        console.error(
+            "Error en el servicio de obtención de operaciones:",
+            error
+        );
+        return {
+            status: false,
+            message: "Error al obtener las operaciones",
+            data: [],
+        } as OperationType<string[]>;
+    }
+}
+
+export async function updateContractDetailsService(
+    data: ContractDetailType
+): Promise<OperationType<ContractDetailType>> {
+    try {
+        const response = await updateContractDetailsApi(data);
+        if (response.success) {
+            return {
+                status: true,
+                message: "Detalles del contrato actualizados correctamente",
+                data: data,
+            } as OperationType<ContractDetailType>;
+        } else {
+            return {
+                status: false,
+                message:
+                    response.message ||
+                    "Error al actualizar los detalles del contrato",
+                data: data,
+            } as OperationType<ContractDetailType>;
+        }
+    } catch (error) {
+        console.error(
+            "Error en el servicio de actualización de detalles del contrato:",
+            error
+        );
+        return {
+            status: false,
+            message: "Error al actualizar los detalles del contrato",
+            data: data,
+        } as OperationType<ContractDetailType>;
+    }
+}
+
+export async function createContractDetailsService(
+    data: CreateContractDetailType
+): Promise<OperationType<CreateContractDetailType>> {
+    try {
+        const response = await createContractDetailsApi(data);
+        if (response.success) {
+            return {
+                status: true,
+                message: "Detalles del contrato creados correctamente",
+                data: data,
+            } as OperationType<CreateContractDetailType>;
+        } else {
+            return {
+                status: false,
+                message:
+                    response.message ||
+                    "Error al crear los detalles del contrato",
+                data: data,
+            } as OperationType<CreateContractDetailType>;
+        }
+    } catch (error) {
+        console.error(
+            "Error en el servicio de creación de detalles del contrato:",
+            error
+        );
+        return {
+            status: false,
+            message: "Error al crear los detalles del contrato",
+            data: data,
+        } as OperationType<CreateContractDetailType>;
     }
 }

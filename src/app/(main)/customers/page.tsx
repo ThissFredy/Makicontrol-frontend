@@ -12,8 +12,11 @@ import { searchCustomerByNameOrNIT } from "@/services/customerService";
 import { CustomerType } from "@/types/customerType";
 import { FiPlus, FiSearch, FiEye, FiEdit, FiFile } from "react-icons/fi";
 import { toast } from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import { Tooltip } from "@/components/ui/Tooltip";
 
 const ClientManagementPage = () => {
+    const router = useRouter();
     const [clients, setClients] = React.useState<CustomerType[]>();
     const [lengthClients, setLengthClients] = React.useState<number>(
         clients?.length || 0
@@ -54,6 +57,10 @@ const ClientManagementPage = () => {
     const handleCreationSuccess = (message: string, data: CustomerType) => {
         toast.success(message);
         setClients((prevClients) => [...(prevClients || []), data]);
+    };
+
+    const handleLookForContract = (nit: number) => {
+        router.push(`/contracts?search=${nit}`);
     };
 
     const handleEditationSuccess = (message: string, data: CustomerType) => {
@@ -280,19 +287,34 @@ const ClientManagementPage = () => {
 
                                                 <td className="px-6 py-4">
                                                     <div className="flex items-center gap-4">
-                                                        <button className="text-slate-500 hover:text-indigo-600">
-                                                            <FiEye size={18} />
-                                                        </button>
-                                                        <button
-                                                            className="text-slate-500 hover:text-blue-600"
-                                                            onClick={() => {
-                                                                handleOpenModalEdit(
-                                                                    client
-                                                                );
-                                                            }}
-                                                        >
-                                                            <FiEdit size={18} />
-                                                        </button>
+                                                        <Tooltip text="Ver Contrato">
+                                                            <button
+                                                                className="text-slate-500 hover:text-indigo-600 hover:cursor-pointer"
+                                                                onClick={() => {
+                                                                    handleLookForContract(
+                                                                        client.nit
+                                                                    );
+                                                                }}
+                                                            >
+                                                                <FiEye
+                                                                    size={18}
+                                                                />
+                                                            </button>
+                                                        </Tooltip>
+                                                        <Tooltip text="Editar">
+                                                            <button
+                                                                className="text-slate-500 hover:text-blue-600 hover:cursor-pointer"
+                                                                onClick={() => {
+                                                                    handleOpenModalEdit(
+                                                                        client
+                                                                    );
+                                                                }}
+                                                            >
+                                                                <FiEdit
+                                                                    size={18}
+                                                                />
+                                                            </button>
+                                                        </Tooltip>
                                                     </div>
                                                 </td>
                                             </tr>

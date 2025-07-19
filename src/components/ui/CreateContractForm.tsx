@@ -14,16 +14,13 @@ interface CreateContractFormProps {
     onSuccess: (message: string, data: ContractType) => void;
 }
 
-// TODO: Add period options collected from api
-// TODO: Add validation for canon groups and values
-
 export const CreateContractForm = ({
     onClose,
     onSuccess,
 }: CreateContractFormProps) => {
     const [dataForm, setData] = React.useState<ContractType>({
         clienteNit: "",
-        tipoContrato: "CANON_FIJO",
+        tipoContrato: "",
         valorCanon: "",
         valorBaseEquipo: "",
         periodo: "MENSUAL",
@@ -33,9 +30,7 @@ export const CreateContractForm = ({
         canones: [],
     });
 
-    const [tipoContratos, setTipoContratos] = React.useState<string[]>([
-        "ERROR AL OBTENER TIPOS DE CONTRATO",
-    ]);
+    const [tipoContratos, setTipoContratos] = React.useState<string[]>([""]);
 
     const [tiposCanon, setTiposCanon] = React.useState<string[]>([
         "ERROR AL OBTENER TIPOS DE CANON",
@@ -201,12 +196,22 @@ export const CreateContractForm = ({
                     onChange={handleChange}
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 >
+                    <option value="" disabled>
+                        Selecciona un tipo de contrato
+                    </option>
                     {tipoContratos.map((tipo) => (
                         <option key={tipo} value={tipo}>
                             {tipo.replace(/_/g, " ")}
                         </option>
                     ))}
                 </select>
+                <span className="text-red-500 text-sm">
+                    {
+                        errors.find(
+                            (error) => error.field.name === "tipoContrato"
+                        )?.field.value
+                    }
+                </span>
             </div>
 
             <div>
@@ -353,62 +358,64 @@ export const CreateContractForm = ({
             </div>
 
             {/* Canones Section */}
-            <div className="mt-6">
-                <h3 className="text-lg font-medium text-slate-700 mb-2">
-                    Cánones
-                </h3>
-                {dataForm.canones.map((canon, index) => (
-                    <div
-                        key={index}
-                        className="flex items-center gap-4 mb-2 p-2 border border-slate-200 rounded-lg"
+            {dataForm.tipoContrato === "CANON_CONSUMO" && (
+                <div className="mt-6">
+                    <h3 className="text-lg font-medium text-slate-700 mb-2">
+                        Cánones
+                    </h3>
+                    {dataForm.canones.map((canon, index) => (
+                        <div
+                            key={index}
+                            className="flex items-center gap-4 mb-2 p-2 border border-slate-200 rounded-lg"
+                        >
+                            <select
+                                value={canon.grupo}
+                                onChange={(e) =>
+                                    handleCanonChange(
+                                        index,
+                                        "grupo",
+                                        e.target.value
+                                    )
+                                }
+                                className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                            >
+                                {tiposCanon.map((group) => (
+                                    <option key={group} value={group}>
+                                        {group}
+                                    </option>
+                                ))}
+                            </select>
+                            <input
+                                type="number"
+                                placeholder="Valor del Canon"
+                                value={canon.valorCanon}
+                                onChange={(e) =>
+                                    handleCanonChange(
+                                        index,
+                                        "valorCanon",
+                                        e.target.value
+                                    )
+                                }
+                                className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => handleRemoveCanon(index)}
+                                className="px-3 py-2 font-semibold text-white bg-red-500 rounded-lg hover:bg-red-600"
+                            >
+                                Eliminar
+                            </button>
+                        </div>
+                    ))}
+                    <button
+                        type="button"
+                        onClick={handleAddCanon}
+                        className="mt-2 px-4 py-2 font-semibold text-white bg-slate-800 rounded-lg hover:bg-slate-700"
                     >
-                        <select
-                            value={canon.grupo}
-                            onChange={(e) =>
-                                handleCanonChange(
-                                    index,
-                                    "grupo",
-                                    e.target.value
-                                )
-                            }
-                            className="w-full px-3 py-2 border border-slate-300 rounded-lg"
-                        >
-                            {tiposCanon.map((group) => (
-                                <option key={group} value={group}>
-                                    {group}
-                                </option>
-                            ))}
-                        </select>
-                        <input
-                            type="number"
-                            placeholder="Valor del Canon"
-                            value={canon.valorCanon}
-                            onChange={(e) =>
-                                handleCanonChange(
-                                    index,
-                                    "valorCanon",
-                                    e.target.value
-                                )
-                            }
-                            className="w-full px-3 py-2 border border-slate-300 rounded-lg"
-                        />
-                        <button
-                            type="button"
-                            onClick={() => handleRemoveCanon(index)}
-                            className="px-3 py-2 font-semibold text-white bg-red-500 rounded-lg hover:bg-red-600"
-                        >
-                            Eliminar
-                        </button>
-                    </div>
-                ))}
-                <button
-                    type="button"
-                    onClick={handleAddCanon}
-                    className="mt-2 px-4 py-2 font-semibold text-white bg-slate-800 rounded-lg hover:bg-slate-700"
-                >
-                    Agregar Canon
-                </button>
-            </div>
+                        Agregar Canon
+                    </button>
+                </div>
+            )}
 
             <div className="mt-8 flex justify-end gap-4">
                 <button

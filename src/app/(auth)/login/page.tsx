@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FiLock, FiEye, FiEyeOff } from "react-icons/fi";
 import { IoPerson } from "react-icons/io5";
-
 import type { LoginCredentials } from "@/types/loginType";
 import type { ErrorFieldType } from "@/types/errorType";
 import { validateLogin } from "@/utilities/validateLogin";
