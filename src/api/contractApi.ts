@@ -188,3 +188,11 @@ export async function createContractDetailsApi(
 
     return response;
 }
+
+export async function getPaidMethodsApi(): Promise<ApiResponse<null>> {
+    const response = await apiService<null>("/api/detalleContrato/modo-cobro", {
+        method: "GET",
+    });
+
+    return response;
+}

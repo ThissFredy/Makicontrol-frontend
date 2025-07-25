@@ -54,20 +54,20 @@ export function validateCreate(data: CustomerCreateType): ErrorFieldType[] {
                 value: "El NIT debe ser un número positivo",
             },
         });
-    } else if (data.nit.toString().length < 4) {
+    } else if (data.nit.toString().length < 5) {
         errors.push({
             isError: true,
             field: {
                 name: "nit",
-                value: "El NIT debe tener al menos 4 dígitos",
+                value: "El NIT debe tener al menos 5 dígitos",
             },
         });
-    } else if (data.nit.toString().length > 35) {
+    } else if (data.nit.toString().length > 15) {
         errors.push({
             isError: true,
             field: {
                 name: "nit",
-                value: "El NIT no puede tener más de 35 dígitos",
+                value: "El NIT no puede tener más de 15 dígitos",
             },
         });
     }

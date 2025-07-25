@@ -6,6 +6,7 @@ import type { ErrorFieldType } from "@/types/errorType";
 import {
     getOperationsTypesService,
     createContractDetailsService,
+    getCashMethodService,
 } from "@/services/contractService";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
@@ -40,6 +41,7 @@ export const CreateDetailsContract = ({
     }, [clienteNIT]);
 
     const [errors, setErrors] = useState<ErrorFieldType[]>([]);
+    const [cashMethods, setCashMethods] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(false);
 
     const [tiposOperacion, setTiposOperacion] = useState<string[]>([
@@ -60,6 +62,23 @@ export const CreateDetailsContract = ({
         };
 
         fetchTiposOperacion();
+    }, []);
+
+    // useEffect for fetching cash methods
+    useEffect(() => {
+        const fetchCashMethods = async () => {
+            const response = await getCashMethodService();
+            if (response.status) {
+                setCashMethods(response.data);
+            } else {
+                console.error(
+                    "Error al obtener métodos de pago:",
+                    response.message
+                );
+            }
+        };
+
+        fetchCashMethods();
     }, []);
 
     const handleChange = async (
@@ -239,18 +258,27 @@ export const CreateDetailsContract = ({
 
             <div>
                 <label
-                    htmlFor="valorUnitario"
+                    htmlFor="modoCobro"
                     className="block text-sm font-medium text-slate-600 mb-1"
                 >
                     Modo de Cobro
                 </label>
-                <input
+                <select
                     id="modoCobro"
                     name="modoCobro"
                     value={dataForm.modoCobro}
                     onChange={handleChange}
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
+                >
+                    <option value="" disabled>
+                        Selecciona un modo de cobro
+                    </option>
+                    {cashMethods.map((tipo) => (
+                        <option key={tipo} value={tipo}>
+                            {tipo.replace(/_/g, " ")}
+                        </option>
+                    ))}
+                </select>
                 <span className="text-red-500 text-sm">
                     {
                         errors.find((error) => error.field.name === "modoCobro")

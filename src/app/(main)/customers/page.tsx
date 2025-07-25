@@ -10,10 +10,18 @@ import { StatCard } from "@/components/ui/StatCard";
 import { useDebounce } from "@/utilities/useDebounce";
 import { searchCustomerByNameOrNIT } from "@/services/customerService";
 import { CustomerType } from "@/types/customerType";
-import { FiPlus, FiSearch, FiEye, FiEdit, FiFile } from "react-icons/fi";
+import {
+    FiPlus,
+    FiSearch,
+    FiEye,
+    FiEdit,
+    FiFile,
+    FiPrinter,
+} from "react-icons/fi";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { Tooltip } from "@/components/ui/Tooltip";
+import { AssignPrintersFromFile } from "@/components/ui/AssignPrintersFromFile";
 
 const ClientManagementPage = () => {
     const router = useRouter();
@@ -25,6 +33,7 @@ const ClientManagementPage = () => {
     const [isModalEditOpen, setIsModalEditOpen] = useState(false);
     const [isModalOpenFile, setIsModalOpenFile] = useState(false);
     const [loading, setLoading] = React.useState<boolean>(true);
+    const [isModalPrintersFile, setIsModalPrintersFile] = useState(false);
     const [loadingClients, setLoadingClients] = React.useState<boolean>(false);
     const [selectedClient, setSelectedClient] = React.useState<CustomerType>({
         nombre: "",
@@ -43,6 +52,9 @@ const ClientManagementPage = () => {
 
     const handleOpenModalFile = () => setIsModalOpenFile(true);
     const handleCloseModalFile = () => setIsModalOpenFile(false);
+
+    const handleOpenPrintersFile = () => setIsModalPrintersFile(true);
+    const handleClosePrintersFile = () => setIsModalPrintersFile(false);
 
     const handleOpenModalEdit = (client: CustomerType) => {
         setSelectedClient(client);
@@ -79,51 +91,84 @@ const ClientManagementPage = () => {
         fetchClients();
     };
 
+    const handleFilePrintersUploadSuccess = (message: string) => {
+        toast.success(message);
+        fetchClients();
+    };
+
+    // * For relationate users and printers
+    const handleViewPrinters = (nit: number) => {
+        router.push(`/customers/${nit}`);
+    };
+
     // * For searching clients by name or NIT
     useEffect(() => {
-        const searchClients = async () => {
-            if (!debouncedSearchTerm) {
-                const response = await getCustomers();
-                if (response.status) setClients(response.data.data);
-                return;
-            }
+        const loadClients = async () => {
+            try {
+                // Si no hay término de búsqueda y es la primera carga
+                if (!debouncedSearchTerm) {
+                    if (loading) {
+                        // Primera carga
+                        const response = await getCustomers();
+                        if (response.status) {
+                            setClients(response.data.data);
+                            setLengthClients(response.data.data?.length || 0);
+                        } else {
+                            toast.error(response.message);
+                            setClients([]);
+                        }
+                        setLoading(false);
+                    } else {
+                        // Búsqueda vacía (regresar a mostrar todos)
+                        const response = await getCustomers();
+                        if (response.status) {
+                            setClients(response.data.data);
+                        }
+                    }
+                    return;
+                }
 
-            setLoadingClients(true);
-            const response = await searchCustomerByNameOrNIT(
-                debouncedSearchTerm
-            );
+                // Búsqueda con término
+                setLoadingClients(true);
+                const response = await searchCustomerByNameOrNIT(
+                    debouncedSearchTerm
+                );
 
-            if (response.status) {
-                console.log("Clientes encontrados:", response);
-                setClients(response.data.data);
-                toast.error("No se encontraron clientes");
-            } else {
+                if (response.status) {
+                    console.log("Clientes encontrados:", response);
+                    setClients(response.data.data);
+                } else {
+                    toast.error("No se encontraron clientes");
+                    setClients([]);
+                }
+            } catch (error) {
+                console.error("Error loading clients:", error);
+                toast.error("Error al cargar los clientes");
                 setClients([]);
+            } finally {
+                setLoadingClients(false);
             }
-            setLoadingClients(false);
         };
 
-        searchClients();
-    }, [debouncedSearchTerm]);
-
-    useEffect(() => {
-        fetchClients();
-    }, []);
+        loadClients();
+    }, [debouncedSearchTerm, loading]);
 
     const fetchClients = async () => {
-        const response = await getCustomers();
-        if (response.status) {
-            setClients(response.data.data);
-            setLengthClients(
-                response.data && response.data.data
-                    ? response.data.data.length
-                    : 0
-            );
-        } else {
-            toast.error(response.message);
+        try {
+            const response = await getCustomers();
+            if (response.status) {
+                setClients(response.data.data);
+                setLengthClients(response.data.data?.length || 0);
+                return true;
+            } else {
+                setClients([]);
+                return false;
+            }
+        } catch (error) {
+            console.error("Error fetching clients:", error);
             setClients([]);
+            return false;
         }
-        setLoading(false);
     };
 
     return (
@@ -144,11 +189,18 @@ const ClientManagementPage = () => {
                                     Administra y organiza tu base de clientes
                                 </p>
                             </div>
-                            <div className="flex gap-4 mt-4 sm:mt-0">
+                            <div className="block space-y-4 sm:space-y-0 sm:flex gap-4 mt-4 sm:mt-0">
+                                <Button
+                                    onClick={handleOpenPrintersFile}
+                                    icon={<FiFile size={20} />}
+                                    className="hover:cursor-pointer !bg-[#8C9EC2]"
+                                >
+                                    Agregar Plantilla de Impresoras
+                                </Button>
                                 <Button
                                     onClick={handleOpenModalFile}
                                     icon={<FiFile size={20} />}
-                                    className="hover:cursor-pointer"
+                                    className="hover:cursor-pointer !bg-[#8C9EC2]"
                                 >
                                     Agregar plantilla de clientes
                                 </Button>
@@ -287,9 +339,23 @@ const ClientManagementPage = () => {
 
                                                 <td className="px-6 py-4">
                                                     <div className="flex items-center gap-4">
+                                                        <Tooltip text="Ver Impresoras">
+                                                            <button
+                                                                className="text-slate-500 hover:text-[#E87A3E] hover:cursor-pointer"
+                                                                onClick={() => {
+                                                                    handleViewPrinters(
+                                                                        client.nit
+                                                                    );
+                                                                }}
+                                                            >
+                                                                <FiPrinter
+                                                                    size={18}
+                                                                />
+                                                            </button>
+                                                        </Tooltip>
                                                         <Tooltip text="Ver Contrato">
                                                             <button
-                                                                className="text-slate-500 hover:text-indigo-600 hover:cursor-pointer"
+                                                                className="text-slate-500 hover:text-[#E87A3E] hover:cursor-pointer"
                                                                 onClick={() => {
                                                                     handleLookForContract(
                                                                         client.nit
@@ -303,7 +369,7 @@ const ClientManagementPage = () => {
                                                         </Tooltip>
                                                         <Tooltip text="Editar">
                                                             <button
-                                                                className="text-slate-500 hover:text-blue-600 hover:cursor-pointer"
+                                                                className="text-slate-500 hover:text-[#E87A3E] hover:cursor-pointer"
                                                                 onClick={() => {
                                                                     handleOpenModalEdit(
                                                                         client
@@ -348,6 +414,15 @@ const ClientManagementPage = () => {
                         <CreateClientFromFile
                             onClose={handleCloseModalFile}
                             onSuccess={handleFileUploadSuccess}
+                        />
+                    </Modal>
+                    <Modal
+                        isOpen={isModalPrintersFile}
+                        onClose={handleClosePrintersFile}
+                    >
+                        <AssignPrintersFromFile
+                            onClose={handleClosePrintersFile}
+                            onSuccess={handleFilePrintersUploadSuccess}
                         />
                     </Modal>
                 </div>

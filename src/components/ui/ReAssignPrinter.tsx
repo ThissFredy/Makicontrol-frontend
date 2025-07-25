@@ -1,47 +1,44 @@
 import React from "react";
 import { useEffect } from "react";
-import type { ContractDetailType } from "@/types/contractType";
-import { validateDetailsContract } from "@/utilities/validateContract";
+import type { printerType, printerCreateType } from "@/types/printerType";
+import { validateEdit } from "@/utilities/validatePrinter";
 import type { ErrorFieldType } from "@/types/errorType";
 import {
-    getOperationsTypesService,
-    updateContractDetailsService,
-} from "@/services/contractService";
+    getCanonForPrintersService,
+    reAssignPrintersService,
+} from "@/services/printerService";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 
-interface EditDetailsContractProps {
+interface ReAssignPrinterProps {
     onClose: () => void;
-    onSuccess: (message: string, data: ContractDetailType) => void;
-    initialData: ContractDetailType;
+
+    onSuccess: (message: string) => void;
+    initialData: printerType;
 }
 
-export const EditDetailsContract = ({
+export const ReAssignPrinter = ({
     onClose,
     onSuccess,
     initialData,
-}: EditDetailsContractProps) => {
-    const [dataForm, setData] = useState<ContractDetailType>({
-        id: 0,
+}: ReAssignPrinterProps) => {
+    const [dataForm, setDataForm] = useState<printerCreateType>({
         clienteNit: "",
-        tipoOperacion: "",
-        limiteIncluido: 0,
-        valorUnitario: 0,
-        valorBase: 0,
-        modoCobro: "",
+        serial: "",
+        modelo: "",
+        grupo: "",
+        fechaInicio: "",
     });
 
     useEffect(() => {
         if (initialData) {
-            setData({
-                id: initialData.id,
-                clienteNit: initialData.clienteNit,
-                tipoOperacion: initialData.tipoOperacion,
-                limiteIncluido: initialData.limiteIncluido,
-                valorUnitario: initialData.valorUnitario,
-                valorBase: initialData.valorBase,
-                modoCobro: initialData.modoCobro,
-            });
+            setDataForm({
+                clienteNit: "",
+                serial: initialData.serial,
+                modelo: initialData.modelo,
+                grupo: "",
+                fechaInicio: "",
+            } as printerCreateType);
         }
     }, [initialData]);
 
@@ -54,7 +51,7 @@ export const EditDetailsContract = ({
 
     useEffect(() => {
         const fetchTiposOperacion = async () => {
-            const response = await getOperationsTypesService();
+            const response = await getCanonForPrintersService();
             if (response.status) {
                 setTiposOperacion(response.data);
             } else {
@@ -75,17 +72,19 @@ export const EditDetailsContract = ({
         const data = {
             ...dataForm,
             [name]: value,
-        };
-        setData(data);
+        } as printerCreateType;
+        console.log("Datos cambiados:", data);
+        setDataForm(data);
 
-        const validationErrors = await validateDetailsContract(data);
+        const validationErrors = await validateEdit(data);
         setErrors(validationErrors);
     };
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        const validationErrors = await validateDetailsContract(dataForm);
+        console.log("Datos del formulario:", dataForm);
+        const validationErrors = await validateEdit(dataForm);
         setErrors(validationErrors);
 
         if (validationErrors.length > 0) {
@@ -93,11 +92,11 @@ export const EditDetailsContract = ({
         }
 
         setIsLoading(true);
-        const response = await updateContractDetailsService(dataForm);
+        const response = await reAssignPrintersService(dataForm);
         setIsLoading(false);
 
         if (response.status) {
-            onSuccess(response.message, dataForm);
+            onSuccess(response.message);
             onClose();
         } else {
             toast.error(response.message || "Error al crear cliente");
@@ -111,53 +110,28 @@ export const EditDetailsContract = ({
         >
             <div className="mb-6">
                 <h2 className="text-2xl font-bold text-slate-800">
-                    Editar Detalles Contrato
+                    Editar Impresora
                 </h2>
                 <p className="mt-1 text-slate-500">
-                    Completa la información para editar los detalles de
-                    contrato.
+                    Completa la información para editar los detalles de la
+                    impresora.
                 </p>
             </div>
 
             <div>
                 <label
-                    htmlFor="idDetails"
+                    htmlFor="clienteNit"
                     className="block text-sm font-medium text-slate-600 mb-1"
                 >
-                    ID
-                </label>
-                <input
-                    type="text"
-                    id="id"
-                    name="id"
-                    value={dataForm.id}
-                    onChange={handleChange}
-                    disabled
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-500"
-                />
-                <span className="text-red-500 text-sm">
-                    {
-                        errors.find((error) => error.field.name === "id")?.field
-                            .value
-                    }
-                </span>
-            </div>
-
-            <div>
-                <label
-                    htmlFor="ClienteNit"
-                    className="block text-sm font-medium text-slate-600 mb-1"
-                >
-                    NIT Cliente
+                    Cliente NIT (Nuevo)
                 </label>
                 <input
                     type="text"
                     id="clienteNit"
                     name="clienteNit"
                     value={dataForm.clienteNit}
-                    disabled
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-500 "
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
                 <span className="text-red-500 text-sm">
                     {
@@ -170,20 +144,68 @@ export const EditDetailsContract = ({
 
             <div>
                 <label
-                    htmlFor="tipoOperacion"
+                    htmlFor="serial"
                     className="block text-sm font-medium text-slate-600 mb-1"
                 >
-                    Tipo de Operación
+                    Serial
+                </label>
+                <input
+                    type="text"
+                    id="serial"
+                    name="serial"
+                    value={dataForm.serial}
+                    disabled
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-500 "
+                />
+                <span className="text-red-500 text-sm">
+                    {
+                        errors.find((error) => error.field.name === "serial")
+                            ?.field.value
+                    }
+                </span>
+            </div>
+
+            <div>
+                <label
+                    htmlFor="modelo"
+                    className="block text-sm font-medium text-slate-600 mb-1"
+                >
+                    Modelo
+                </label>
+                <input
+                    type="text"
+                    id="modelo"
+                    name="modelo"
+                    value={dataForm.modelo}
+                    disabled
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-500 "
+                />
+                <span className="text-red-500 text-sm">
+                    {
+                        errors.find((error) => error.field.name === "modelo")
+                            ?.field.value
+                    }
+                </span>
+            </div>
+
+            <div>
+                <label
+                    htmlFor="grupo"
+                    className="block text-sm font-medium text-slate-600 mb-1"
+                >
+                    Grupo de Impresora
                 </label>
                 <select
-                    id="tipoOperacion"
-                    name="tipoOperacion"
-                    value={dataForm.tipoOperacion}
+                    id="grupo"
+                    name="grupo"
+                    value={dataForm.grupo}
                     onChange={handleChange}
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 >
                     <option value="" disabled>
-                        Selecciona un tipo de operación
+                        Selecciona un grupo
                     </option>
                     {tiposOperacion.map((tipo) => (
                         <option key={tipo} value={tipo}>
@@ -193,76 +215,7 @@ export const EditDetailsContract = ({
                 </select>
                 <span className="text-red-500 text-sm">
                     {
-                        errors.find(
-                            (error) => error.field.name === "tipoOperacion"
-                        )?.field.value
-                    }
-                </span>
-            </div>
-
-            <div>
-                <label
-                    htmlFor="limiteIncluido"
-                    className="block text-sm font-medium text-slate-600 mb-1"
-                >
-                    Límite Incluido
-                </label>
-                <input
-                    id="limiteIncluido"
-                    name="limiteIncluido"
-                    value={dataForm.limiteIncluido}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-                <span className="text-red-500 text-sm">
-                    {
-                        errors.find(
-                            (error) => error.field.name === "limiteIncluido"
-                        )?.field.value
-                    }
-                </span>
-            </div>
-
-            <div>
-                <label
-                    htmlFor="valorUnitario"
-                    className="block text-sm font-medium text-slate-600 mb-1"
-                >
-                    Valor Unitario
-                </label>
-                <input
-                    id="valorUnitario"
-                    name="valorUnitario"
-                    value={dataForm.valorUnitario}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-                <span className="text-red-500 text-sm">
-                    {
-                        errors.find(
-                            (error) => error.field.name === "valorUnitario"
-                        )?.field.value
-                    }
-                </span>
-            </div>
-
-            <div>
-                <label
-                    htmlFor="valorBase"
-                    className="block text-sm font-medium text-slate-600 mb-1"
-                >
-                    Valor Base
-                </label>
-                <input
-                    id="valorBase"
-                    name="valorBase"
-                    value={dataForm.valorBase}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-                <span className="text-red-500 text-sm">
-                    {
-                        errors.find((error) => error.field.name === "valorBase")
+                        errors.find((error) => error.field.name === "grupo")
                             ?.field.value
                     }
                 </span>
@@ -270,22 +223,24 @@ export const EditDetailsContract = ({
 
             <div>
                 <label
-                    htmlFor="valorUnitario"
+                    htmlFor="fechaInicio"
                     className="block text-sm font-medium text-slate-600 mb-1"
                 >
-                    Valor Unitario
+                    Fecha de Inicio
                 </label>
                 <input
-                    id="modoCobro"
-                    name="modoCobro"
-                    value={dataForm.modoCobro}
+                    type="date"
+                    id="fechaInicio"
+                    name="fechaInicio"
+                    value={dataForm.fechaInicio}
                     onChange={handleChange}
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
                 <span className="text-red-500 text-sm">
                     {
-                        errors.find((error) => error.field.name === "modoCobro")
-                            ?.field.value
+                        errors.find(
+                            (error) => error.field.name === "fechaInicio"
+                        )?.field.value
                     }
                 </span>
             </div>

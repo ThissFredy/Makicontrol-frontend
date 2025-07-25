@@ -131,80 +131,127 @@ const ContractsPage = () => {
 
     // * For searching contracts by Nit and Status
     useEffect(() => {
-        const searchContracts = async () => {
-            if (debouncedSearchTerms.query && debouncedSearchTerms.status) {
-                setLoadingContracts(true);
-                const response = await searchCustomerByNitAndStatusService(
-                    debouncedSearchTerms.query,
+        const loadContracts = async () => {
+            try {
+                // Buscar por NIT y Estado
+                if (debouncedSearchTerms.query && debouncedSearchTerms.status) {
+                    setLoadingContracts(true);
+                    const response = await searchCustomerByNitAndStatusService(
+                        debouncedSearchTerms.query,
+                        debouncedSearchTerms.status
+                    );
+                    console.log("Response from search:", response);
+                    if (response.status) {
+                        setContracts(response.data);
+                    } else {
+                        setContracts([]);
+                        toast.error(
+                            "No se encontraron contratos con esos criterios"
+                        );
+                    }
+                    setLoadingContracts(false);
+                    return;
+                }
+
+                // Buscar solo por NIT
+                if (
+                    debouncedSearchTerms.query &&
+                    !debouncedSearchTerms.status
+                ) {
+                    setLoadingContracts(true);
+                    const response = await searchCustomerByNITService(
+                        debouncedSearchTerms.query
+                    );
+                    console.log("Response from search:", response);
+                    if (response.status) {
+                        setContracts(response.data);
+                    } else {
+                        setContracts([]);
+                        toast.error("No se encontraron contratos para ese NIT");
+                    }
+                    setLoadingContracts(false);
+                    return;
+                }
+
+                // Filtrar solo por estado (sin implementar búsqueda)
+                if (
+                    !debouncedSearchTerms.query &&
                     debouncedSearchTerms.status
-                );
-                console.log("Response from search:", response);
-                if (response.status) setContracts(response.data);
-                else setContracts([]);
+                ) {
+                    // Podrías implementar búsqueda por estado aquí si tienes el servicio
+                    return;
+                }
+
+                // Cargar todos los contratos (inicial o cuando se limpia la búsqueda)
+                if (
+                    loading ||
+                    (!debouncedSearchTerms.query &&
+                        !debouncedSearchTerms.status)
+                ) {
+                    setLoadingContracts(true);
+                    const response = await getContractsService();
+
+                    if (response.status) {
+                        setContracts(response.data);
+                        setLengthContracts(response.data?.length || 0);
+
+                        // Calcular estadísticas solo en carga inicial
+                        if (loading) {
+                            const activeCount = response.data.filter(
+                                (contract) => contract.estado === "ACTIVO"
+                            ).length;
+                            const inactiveCount = response.data.filter(
+                                (contract) => contract.estado === "INACTIVO"
+                            ).length;
+                            setActiveContracts(activeCount);
+                            setInactiveContracts(inactiveCount);
+                            setLoading(false);
+                        }
+                    } else {
+                        setContracts([]);
+                        // Solo mostrar error en carga inicial
+                        if (loading) {
+                            toast.error(response.message);
+                            setLoading(false);
+                        }
+                    }
+                    setLoadingContracts(false);
+                }
+            } catch (error) {
+                console.error("Error loading contracts:", error);
+                setContracts([]);
+                if (loading) {
+                    toast.error("Error al cargar los contratos");
+                    setLoading(false);
+                }
                 setLoadingContracts(false);
-                return;
-            } else if (
-                debouncedSearchTerms.query &&
-                !debouncedSearchTerms.status
-            ) {
-                setLoadingContracts(true);
-                const response = await searchCustomerByNITService(
-                    debouncedSearchTerms.query
-                );
-                console.log("Response from search:", response);
-                if (response.status) setContracts(response.data);
-                else setContracts([]);
-                setLoadingContracts(false);
-                return;
-            } else if (
-                !debouncedSearchTerms.query &&
-                debouncedSearchTerms.status
-            ) {
-                return;
             }
-            setLoadingContracts(true);
+        };
+
+        loadContracts();
+    }, [debouncedSearchTerms, loading]);
+
+    const fetchContracts = async () => {
+        try {
             const response = await getContractsService();
             if (response.status) {
                 setContracts(response.data);
-                setLengthContracts(
-                    response.data && response.data.length
-                        ? response.data.length
-                        : 0
-                );
-            } else {
-                toast.error(response.message);
-                setContracts([]);
+                setLengthContracts(response.data?.length || 0);
+                const activeCount = response.data.filter(
+                    (contract) => contract.estado === "ACTIVO"
+                ).length;
+                const inactiveCount = response.data.filter(
+                    (contract) => contract.estado === "INACTIVO"
+                ).length;
+                setActiveContracts(activeCount);
+                setInactiveContracts(inactiveCount);
+                return true;
             }
-            setLoadingContracts(false);
-        };
-
-        searchContracts();
-    }, [debouncedSearchTerms]);
-
-    useEffect(() => {
-        fetchContracts();
-    }, []);
-
-    const fetchContracts = async () => {
-        const response = await getContractsService();
-        if (response.status) {
-            setContracts(response.data);
-            setLengthContracts(
-                response.data && response.data.length ? response.data.length : 0
-            );
-            const activeCount = response.data.filter(
-                (contract) => contract.estado === "ACTIVO"
-            ).length;
-            const inactiveCount = response.data.filter(
-                (contract) => contract.estado === "INACTIVO"
-            ).length;
-            setActiveContracts(activeCount);
-            setInactiveContracts(inactiveCount);
-        } else {
-            toast.error(response.message);
-            setContracts([]);
+            return false;
+        } catch (error) {
+            console.error("Error fetching contracts:", error);
+            return false;
         }
-        setLoading(false);
     };
 
     return (
@@ -488,7 +535,7 @@ const ContractsPage = () => {
                                                     <div className="flex items-center gap-4">
                                                         <Tooltip text="Ver Detalles">
                                                             <button
-                                                                className="text-slate-500 hover:text-indigo-600 hover:cursor-pointer"
+                                                                className="text-slate-500 hover:text-[#E87A3E] hover:cursor-pointer"
                                                                 onClick={() =>
                                                                     handleViewDetails(
                                                                         contract.clienteNit
@@ -502,7 +549,7 @@ const ContractsPage = () => {
                                                         </Tooltip>
                                                         <Tooltip text="Editar">
                                                             <button
-                                                                className="text-slate-500 hover:text-blue-600 hover:cursor-pointer"
+                                                                className="text-slate-500 hover:text-[#E87A3E] hover:cursor-pointer"
                                                                 onClick={() => {
                                                                     handleOpenModalEdit(
                                                                         contract
