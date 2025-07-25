@@ -35,7 +35,6 @@ export async function apiService<T>(
             credentials: "include",
         });
 
-        // Si la respuesta es 401 (Unauthorized), eliminamos el token y redirigimos al login
         if (response.status === 401 || response.status === 403) {
             removeTokenCookie();
             window.location.href = "/login"; // Redirigir al login

@@ -39,6 +39,7 @@ export const CreateClientForm = ({
         e.preventDefault();
 
         const validationErrors = validateCreate(dataForm);
+        console.log("Errores de validación:", validationErrors);
         setErrors(validationErrors);
 
         if (validationErrors.length > 0) {

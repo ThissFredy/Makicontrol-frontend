@@ -9,6 +9,7 @@ import {
     getContractsApi,
     getContractByIdApi,
     getContractDetailsApi,
+    getPaidMethodsApi,
     createContractApi,
     getContractByNitAndStatusApi,
     updateContractApi,
@@ -444,5 +445,35 @@ export async function createContractDetailsService(
             message: "Error al crear los detalles del contrato",
             data: data,
         } as OperationType<CreateContractDetailType>;
+    }
+}
+
+export async function getCashMethodService(): Promise<OperationType<string[]>> {
+    try {
+        const response = await getPaidMethodsApi();
+        if (response.success) {
+            return {
+                status: true,
+                message: "Métodos de pago obtenidos correctamente",
+                data: response.data ?? [],
+            } as OperationType<string[]>;
+        } else {
+            return {
+                status: false,
+                message:
+                    response.message || "Error al obtener los métodos de pago",
+                data: [],
+            } as OperationType<string[]>;
+        }
+    } catch (error) {
+        console.error(
+            "Error en el servicio de creación de detalles del contrato:",
+            error
+        );
+        return {
+            status: false,
+            message: "Error al crear los detalles del contrato",
+            data: [],
+        } as OperationType<string[]>;
     }
 }
