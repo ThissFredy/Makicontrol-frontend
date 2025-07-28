@@ -9,6 +9,7 @@ import { EditClientForm } from "@/components/ui/EditClientForm";
 import { StatCard } from "@/components/ui/StatCard";
 import { useDebounce } from "@/utilities/useDebounce";
 import { searchCustomerByNameOrNIT } from "@/services/customerService";
+import { CreateCounter } from "@/components/ui/CreateCounter";
 import { CustomerType } from "@/types/customerType";
 import {
     FiPlus,
@@ -22,6 +23,7 @@ import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { AssignPrintersFromFile } from "@/components/ui/AssignPrintersFromFile";
+import { BsCash } from "react-icons/bs";
 
 const ClientManagementPage = () => {
     const router = useRouter();
@@ -32,7 +34,9 @@ const ClientManagementPage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalEditOpen, setIsModalEditOpen] = useState(false);
     const [isModalOpenFile, setIsModalOpenFile] = useState(false);
-    const [loading, setLoading] = React.useState<boolean>(true);
+    const [isModalCounterOpen, setIsModalCounterOpen] = useState(false);
+    const [counterUser, setCounterUser] = useState<string>("");
+    const [loading, setLoading] = useState<boolean>(true);
     const [isModalPrintersFile, setIsModalPrintersFile] = useState(false);
     const [loadingClients, setLoadingClients] = React.useState<boolean>(false);
     const [selectedClient, setSelectedClient] = React.useState<CustomerType>({
@@ -52,6 +56,9 @@ const ClientManagementPage = () => {
 
     const handleOpenModalFile = () => setIsModalOpenFile(true);
     const handleCloseModalFile = () => setIsModalOpenFile(false);
+
+    const handleOpenCounterModal = () => setIsModalCounterOpen(true);
+    const handleCloseCounterModal = () => setIsModalCounterOpen(false);
 
     const handleOpenPrintersFile = () => setIsModalPrintersFile(true);
     const handleClosePrintersFile = () => setIsModalPrintersFile(false);
@@ -84,6 +91,16 @@ const ClientManagementPage = () => {
                 client.nit === data.nit ? data : client
             );
         });
+    };
+
+    // * Looking for counters
+    const handleLookForCounter = (nit: number) => {
+        setIsModalCounterOpen(true);
+        setCounterUser(nit.toString());
+    };
+
+    const handleCounterSuccess = (message: string) => {
+        toast.success(message);
     };
 
     const handleFileUploadSuccess = (message: string) => {
@@ -339,6 +356,20 @@ const ClientManagementPage = () => {
 
                                                 <td className="px-6 py-4">
                                                     <div className="flex items-center gap-4">
+                                                        <Tooltip text="Generar Contador">
+                                                            <button
+                                                                className="text-slate-500 hover:text-[#E87A3E] hover:cursor-pointer"
+                                                                onClick={() => {
+                                                                    handleLookForCounter(
+                                                                        client.nit
+                                                                    );
+                                                                }}
+                                                            >
+                                                                <BsCash
+                                                                    size={18}
+                                                                />
+                                                            </button>
+                                                        </Tooltip>
                                                         <Tooltip text="Ver Impresoras">
                                                             <button
                                                                 className="text-slate-500 hover:text-[#E87A3E] hover:cursor-pointer"
@@ -423,6 +454,17 @@ const ClientManagementPage = () => {
                         <AssignPrintersFromFile
                             onClose={handleClosePrintersFile}
                             onSuccess={handleFilePrintersUploadSuccess}
+                        />
+                    </Modal>
+                    {/* 👇Modal for counters */}
+                    <Modal
+                        isOpen={isModalCounterOpen}
+                        onClose={handleCloseCounterModal}
+                    >
+                        <CreateCounter
+                            onClose={handleCloseCounterModal}
+                            onSuccess={handleCounterSuccess}
+                            clienteNit={counterUser}
                         />
                     </Modal>
                 </div>
