@@ -497,11 +497,11 @@ const ContractsPage = () => {
                                                 <td className="px-6 py-4 text-xs">
                                                     {contract.estado ===
                                                     "ACTIVO" ? (
-                                                        <span className="text-green-500 font-semibold border border-green-500 px-2 py-1 rounded">
+                                                        <span className="text-green-500 bg-green-100 font-semibold border border-green-500 px-2 py-1 rounded-xl">
                                                             {contract.estado}
                                                         </span>
                                                     ) : (
-                                                        <span className="text-red-500 font-semibold border border-red-500 px-2 py-1 rounded">
+                                                        <span className="text-red-500 bg-red-100 font-semibold border border-red-500 px-2 py-1 rounded-xl">
                                                             INACTIVO
                                                         </span>
                                                     )}
