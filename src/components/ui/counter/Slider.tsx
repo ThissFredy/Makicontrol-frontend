@@ -28,12 +28,14 @@ const monthNames = [
 export const Slider = ({ onSuccess, clientNit }: AddCounters1Props) => {
     // --- Estados para guardar el año y mes seleccionados ---
     const currentYear = new Date().getFullYear();
+    const [loading, setLoading] = useState(false);
     const currentMonth = new Date().getMonth() + 1;
 
     const [year, setYear] = useState(currentYear);
     const [month, setMonth] = useState(currentMonth);
 
     const handleLoadCounters = async () => {
+        setLoading(true);
         try {
             const response = await getReadyService(clientNit, year, month);
             if (response.status)
@@ -42,6 +44,7 @@ export const Slider = ({ onSuccess, clientNit }: AddCounters1Props) => {
         } catch (error) {
             toast.error("Error al cargar contadores:");
         }
+        setLoading(false);
     };
 
     return (
@@ -108,8 +111,12 @@ export const Slider = ({ onSuccess, clientNit }: AddCounters1Props) => {
 
             {/* --- Botón de Acción --- */}
             <div className="mt-10">
-                <Button className="w-full" onClick={handleLoadCounters}>
-                    Cargar Contadores
+                <Button
+                    className="w-full"
+                    onClick={handleLoadCounters}
+                    disabled={loading}
+                >
+                    {loading ? "Cargando..." : "Cargar Contadores"}
                 </Button>
             </div>
         </div>

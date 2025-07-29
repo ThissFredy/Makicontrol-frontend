@@ -24,6 +24,7 @@ import { useRouter } from "next/navigation";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { AssignPrintersFromFile } from "@/components/ui/AssignPrintersFromFile";
 import { BsCash } from "react-icons/bs";
+import { Modal2 } from "@/components/ui/Modal2";
 
 const ClientManagementPage = () => {
     const router = useRouter();
@@ -457,7 +458,7 @@ const ClientManagementPage = () => {
                         />
                     </Modal>
                     {/* 👇Modal for counters */}
-                    <Modal
+                    <Modal2
                         isOpen={isModalCounterOpen}
                         onClose={handleCloseCounterModal}
                     >
@@ -466,7 +467,7 @@ const ClientManagementPage = () => {
                             onSuccess={handleCounterSuccess}
                             clienteNit={counterUser}
                         />
-                    </Modal>
+                    </Modal2>
                 </div>
             )}
         </div>
