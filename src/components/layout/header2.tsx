@@ -40,10 +40,10 @@ const Header2 = () => {
                             className="w-[150px] h-[50px] object-contain"
                         />
                     </Link>
-                    <nav className="hidden md:flex items-center text-white space-x-6 ml-10">
+                    <nav className="hidden md:flex items-center text-white space-x-6 ml-10 bg-[#1A2541] rounded-lg p-3">
                         <Link
                             href="/customers"
-                            className="flex items-center space-x-2 px-4 py-2 text-white hover:bg-white/10 rounded-lg transition-colors duration-200"
+                            className="flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors duration-200 hover:transform hover:scale-105 transition-transform duration-200"
                         >
                             <FiUsers size={18} />
                             <span className="font-medium">Clientes</span>
@@ -51,13 +51,13 @@ const Header2 = () => {
 
                         <Link
                             href="/contracts"
-                            className="flex items-center space-x-2 px-4 py-2 text-white hover:bg-white/10 rounded-lg transition-colors duration-200"
+                            className="flex items-center space-x-2 px-4 py-2 text-white rounded-lg transition-colors duration-200 hover:transform hover:scale-105 transition-transform duration-200"
                         >
                             <FiFileText size={18} />
                             <span className="font-medium">Contratos</span>
                         </Link>
                     </nav>
-                    <nav className="flex items-center space-x-6 ml-10 md:hidden">
+                    <nav className="flex items-center space-x-6 ml-10 md:hidden bg-[#1A2541] rounded-lg p-3">
                         <Link
                             href="/customers"
                             className="flex items-center space-x-2 px-4 py-2 text-white hover:bg-white/10 rounded-lg transition-colors duration-200"
