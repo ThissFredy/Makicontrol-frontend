@@ -40,20 +40,18 @@ const ContractsPage = () => {
     const [isModalOpenFile, setIsModalOpenFile] = useState(false);
     const [isModalOpenDetailsFile, setIsModalOpenDetailsFile] = useState(false);
     const [loading, setLoading] = React.useState<boolean>(true);
-    const [loadingContracts, setLoadingContracts] =
-        React.useState<boolean>(false);
-    const [selectedContract, setSelectedContract] =
-        React.useState<ContractType>({
-            clienteNit: "",
-            tipoContrato: "CANON_FIJO",
-            valorCanon: "",
-            valorBaseEquipo: "",
-            periodo: "MENSUAL",
-            fechaInicio: "",
-            fechaFin: null,
-            estado: "ACTIVO",
-            canones: [],
-        });
+    const [loadingContracts, setLoadingContracts] = useState<boolean>(false);
+    const [selectedContract, setSelectedContract] = useState<ContractType>({
+        clienteNit: "",
+        tipoContrato: "CANON_FIJO",
+        valorCanon: "",
+        valorBaseEquipo: "",
+        periodo: "MENSUAL",
+        fechaInicio: "",
+        fechaFin: null,
+        estado: "ACTIVO",
+        canones: [],
+    });
     const [searchTerms, setSearchTerms] = React.useState<{
         [key: string]: string;
     }>({});
@@ -277,14 +275,14 @@ const ContractsPage = () => {
                                 <Button
                                     onClick={handleOpenModalFile}
                                     icon={<FiFile size={20} />}
-                                    className="hover:cursor-pointer"
+                                    className="hover:cursor-pointer !bg-[#8C9EC2]"
                                 >
                                     Agregar archivo de contratos
                                 </Button>
                                 <Button
                                     onClick={handleOpenModalDetailsFile}
                                     icon={<FiFile size={20} />}
-                                    className="hover:cursor-pointer"
+                                    className="hover:cursor-pointer !bg-[#8C9EC2]"
                                 >
                                     Agregar archivo detalles de contratos
                                 </Button>
