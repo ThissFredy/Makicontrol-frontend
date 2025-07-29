@@ -8,6 +8,7 @@ import {
 } from "@/api/counterApi";
 import { OperationType } from "@/types/operationType";
 import type { GetReadyType, RegisterCounterType } from "@/types/counterType";
+import { validateSendCounter } from "@/utilities/counterUtility";
 
 export const getReadyService = async (
     nit: string,
@@ -138,10 +139,11 @@ export const getPendingCountersService = async (
 };
 
 export const registerCounterService = async (
-    data: RegisterCounterType
+    dataInit: RegisterCounterType[]
 ): Promise<OperationType<null>> => {
+    const data = validateSendCounter(dataInit).data;
     try {
-        const response = await registerCounterApi(data);
+        const response = await registerCounterApi(data[0]);
         if (response.success) {
             return {
                 status: true,
@@ -166,8 +168,9 @@ export const registerCounterService = async (
 };
 
 export const registerCountersService = async (
-    data: RegisterCounterType[]
+    dataInit: RegisterCounterType[]
 ): Promise<OperationType<null>> => {
+    const data = validateSendCounter(dataInit).data;
     try {
         const response = await registerCountersApi(data);
         if (response.success) {

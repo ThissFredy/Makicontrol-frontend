@@ -5,7 +5,12 @@ import type { GetReadyType } from "@/types/counterType";
 import { toast } from "react-hot-toast";
 
 interface AddCounters1Props {
-    onSuccess: (message: string, response: GetReadyType[]) => void;
+    onSuccess: (
+        message: string,
+        response: GetReadyType[],
+        month: number,
+        year: number
+    ) => void;
     clientNit: string;
 }
 
@@ -39,7 +44,12 @@ export const Slider = ({ onSuccess, clientNit }: AddCounters1Props) => {
         try {
             const response = await getReadyService(clientNit, year, month);
             if (response.status)
-                onSuccess("Contadores cargados con éxito", response.data);
+                onSuccess(
+                    "Contadores cargados con éxito",
+                    response.data,
+                    month,
+                    year
+                );
             else toast.error(response.message || "Error al cargar contadores");
         } catch (error) {
             toast.error("Error al cargar contadores:");

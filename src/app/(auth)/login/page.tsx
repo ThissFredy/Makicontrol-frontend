@@ -11,7 +11,16 @@ import { toast } from "react-hot-toast";
 
 const LoginForm = () => {
     const router = useRouter();
-    const [errors, setErrors] = useState<ErrorFieldType[]>([]);
+    const [errors, setErrors] = useState<ErrorFieldType[]>([
+        {
+            isError: false,
+            field: { name: "username", value: "" },
+        },
+        {
+            isError: false,
+            field: { name: "password", value: "" },
+        },
+    ]);
     const [isLoading, setIsLoading] = useState(false);
     const [loginData, setLoginData] = useState<LoginCredentials>({
         username: "",
