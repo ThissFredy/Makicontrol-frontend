@@ -12,6 +12,7 @@ import {
     validateCounterCreateArray,
 } from "@/utilities/validateCounter";
 import { Button } from "@/components/ui/Button";
+import { formatNumber } from "@/utilities/moneyUtility";
 
 interface CreateContractFormProps {
     onClose: () => void;
@@ -49,6 +50,12 @@ export const CreateCounter = ({
         e: React.ChangeEvent<HTMLInputElement>,
         index: number
     ) => {
+        setData((prev) => {
+            const updatedData = [...prev];
+            updatedData[index].contadorActual = e.target.value;
+            return updatedData;
+        });
+
         const data: RegisterCounterType = {
             serialImpresora: dataForm[index].serial,
             anio: year.toString(),
@@ -67,16 +74,16 @@ export const CreateCounter = ({
             };
             return updatedData;
         });
-        setData((prev) => {
-            const updatedData = [...prev];
-            updatedData[index].contadorActual = e.target.value;
-            return updatedData;
-        });
     };
 
     useEffect(() => {
         const handleValidate = () => {
-            const errors = validateCounterCreateArray(registerMassiveData);
+            // Filtrar elementos undefined antes de validar
+            const validData = registerMassiveData.filter(
+                (item) => item !== undefined
+            );
+            const errors = validateCounterCreateArray(validData);
+
             if (errors.length > 0) {
                 setError(errors);
                 return false;
@@ -94,11 +101,15 @@ export const CreateCounter = ({
             setLoading(false);
             return;
         }
+
+        // Filtrar elementos undefined antes de enviar
+        const validData = registerMassiveData.filter(
+            (item) => item !== undefined
+        );
+
         try {
-            if (registerMassiveData.length === 1) {
-                const response = await registerCounterService(
-                    registerMassiveData
-                );
+            if (validData.length === 1) {
+                const response = await registerCounterService(validData);
                 if (response.status) {
                     onSuccess("Contador registrado con éxito");
                     onClose();
@@ -108,9 +119,7 @@ export const CreateCounter = ({
                     );
                 }
             } else {
-                const response = await registerCountersService(
-                    registerMassiveData
-                );
+                const response = await registerCountersService(validData);
                 if (response.status) {
                     onSuccess("Contadores registrados con éxito");
                     onClose();
@@ -126,6 +135,8 @@ export const CreateCounter = ({
             setLoading(false);
         }
     };
+
+    console.log("Data Form:", registerMassiveData);
 
     return (
         <div>
@@ -185,7 +196,9 @@ export const CreateCounter = ({
                                             <input
                                                 type="text"
                                                 className="bg-slate-100 px-2 py-1 rounded-md text-slate-800 w-full [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
-                                                value={item.contadorActual}
+                                                value={
+                                                    item.contadorActual || ""
+                                                }
                                                 placeholder="Ingrese contador actual"
                                                 onChange={(e) =>
                                                     handleChange(e, index)
@@ -204,16 +217,28 @@ export const CreateCounter = ({
                                         ) : Number(item.contadorAnterior) -
                                               Number(item.contadorActual) <
                                           0 ? (
-                                            <span className="font-mono font-bold bg-red-100 px-2 py-1 rounded-md text-red-800">
-                                                {Number(item.contadorAnterior) -
-                                                    Number(item.contadorActual)}
+                                            <span className="font-mono font-bold bg-green-100 px-2 py-1 rounded-md text-green-800">
+                                                {Math.abs(
+                                                    Number(
+                                                        item.contadorAnterior
+                                                    ) -
+                                                        Number(
+                                                            item.contadorActual
+                                                        )
+                                                )}
                                             </span>
                                         ) : Number(item.contadorAnterior) -
                                               Number(item.contadorActual) >
                                           0 ? (
-                                            <span className="font-mono font-bold bg-green-100 px-2 py-1 rounded-md text-green-800">
-                                                {Number(item.contadorAnterior) -
-                                                    Number(item.contadorActual)}
+                                            <span className="font-mono font-bold bg-red-100 px-2 py-1 rounded-md text-red-800">
+                                                {Math.abs(
+                                                    Number(
+                                                        item.contadorAnterior
+                                                    ) -
+                                                        Number(
+                                                            item.contadorActual
+                                                        )
+                                                )}
                                             </span>
                                         ) : (
                                             <span className="font-mono font-bold bg-yellow-100 px-2 py-1 rounded-md text-yellow-800">
@@ -241,11 +266,14 @@ export const CreateCounter = ({
                     )}
                     <Button
                         className={`mt-6 w-full ${
-                            error.length > 0
-                                ? "opacity-50 cursor-not-allowed"
-                                : ""
+                            error.length === 0
+                                ? loading
+                                    ? "opacity-50 cursor-not-allowed"
+                                    : registerMassiveData.length > 0
+                                    ? "bg-[#1A2541]"
+                                    : "opacity-50 cursor-not-allowed"
+                                : "opacity-50 cursor-not-allowed"
                         }`}
-                        disabled={loading || error.length > 0}
                         onClick={handleSubmit}
                     >
                         Registrar Contadores
