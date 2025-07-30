@@ -230,7 +230,7 @@ export const CreateCounter = ({
                                         ) : Number(item.contadorAnterior) -
                                               Number(item.contadorActual) >
                                           0 ? (
-                                            <span className="font-mono font-bold bg-red-100 px-2 py-1 rounded-md text-red-800">
+                                            <span className="font-mono font-bold bg-red-100 px-2 py-1 rounded-md text-red-900">
                                                 {Math.abs(
                                                     Number(
                                                         item.contadorAnterior
