@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# **MAKI-Control (Frontend) 🖥️**
 
-## Getting Started
+Este repositorio contiene el código fuente del frontend para **MAKI-Control**, un sistema de gestión y facturación. La aplicación está construida con **Next.js** y **TypeScript**, y consume una API de backend para la gestión de datos.
 
-First, run the development server:
+## **🚀 Entorno de Desarrollo**
+
+Para levantar el proyecto en un entorno local, asegúrate de cumplir con los siguientes prerrequisitos.
+
+  * **Node.js**: Se recomienda la versión `22.17.1` o superior.
+  * **Gestor de Paquetes**: Se recomienda usar **pnpm**, aunque `npm` también es compatible.
+
+## **📦 Instalación**
+
+Sigue estos pasos para configurar el proyecto en tu máquina.
+
+1.  **Clonar el Repositorio**
+    ```bash
+    git clone https://github.com/tu-usuario/maki-control-frontend.git
+    cd maki-control-frontend
+    ```
+2.  **Configurar Variables de Entorno**
+    Crea un archivo llamado `.env.local` en la raíz del proyecto. Este archivo contendrá la URL de la API a la que se conectará el frontend.
+    ```env
+    NEXT_PUBLIC_API_URL=http://localhost:8081
+    ```
+3.  **Instalar Dependencias**
+    Ejecuta el siguiente comando en la terminal. Se recomienda `pnpm`.
+    ```bash
+    # Usando pnpm (recomendado)
+    pnpm install
+
+    # Alternativa con npm
+    npm install
+    ```
+
+## **⚡ Ejecución**
+
+Una vez instaladas las dependencias, inicia el servidor de desarrollo:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+La aplicación estará disponible en **http://localhost:3000**.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## **🛠️ Stack Tecnológico**
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+  * **Framework**: Next.js
+  * **Lenguaje**: TypeScript
+  * **Estilos**: Tailwind CSS
+  * **Notificaciones**: React Hot Toast
 
-## Learn More
+## **📂 Estructura del Proyecto**
 
-To learn more about Next.js, take a look at the following resources:
+El repositorio sigue una estructura organizada para facilitar el mantenimiento y la escalabilidad.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+/
+├── app/              # Enrutador y páginas de la aplicación
+├── components/       # Componentes reutilizables de la UI
+│   └── ui/           # Componentes de UI genéricos (botones, inputs, etc.)
+├── services/         # Funciones para las llamadas a la API (ej. counterService.ts)
+├── types/            # Definiciones de interfaces de TypeScript (ej. counterType.ts)
+├── utilities/        # Funciones de ayuda y lógica de validación (ej. validateCounter.ts)
+└── public/           # Archivos estáticos como imágenes y fuentes
+```
