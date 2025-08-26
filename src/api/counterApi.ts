@@ -76,10 +76,13 @@ export async function registerCounterApi(
 export async function registerCountersApi(
     data: RegisterCounterType[]
 ): Promise<ApiResponse<null>> {
-    const response = await apiService<null>("/api/contadores/registrar", {
-        method: "POST",
-        body: JSON.stringify(data),
-    });
+    const response = await apiService<null>(
+        "/api/contadores/registrar-masivo",
+        {
+            method: "POST",
+            body: JSON.stringify(data),
+        }
+    );
 
     return response;
 }
