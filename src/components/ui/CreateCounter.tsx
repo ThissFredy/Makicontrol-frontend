@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import type { GetReadyType, RegisterCounterType } from "@/types/counterType";
 import { Slider } from "@/components/ui/counter/Slider";
 import { toast } from "react-hot-toast";
@@ -12,7 +12,6 @@ import {
     validateCounterCreateArray,
 } from "@/utilities/validateCounter";
 import { Button } from "@/components/ui/Button";
-import { formatNumber } from "@/utilities/moneyUtility";
 
 interface CreateContractFormProps {
     onClose: () => void;
@@ -44,25 +43,25 @@ export const CreateCounter = ({
         setData(data);
         setMonth(month);
         setYear(year);
+        // Inicializa el array para el envío masivo con la misma longitud que los datos recibidos
+        setRegisterMassiveData(new Array(data.length));
     };
 
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement>,
         index: number
     ) => {
+        // Actualiza el estado visual (dataForm)
         setData((prev) => {
             const updatedData = [...prev];
-            updatedData[index].contadorActual = e.target.value;
+            updatedData[index] = {
+                ...updatedData[index],
+                contadorActual: e.target.value,
+            };
             return updatedData;
         });
 
-        const data: RegisterCounterType = {
-            serialImpresora: dataForm[index].serial,
-            anio: year.toString(),
-            mes: month.toString(),
-            tipoOperacion: dataForm[index].tipoOperacion,
-            cantidad: e.target.value,
-        };
+        // Actualiza el estado de los datos a enviar (registerMassiveData)
         setRegisterMassiveData((prev) => {
             const updatedData = [...prev];
             updatedData[index] = {
@@ -76,13 +75,30 @@ export const CreateCounter = ({
         });
     };
 
+    // Agrupa los datos por serial de impresora para la vista
+    const groupedData = useMemo(() => {
+        return dataForm.reduce<
+            Record<string, { modelo: string; operations: GetReadyType[] }>
+        >((acc, item) => {
+            const key = item.serial;
+            if (!acc[key]) {
+                acc[key] = {
+                    modelo: item.modelo,
+                    operations: [],
+                };
+            }
+            acc[key].operations.push(item);
+            return acc;
+        }, {});
+    }, [dataForm]);
+
     useEffect(() => {
         const handleValidate = () => {
-            // Filtrar elementos undefined antes de validar
             const validData = registerMassiveData.filter(
                 (item) => item !== undefined
             );
-            const errors = validateCounterCreateArray(validData);
+            const errors: ErrorFieldType[] =
+                validateCounterCreateArray(validData);
 
             if (errors.length > 0) {
                 setError(errors);
@@ -98,45 +114,37 @@ export const CreateCounter = ({
     const handleSubmit = async () => {
         setLoading(true);
         if (error.length > 0) {
+            toast.error("Por favor, corrija los errores antes de continuar.");
             setLoading(false);
             return;
         }
 
-        // Filtrar elementos undefined antes de enviar
         const validData = registerMassiveData.filter(
             (item) => item !== undefined
         );
 
+        if (validData.length === 0) {
+            toast.error("Debe ingresar al menos un contador actual.");
+            setLoading(false);
+            return;
+        }
+
         try {
-            if (validData.length === 1) {
-                const response = await registerCounterService(validData);
-                if (response.status) {
-                    onSuccess("Contador registrado con éxito");
-                    onClose();
-                } else {
-                    toast.error(
-                        response.message || "Error al registrar contador"
-                    );
-                }
+            const response = await registerCountersService(validData);
+            if (response.status) {
+                onSuccess("Contadores registrados con éxito");
+                onClose();
             } else {
-                const response = await registerCountersService(validData);
-                if (response.status) {
-                    onSuccess("Contadores registrados con éxito");
-                    onClose();
-                } else {
-                    toast.error(
-                        response.message || "Error al registrar contadores"
-                    );
-                }
+                toast.error(
+                    response.message || "Error al registrar contadores"
+                );
             }
         } catch (error) {
-            toast.error("Error al registrar contadores");
+            toast.error("Error en la conexión al registrar contadores.");
         } finally {
             setLoading(false);
         }
     };
-
-    console.log("Data Form:", registerMassiveData);
 
     return (
         <div>
@@ -144,7 +152,6 @@ export const CreateCounter = ({
                 <Slider onSuccess={successHandler} clientNit={clienteNit} />
             ) : (
                 <div>
-                    {/* --- Título de la sección --- */}
                     <div className="mb-4">
                         <h2 className="text-2xl font-bold text-slate-800">
                             Resumen de Contadores a Registrar
@@ -154,129 +161,153 @@ export const CreateCounter = ({
                         </p>
                     </div>
 
-                    <div className="max-h-[65vh] overflow-y-auto space-y-4 p-4 bg-slate-50 rounded-lg border">
-                        {dataForm.map((item, index) => (
-                            <div
-                                key={index}
-                                className="bg-white p-5 rounded-xl shadow-md border border-slate-200"
-                            >
-                                <h3 className="flex gap-4 text-md font-bold text-[#253763] border-b border-slate-200 pb-2 mb-4">
-                                    Equipo:
-                                    <div className="flex text-slate-600 italic font-semibold">
-                                        {item.serial}
-                                    </div>
-                                    <div className="flex text-slate-600 font-medium">
-                                        {item.modelo}
-                                    </div>
-                                </h3>
+                    <div className="max-h-[80vh] overflow-y-auto space-y-4 p-4 bg-slate-50 rounded-lg border">
+                        {/* --- Contenedor Grid Responsive --- */}
+                        <div className="flex gap-6 overflow-x-auto overflow-y-hidden">
+                            {/* Mapeo sobre los datos agrupados */}
+                            {Object.keys(groupedData).map((serial) => {
+                                const group = groupedData[serial];
+                                return (
+                                    <div
+                                        key={serial}
+                                        className="bg-white p-5 rounded-xl shadow-md border border-slate-200 flex flex-col min-w-[300px]"
+                                    >
+                                        <h3 className="text-md font-bold text-[#253763] border-b border-slate-200 pb-3 mb-4">
+                                            Equipo:
+                                            <div className="flex flex-col mt-1">
+                                                <span className="text-slate-700 italic font-semibold">
+                                                    {serial}
+                                                </span>
+                                                <span className="text-slate-500 font-medium text-sm">
+                                                    {group.modelo}
+                                                </span>
+                                            </div>
+                                        </h3>
 
-                                {/* --- Grid para alinear los datos --- */}
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
-                                    <div>
-                                        <span className="font-semibold text-slate-600 ">
-                                            Operación:{" "}
-                                        </span>
-                                        <span className="text-black font-semibold">
-                                            {item.tipoOperacion}
-                                        </span>
-                                    </div>
-                                    <div>
-                                        <span className="font-semibold text-slate-600">
-                                            Contador Anterior:{" "}
-                                        </span>
-                                        <span className="font-mono bg-slate-100 px-2 py-1 rounded-md text-slate-800">
-                                            {item.contadorAnterior}
-                                        </span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <span className="font-semibold text-slate-600">
-                                            Contador Actual:{" "}
-                                        </span>
-                                        <span className="text-black font-semibold">
-                                            <input
-                                                type="text"
-                                                className="bg-slate-100 px-2 py-1 rounded-md text-slate-800 w-full [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
-                                                value={
-                                                    item.contadorActual || ""
-                                                }
-                                                placeholder="Ingrese contador actual"
-                                                onChange={(e) =>
-                                                    handleChange(e, index)
-                                                }
-                                            />
-                                        </span>
-                                    </div>
-                                    <div>
-                                        <span className="font-semibold text-slate-600">
-                                            Consumo:{" "}
-                                        </span>
-                                        {item.consumo ? (
-                                            <span className="font-mono font-bold bg-green-100 px-2 py-1 rounded-md text-green-800">
-                                                {item.consumo}
-                                            </span>
-                                        ) : Number(item.contadorAnterior) -
-                                              Number(item.contadorActual) <
-                                          0 ? (
-                                            <span className="font-mono font-bold bg-green-100 px-2 py-1 rounded-md text-green-800">
-                                                {Math.abs(
+                                        {/* Mapeo de las operaciones para este equipo */}
+                                        <div className="space-y-5">
+                                            {group.operations.map((item) => {
+                                                // Encontramos el índice original en el array plano para que handleChange funcione
+                                                const originalIndex =
+                                                    dataForm.findIndex(
+                                                        (dfItem) =>
+                                                            dfItem.tipoOperacion ===
+                                                                item.tipoOperacion &&
+                                                            dfItem.serial ===
+                                                                item.serial
+                                                    );
+
+                                                const consumo = Math.abs(
                                                     Number(
-                                                        item.contadorAnterior
+                                                        item.contadorActual || 0
                                                     ) -
                                                         Number(
-                                                            item.contadorActual
+                                                            item.contadorAnterior
                                                         )
-                                                )}
-                                            </span>
-                                        ) : Number(item.contadorAnterior) -
-                                              Number(item.contadorActual) >
-                                          0 ? (
-                                            <span className="font-mono font-bold bg-red-100 px-2 py-1 rounded-md text-red-900">
-                                                {Math.abs(
-                                                    Number(
-                                                        item.contadorAnterior
-                                                    ) -
-                                                        Number(
-                                                            item.contadorActual
-                                                        )
-                                                )}
-                                            </span>
-                                        ) : (
-                                            <span className="font-mono font-bold bg-yellow-100 px-2 py-1 rounded-md text-yellow-800">
-                                                {Number(item.contadorAnterior) -
-                                                    Number(item.contadorActual)}
-                                            </span>
-                                        )}
+                                                );
+                                                const isValidConsumo =
+                                                    !isNaN(consumo) &&
+                                                    item.contadorActual;
+
+                                                return (
+                                                    <div
+                                                        key={`${serial}-${item.tipoOperacion}`}
+                                                    >
+                                                        <p className="text-sm font-bold text-slate-700 mb-2">
+                                                            {item.tipoOperacion}
+                                                        </p>
+                                                        <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                                                            <div className="col-span-2 flex justify-between items-center">
+                                                                <span className="font-semibold text-slate-500">
+                                                                    Cont.
+                                                                    Anterior:
+                                                                </span>
+                                                                <span className="font-mono bg-slate-100 px-2 py-1 rounded-md text-slate-800">
+                                                                    {
+                                                                        item.contadorAnterior
+                                                                    }
+                                                                </span>
+                                                            </div>
+
+                                                            <div className="col-span-2 flex justify-between items-center">
+                                                                <label
+                                                                    htmlFor={`contador-${originalIndex}`}
+                                                                    className="font-semibold text-slate-500"
+                                                                >
+                                                                    Cont.
+                                                                    Actual:
+                                                                </label>
+                                                                <input
+                                                                    id={`contador-${originalIndex}`}
+                                                                    type="number"
+                                                                    className="font-mono bg-slate-100 px-2 py-1 rounded-md text-slate-800 w-28 text-right border focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                                                                    value={
+                                                                        item.contadorActual ||
+                                                                        ""
+                                                                    }
+                                                                    placeholder="0"
+                                                                    onChange={(
+                                                                        e
+                                                                    ) =>
+                                                                        handleChange(
+                                                                            e,
+                                                                            originalIndex
+                                                                        )
+                                                                    }
+                                                                />
+                                                            </div>
+
+                                                            <div className="col-span-2 flex justify-between items-center">
+                                                                <span className="font-semibold text-slate-500">
+                                                                    Consumo:
+                                                                </span>
+                                                                <span
+                                                                    className={`font-mono font-bold px-2 py-1 rounded-md ${
+                                                                        isValidConsumo
+                                                                            ? "bg-green-100 text-green-800"
+                                                                            : "bg-yellow-100 text-yellow-800"
+                                                                    }`}
+                                                                >
+                                                                    {isValidConsumo
+                                                                        ? consumo
+                                                                        : 0}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                        ))}
+                                );
+                            })}
+                        </div>
                     </div>
-                    {/* Errores */}
+
+                    {/* El resto de tu lógica para errores y el botón de submit se mantiene igual */}
                     {error.length > 0 && (
-                        <div className="mt-4">
-                            <h3 className="text-red-600 font-semibold">
-                                Errores:
+                        <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
+                            <h3 className="text-red-700 font-semibold text-sm">
+                                Errores de validación:
                             </h3>
-                            <ul className="list-disc pl-5 text-red-500">
+                            <ul className="list-disc pl-5 text-red-600 text-sm mt-1">
                                 {error.map((err, index) => (
                                     <li key={index}>{err.field.value}</li>
                                 ))}
                             </ul>
                         </div>
                     )}
+
                     <Button
-                        className={`mt-6 w-full ${
-                            error.length === 0
-                                ? loading
-                                    ? "opacity-50 cursor-not-allowed"
-                                    : registerMassiveData.length > 0
-                                    ? "bg-[#1A2541]"
-                                    : "opacity-50 cursor-not-allowed"
-                                : "opacity-50 cursor-not-allowed"
-                        }`}
+                        className={`mt-6 w-full disabled:opacity-50 disabled:cursor-not-allowed`}
                         onClick={handleSubmit}
+                        disabled={
+                            loading ||
+                            error.length > 0 ||
+                            registerMassiveData.filter((i) => i).length === 0
+                        }
                     >
-                        Registrar Contadores
+                        {loading ? "Registrando..." : "Registrar Contadores"}
                     </Button>
                 </div>
             )}
