@@ -8,11 +8,8 @@ export function validateCounterCreateArray(
 
     var flag: boolean = false;
 
-    for (const [index, item] of data.entries()) {
-        if (Number(item.cantidad) < 0) {
-            flag = true;
-        }
-        if (isNaN(Number(item.cantidad))) {
+    for (const item of data) {
+        if (typeof item.cantidad !== "string" || !/^\d+$/.test(item.cantidad)) {
             flag = true;
         }
     }
@@ -41,10 +38,7 @@ export function validateCounterCreate(data: RegisterCounterType) {
 
     var flag: boolean = false;
 
-    if (Number(data.cantidad) < 0) {
-        flag = true;
-    }
-    if (isNaN(Number(data.cantidad))) {
+    if (typeof data.cantidad !== "string" || !/^\d+$/.test(data.cantidad)) {
         flag = true;
     }
 
