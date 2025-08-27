@@ -34,6 +34,7 @@ export default function RootLayout({
                             fontSize: "15px",
                             borderRadius: "8px",
                             minWidth: "350px",
+                            overflow: "hidden",
                         },
                         success: {
                             duration: 3000,

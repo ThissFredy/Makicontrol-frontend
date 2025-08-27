@@ -4,12 +4,12 @@ import Image from "next/image";
 // --- Componente Header ---
 const Header = () => {
     return (
-        <header className="bg-[#8C9EC2] shadow-md min-h-[60px]">
+        <header className="bg-[#1A2541] shadow-md min-h-[60px]">
             <div className="w-full">
                 <div className="flex justify-center md:justify-start m-1 items-center h-23">
                     <Link href="/">
                         <Image
-                            src="/logo.svg"
+                            src="/logo2.svg"
                             alt="Logo de MAKI"
                             width={150}
                             height={50}

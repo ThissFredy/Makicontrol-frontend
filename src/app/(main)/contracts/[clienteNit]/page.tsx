@@ -6,9 +6,7 @@ import {
     IoPrintOutline,
 } from "react-icons/io5";
 import type { ContractDetailType } from "@/types/contractType";
-import {
-    getContractDetailsByIdService,
-} from "@/services/contractService";
+import { getContractDetailsByIdService } from "@/services/contractService";
 import { formatCurrency, formatNumber } from "@/utilities/moneyUtility";
 import { EditDetailsContract } from "@/components/ui/EditDetailsContract";
 import { CreateDetailsContract } from "@/components/ui/CreateDetailsContract";
@@ -214,16 +212,16 @@ const ContractDetails = () => {
                     <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
                         <div className="flex items-center mb-4 sm:mb-0">
                             <button className="flex items-center text-gray-600 hover:text-gray-900 mr-4">
-                                <IoChevronBack className="w-6 h-6" />
-                                <Link href="/contracts">
-                                    <span className="ml-2 mr-2 font-semibold">
+                                <Link href="/contracts" className="flex">
+                                    <IoChevronBack className="w-6 h-6" />
+                                    <span className="ml-2 mr-2 font-semibold hidden md:block">
                                         Volver a Contratos
                                     </span>
                                 </Link>
                             </button>
                             <div>
                                 <h1 className="text-2xl font-bold text-[#1A2541]">
-                                    Contrato no encontrado
+                                    Detalles de Contrato No Encontrados
                                 </h1>
                                 <p className="text-sm text-gray-500">
                                     NIT: {clienteNit}

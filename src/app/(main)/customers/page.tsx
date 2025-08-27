@@ -123,7 +123,6 @@ const ClientManagementPage = () => {
     useEffect(() => {
         const loadClients = async () => {
             try {
-                // Si no hay término de búsqueda y es la primera carga
                 if (!debouncedSearchTerm) {
                     if (loading) {
                         // Primera carga
@@ -211,21 +210,21 @@ const ClientManagementPage = () => {
                                 <Button
                                     onClick={handleOpenPrintersFile}
                                     icon={<FiFile size={20} />}
-                                    className="hover:cursor-pointer !bg-[#8C9EC2]"
+                                    className="bg-slate-200 hover:bg-slate-300 text-slate-700"
                                 >
                                     Agregar Plantilla de Impresoras
                                 </Button>
                                 <Button
                                     onClick={handleOpenModalFile}
                                     icon={<FiFile size={20} />}
-                                    className="hover:cursor-pointer !bg-[#8C9EC2]"
+                                    className="bg-slate-200 hover:bg-slate-300 text-slate-700"
                                 >
                                     Agregar plantilla de clientes
                                 </Button>
                                 <Button
                                     onClick={handleOpenModal}
                                     icon={<FiPlus size={20} />}
-                                    className="hover:cursor-pointer"
+                                    className="bg-[#E87A3E] hover:bg-[#D76B2D]"
                                 >
                                     Nuevo Cliente
                                 </Button>
@@ -234,6 +233,7 @@ const ClientManagementPage = () => {
                         {/* Tarjetas de Estadísticas */}
                         <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <StatCard
+                                icon={<FiFile size={24} />}
                                 title="Total Clientes"
                                 value={totalClients}
                                 description="Clientes registrados"
@@ -267,43 +267,37 @@ const ClientManagementPage = () => {
                             </div>
 
                             {/* Tabla de Clientes */}
-                            <div className="overflow-x-auto">
+                            <div className="overflow-x-auto rounded-lg">
                                 <table className="w-full text-md text-left text-slate-500">
-                                    <thead className="text-xs text-slate-700 uppercase bg-slate-100">
+                                    <thead className="text-xs text-slate-700 uppercase bg-[#253763]">
                                         <tr>
                                             <th
                                                 scope="col"
-                                                className="px-6 py-3"
+                                                className="px-6 py-3 text-white"
                                             >
-                                                Nombre
+                                                Nombre / NIT
                                             </th>
                                             <th
                                                 scope="col"
-                                                className="px-6 py-3"
-                                            >
-                                                NIT
-                                            </th>
-                                            <th
-                                                scope="col"
-                                                className="px-6 py-3"
+                                                className="px-6 py-3 text-white"
                                             >
                                                 Dirección
                                             </th>
                                             <th
                                                 scope="col"
-                                                className="px-6 py-3"
+                                                className="px-6 py-3 text-white"
                                             >
                                                 Teléfono
                                             </th>
                                             <th
                                                 scope="col"
-                                                className="px-6 py-3"
+                                                className="px-6 py-3 text-white"
                                             >
                                                 Correo Electrónico
                                             </th>
                                             <th
                                                 scope="col"
-                                                className="px-6 py-3"
+                                                className="px-6 py-3 text-white"
                                             >
                                                 Acciones
                                             </th>
@@ -340,10 +334,10 @@ const ClientManagementPage = () => {
                                                 className="bg-white border-b hover:bg-slate-50"
                                             >
                                                 <td className="px-6 py-4 font-medium text-slate-900">
-                                                    {client.nombre}
-                                                </td>
-                                                <td className="px-6 py-4 text-[#000000]">
-                                                    {client.nit}
+                                                    <div>{client.nombre}</div>
+                                                    <div className="text-slate-700 font-normal">
+                                                        {client.nit}
+                                                    </div>
                                                 </td>
                                                 <td className="px-6 py-4 text-[#000000]">
                                                     {client.direccion}
@@ -356,10 +350,10 @@ const ClientManagementPage = () => {
                                                 </td>
 
                                                 <td className="px-6 py-4">
-                                                    <div className="flex items-center gap-4">
+                                                    <div className="flex items-center gap-1">
                                                         <Tooltip text="Generar Contador">
                                                             <button
-                                                                className="text-slate-500 hover:text-[#E87A3E] hover:cursor-pointer"
+                                                                className="border-[#8C9EC2] text-green-500 hover:bg-[#8C9EC2] hover:text-white font-semibold p-2 rounded-lg hover:cursor-pointer hover:transform hover:scale-105 transition-transform duration-200"
                                                                 onClick={() => {
                                                                     handleLookForCounter(
                                                                         client.nit
@@ -373,7 +367,7 @@ const ClientManagementPage = () => {
                                                         </Tooltip>
                                                         <Tooltip text="Ver Impresoras">
                                                             <button
-                                                                className="text-slate-500 hover:text-[#E87A3E] hover:cursor-pointer"
+                                                                className="border-[#8C9EC2] text-red-500 hover:bg-[#8C9EC2] hover:text-white font-semibold p-2 rounded-lg hover:cursor-pointer hover:transform hover:scale-105 transition-transform duration-200"
                                                                 onClick={() => {
                                                                     handleViewPrinters(
                                                                         client.nit
@@ -387,7 +381,7 @@ const ClientManagementPage = () => {
                                                         </Tooltip>
                                                         <Tooltip text="Ver Contrato">
                                                             <button
-                                                                className="text-slate-500 hover:text-[#E87A3E] hover:cursor-pointer"
+                                                                className="border-[#8C9EC2] text-yellow-500 hover:bg-[#8C9EC2] hover:text-white font-semibold p-2 rounded-lg hover:cursor-pointer hover:transform hover:scale-105 transition-transform duration-200"
                                                                 onClick={() => {
                                                                     handleLookForContract(
                                                                         client.nit
@@ -401,7 +395,7 @@ const ClientManagementPage = () => {
                                                         </Tooltip>
                                                         <Tooltip text="Editar">
                                                             <button
-                                                                className="text-slate-500 hover:text-[#E87A3E] hover:cursor-pointer"
+                                                                className="border-[#8C9EC2] text-blue-500 hover:bg-[#8C9EC2] hover:text-white font-semibold p-2 rounded-lg hover:cursor-pointer hover:transform hover:scale-105 transition-transform duration-200"
                                                                 onClick={() => {
                                                                     handleOpenModalEdit(
                                                                         client
