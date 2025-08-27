@@ -27,12 +27,12 @@ const Header2 = () => {
     };
 
     return (
-        <header className="bg-[#8C9EC2] shadow-md min-h-[60px]">
+        <header className="bg-[#1A2541] shadow-md min-h-[60px]">
             <div className="w-full flex justify-between items-center px-4">
                 <div className="flex justify-center md:justify-start m-1 items-center h-23">
                     <Link href="/">
                         <Image
-                            src="/logo.svg"
+                            src="/logo2.svg"
                             alt="Logo de MAKI"
                             width={150}
                             height={50}
@@ -40,10 +40,10 @@ const Header2 = () => {
                             className="w-[150px] h-[50px] object-contain"
                         />
                     </Link>
-                    <nav className="hidden md:flex items-center space-x-6 ml-10 bg-[#818FAA] font-medium rounded-lg p-3">
+                    <nav className="hidden md:flex items-center space-x-6 ml-20 font-medium text-[#8C9EC2]">
                         <Link
                             href="/customers"
-                            className="flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors text-[#F0F2F5] duration-200 hover:transform hover:scale-105 transition-transform duration-200"
+                            className="flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors hover:text-white duration-200 hover:transform hover:scale-105 transition-transform duration-200"
                         >
                             <FiUsers size={18} />
                             <span className="">Clientes</span>
@@ -51,23 +51,23 @@ const Header2 = () => {
 
                         <Link
                             href="/contracts"
-                            className="flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors text-[#F0F2F5] duration-200 hover:transform hover:scale-105 transition-transform duration-200"
+                            className="flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors hover:text-white duration-200 hover:transform hover:scale-105 transition-transform duration-200"
                         >
                             <FiFileText size={18} />
                             <span className="">Contratos</span>
                         </Link>
                     </nav>
-                    <nav className="flex items-center space-x-6 ml-10 md:hidden bg-[#818FAA] rounded-lg p-3">
+                    <nav className="flex items-center space-x-6 ml-10 md:hidden text-[#8C9EC2]">
                         <Link
                             href="/customers"
-                            className="flex items-center space-x-2 px-4 py-2 text-white hover:bg-white/10 rounded-lg transition-colors duration-200"
+                            className="flex items-center space-x-2 px-4 py-2 hover:text-white rounded-lg transition-colors duration-200"
                         >
                             <FiUsers size={18} />
                         </Link>
 
                         <Link
                             href="/contracts"
-                            className="flex items-center space-x-2 px-4 py-2 text-white hover:bg-white/10 rounded-lg transition-colors duration-200"
+                            className="flex items-center space-x-2 px-4 py-2 hover:text-white rounded-lg transition-colors duration-200"
                         >
                             <FiFileText size={18} />
                         </Link>
@@ -79,7 +79,7 @@ const Header2 = () => {
                         onClick={() => setShowUserMenu(!showUserMenu)}
                         className="flex items-center space-x-2 px-4 py-2 text-white hover:bg-white/10 rounded-lg transition-colors duration-200"
                     >
-                        <span className="font-medium">
+                        <span className="font-medium hover:cursor-pointer">
                             {user?.sub || "Usuario Anónimo"}
                         </span>
                         <FiChevronDown
@@ -99,7 +99,7 @@ const Header2 = () => {
                                 </div>
                                 <button
                                     onClick={handleLogout}
-                                    className="flex items-center space-x-2 w-full px-4 py-2 text-left text-red-600 hover:bg-red-50 transition-colors"
+                                    className="flex items-center space-x-2 w-full px-4 py-2 text-left text-red-600 hover:bg-red-50 hover:cursor-pointer transition-colors"
                                 >
                                     <FiLogOut size={16} />
                                     <span>Cerrar sesión</span>

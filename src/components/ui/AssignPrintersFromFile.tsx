@@ -52,8 +52,14 @@ export const AssignPrintersFromFile = ({
             setFile(null);
             return;
         }
-        if (file.type !== "text/csv" && file.type !== "application/json") {
-            toast.error("Por favor, sube un archivo CSV o JSON válido.");
+
+        const allowedTypes = [
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "application/vnd.ms-excel",
+        ];
+
+        if (!allowedTypes.includes(file.type)) {
+            toast.error("Por favor, sube un archivo Excel válido.");
             return;
         }
         setFile(file);
@@ -83,12 +89,12 @@ export const AssignPrintersFromFile = ({
                     Asignar impresoras desde archivo
                 </h2>
                 <p className="mt-1 text-slate-500">
-                    Sube un archivo .csv para asignar impresoras a múltiples
-                    clientes a la vez.
+                    Sube un archivo Excel (.xlsx o .xls) para asignar impresoras
+                    a múltiples clientes a la vez.
                 </p>
-                {/* TODO: Agregar instrucciones sobre el formato del archivo */}
+                {/* TODO: Cambiar el enlace a la plantilla de ejemplo */}
                 <a
-                    href="/files/clientes.csv"
+                    href="/files/undefined"
                     download
                     className="mt-4 inline-block text-sm text-indigo-600 hover:text-indigo-800 font-semibold"
                 >
@@ -101,7 +107,7 @@ export const AssignPrintersFromFile = ({
                     type="file"
                     id="file-upload"
                     className="hidden"
-                    accept=".csv"
+                    accept=".xlsx, .xls"
                     onChange={(e) => handleChange(e.target.files?.[0] || null)}
                     disabled={isLoading}
                 />
@@ -148,7 +154,9 @@ export const AssignPrintersFromFile = ({
                             <p className="text-sm">
                                 o haz clic para seleccionar
                             </p>
-                            <p className="text-xs mt-2">Solo archivos .csv</p>
+                            <p className="text-xs mt-2">
+                                Solo archivos .xlsx o .xls
+                            </p>
                         </div>
                     )}
                 </label>

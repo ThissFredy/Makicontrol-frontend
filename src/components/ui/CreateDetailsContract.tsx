@@ -311,7 +311,7 @@ export const CreateDetailsContract = ({
                         }
                         `}
                 >
-                    Editar Cliente
+                    Crear Detalles
                 </button>
             </div>
         </form>

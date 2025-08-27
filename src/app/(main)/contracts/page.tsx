@@ -24,6 +24,8 @@ import {
     FiEdit,
     FiArrowDown,
     FiFile,
+    FiCheck,
+    FiX,
 } from "react-icons/fi";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
@@ -64,7 +66,6 @@ const ContractsPage = () => {
     const handleOpenModalFile = () => setIsModalOpenFile(true);
     const handleCloseModalFile = () => setIsModalOpenFile(false);
 
-    // Details
     const handleOpenModalDetailsFile = () => setIsModalOpenDetailsFile(true);
     const handleCloseModalDetailsFile = () => setIsModalOpenDetailsFile(false);
 
@@ -275,21 +276,21 @@ const ContractsPage = () => {
                                 <Button
                                     onClick={handleOpenModalFile}
                                     icon={<FiFile size={20} />}
-                                    className="hover:cursor-pointer !bg-[#8C9EC2]"
+                                    className="bg-slate-200 hover:bg-slate-300 text-slate-700"
                                 >
                                     Agregar archivo de contratos
                                 </Button>
                                 <Button
                                     onClick={handleOpenModalDetailsFile}
                                     icon={<FiFile size={20} />}
-                                    className="hover:cursor-pointer !bg-[#8C9EC2]"
+                                    className="bg-slate-200 hover:bg-slate-300 text-slate-700"
                                 >
                                     Agregar archivo detalles de contratos
                                 </Button>
                                 <Button
                                     onClick={handleOpenModal}
                                     icon={<FiPlus size={20} />}
-                                    className="hover:cursor-pointer"
+                                    className="bg-[#E87A3E] hover:bg-[#D76B2D]"
                                 >
                                     Nuevo Contrato
                                 </Button>
@@ -299,21 +300,25 @@ const ContractsPage = () => {
                         {/* Tarjetas de Estadísticas */}
                         <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <StatCard
+                                icon={<FiFile size={24} />}
                                 title="Total Contratos"
                                 value={totalContracts}
                                 description="Contratos registrados"
+                                color="text-[#1A2541] "
                             />
                             <StatCard
+                                icon={<FiCheck size={24} />}
                                 title="Contratos Activos"
                                 value={activeContracts}
                                 description="Contratos en estado activo"
-                                color="text-green-800"
+                                color="text-green-600"
                             />
                             <StatCard
+                                icon={<FiX size={24} />}
                                 title="Contratos Inactivos"
                                 value={inactiveContracts}
                                 description="Contratos en estado inactivo"
-                                color="text-red-800"
+                                color="text-red-500"
                             />
                         </section>
 
@@ -328,7 +333,7 @@ const ContractsPage = () => {
                                         Busca y filtra tus contratos
                                     </p>
                                 </div>
-                                <div className="flex flex-wrap items-center gap-4 mt-4 sm:mt-0 w-full md:w-auto">
+                                <div className="flex flex-wrap items-center gap-4 mt-4 sm:mt-0 w-full md:w-auto border border-slate-200 p-3 rounded-lg">
                                     <div className="relative w-full sm:w-100">
                                         <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                                         <input
@@ -371,67 +376,56 @@ const ContractsPage = () => {
                             </div>
 
                             {/* Tabla de Clientes */}
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-md text-left text-slate-500">
-                                    <thead className="text-xs text-slate-700 uppercase bg-slate-100">
+                            <div className="overflow-x-auto rounded-lg">
+                                <table className="w-full text-md text-center text-slate-500">
+                                    <thead className="text-xs text-white uppercase bg-[#253763]">
                                         <tr>
                                             <th
                                                 scope="col"
-                                                className="px-6 py-3"
+                                                className="px-2 py-3"
                                             >
-                                                Nit del Cliente
+                                                <div>NIT</div>
+                                                <div>Tipo de Contrato</div>
                                             </th>
                                             <th
                                                 scope="col"
-                                                className="px-6 py-3"
-                                            >
-                                                Tipo de Contrato
-                                            </th>
-                                            <th
-                                                scope="col"
-                                                className="px-6 py-3"
+                                                className="px-2 py-3"
                                             >
                                                 Valor Canon
                                             </th>
                                             <th
                                                 scope="col"
-                                                className="px-6 py-3"
+                                                className="px-2 py-3"
                                             >
                                                 Valor Base Equipo
                                             </th>
                                             <th
                                                 scope="col"
-                                                className="px-6 py-3"
+                                                className="px-2 py-3"
                                             >
                                                 Periodo
                                             </th>
                                             <th
                                                 scope="col"
-                                                className="px-6 py-3"
+                                                className="px-2 py-3"
                                             >
-                                                Fecha Inicio
+                                                Inicio / Fin
                                             </th>
                                             <th
                                                 scope="col"
-                                                className="px-6 py-3"
-                                            >
-                                                Fecha Fin
-                                            </th>
-                                            <th
-                                                scope="col"
-                                                className="px-6 py-3"
+                                                className="px-2 py-3 "
                                             >
                                                 Estado
                                             </th>
                                             <th
                                                 scope="col"
-                                                className="px-6 py-3"
+                                                className="px-2 py-3"
                                             >
                                                 Canones
                                             </th>
                                             <th
                                                 scope="col"
-                                                className="px-6 py-3 text-right"
+                                                className="px-2 py-3 "
                                             >
                                                 Acciones
                                             </th>
@@ -442,7 +436,7 @@ const ContractsPage = () => {
                                             <tr className="bg-white border-b">
                                                 <td
                                                     colSpan={10}
-                                                    className="px-6 py-4 text-center text-slate-500"
+                                                    className="px-2 py-4  text-slate-500"
                                                 >
                                                     <div className="flex items-center justify-center h-64">
                                                         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-blue-500"></div>
@@ -454,7 +448,7 @@ const ContractsPage = () => {
                                                 <tr className="bg-white border-b">
                                                     <td
                                                         colSpan={10}
-                                                        className="px-6 py-4 text-center text-slate-500"
+                                                        className="px-2 py-4  text-slate-500"
                                                     >
                                                         No hay contratos
                                                         registrados.
@@ -465,75 +459,86 @@ const ContractsPage = () => {
                                         {contracts?.map((contract, index) => (
                                             <tr
                                                 key={`${contract.clienteNit}-${index}`}
-                                                className="bg-white border-b hover:bg-slate-50 text-[#000000]"
+                                                className="bg-white border-b text-sm hover:bg-slate-50 text-[#000000]"
                                             >
-                                                <td className="px-6 py-4">
-                                                    {contract.clienteNit}
+                                                <td className="px-2 py-4 font-medium">
+                                                    <div className="text-lg">
+                                                        {contract.clienteNit}
+                                                    </div>
+                                                    <div className="text-gray-500 font-normal">
+                                                        {contract.tipoContrato}
+                                                    </div>
                                                 </td>
-                                                <td className="px-6 py-4">
-                                                    {contract.tipoContrato}
-                                                </td>
-                                                <td className="px-6 py-4">
+                                                <td className="px-2 py-4">
                                                     {formatNumber(
                                                         contract.valorCanon
                                                     )}
                                                 </td>
-                                                <td className="px-6 py-4">
+                                                <td className="px-2 py-4">
                                                     {formatNumber(
                                                         contract.valorBaseEquipo
                                                     )}
                                                 </td>
-                                                <td className="px-6 py-4">
+                                                <td className="px-2 py-4">
                                                     {contract.periodo}
                                                 </td>
-                                                <td className="px-6 py-4">
-                                                    {contract.fechaInicio}
+                                                <td className="px-2 py-4 ">
+                                                    <div>
+                                                        {contract.fechaInicio}
+                                                    </div>
+                                                    <div>
+                                                        {contract.fechaFin ||
+                                                            "N/A"}
+                                                    </div>
                                                 </td>
-                                                <td className="px-6 py-4">
-                                                    {contract.fechaFin || "N/A"}
-                                                </td>
-                                                <td className="px-6 py-4 text-xs">
+                                                <td className="px-4 py-4 text-xs ">
                                                     {contract.estado ===
                                                     "ACTIVO" ? (
-                                                        <span className="text-green-500 bg-green-100 font-semibold border border-green-500 px-2 py-1 rounded-xl">
+                                                        <span className="text-green-800 bg-green-100 font-semibold border border-green-500 px-2 py-1 rounded-xl">
                                                             {contract.estado}
                                                         </span>
                                                     ) : (
-                                                        <span className="text-red-500 bg-red-100 font-semibold border border-red-500 px-2 py-1 rounded-xl">
+                                                        <span className="text-red-800 bg-red-100 font-semibold border border-red-500 px-2 py-1 rounded-xl">
                                                             INACTIVO
                                                         </span>
                                                     )}
                                                 </td>
-                                                <td className="px-6 py-4">
-                                                    {contract.canones.length > 0
-                                                        ? contract.canones.map(
-                                                              (canon) => (
-                                                                  <div
-                                                                      key={
-                                                                          canon.grupo
-                                                                      }
-                                                                      className="flex items-center gap-2"
-                                                                  >
-                                                                      <div className="text-[#fffff] text-sm">
-                                                                          {
-                                                                              canon.grupo
-                                                                          }
-                                                                      </div>
-                                                                      <div className="text-slate-500 font-bold text-sm">
-                                                                          {formatNumber(
-                                                                              canon.valorCanon.toString()
-                                                                          )}
-                                                                      </div>
-                                                                  </div>
-                                                              )
-                                                          )
-                                                        : "N/A"}
+                                                <td className="px-2 py-4 justify-center">
+                                                    {contract.canones.length >
+                                                    0 ? (
+                                                        contract.canones.map(
+                                                            (canon) => (
+                                                                <div
+                                                                    key={
+                                                                        canon.grupo
+                                                                    }
+                                                                    className="flex justify-center gap-2"
+                                                                >
+                                                                    <div className="text-[#fffff] font-semibold">
+                                                                        {
+                                                                            canon.grupo
+                                                                        }
+                                                                        :
+                                                                    </div>
+                                                                    <div className="text-slate-600 text-sm">
+                                                                        {formatNumber(
+                                                                            canon.valorCanon.toString()
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+                                                            )
+                                                        )
+                                                    ) : (
+                                                        <div className="text-gray-400">
+                                                            No Aplica
+                                                        </div>
+                                                    )}
                                                 </td>
-                                                <td className="px-6 py-4">
-                                                    <div className="flex items-center gap-4">
+                                                <td className="px-2 py-4 justify-center">
+                                                    <div className="flex justify-center">
                                                         <Tooltip text="Ver Detalles">
                                                             <button
-                                                                className="text-slate-500 hover:text-[#E87A3E] hover:cursor-pointer"
+                                                                className="border-[#8C9EC2] text-yellow-500 hover:bg-[#8C9EC2] p-2 hover:text-white font-semibold rounded-lg hover:cursor-pointer hover:transform hover:scale-105 transition-transform duration-200"
                                                                 onClick={() =>
                                                                     handleViewDetails(
                                                                         contract.clienteNit
@@ -547,7 +552,7 @@ const ContractsPage = () => {
                                                         </Tooltip>
                                                         <Tooltip text="Editar">
                                                             <button
-                                                                className="text-slate-500 hover:text-[#E87A3E] hover:cursor-pointer"
+                                                                className="border-[#8C9EC2] text-blue-500 hover:bg-[#8C9EC2] p-2 hover:text-white font-semibold rounded-lg hover:cursor-pointer hover:transform hover:scale-105 transition-transform duration-200"
                                                                 onClick={() => {
                                                                     handleOpenModalEdit(
                                                                         contract

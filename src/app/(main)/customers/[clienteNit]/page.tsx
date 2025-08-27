@@ -161,16 +161,16 @@ const ContractDetails = () => {
                     <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
                         <div className="flex items-center mb-4 sm:mb-0">
                             <button className="flex items-center text-gray-600 hover:text-gray-900 mr-4">
-                                <IoChevronBack className="w-6 h-6" />
-                                <Link href="/customers">
-                                    <span className="ml-2 mr-2 font-semibold">
+                                <Link href="/customers" className="flex">
+                                    <IoChevronBack className="w-6 h-6" />
+                                    <span className="ml-2 mr-2 font-semibold hidden md:block">
                                         Volver a Clientes
                                     </span>
                                 </Link>
                             </button>
                             <div>
                                 <h1 className="text-2xl font-bold text-[#1A2541]">
-                                    No hay impresoras disponibles
+                                    No Hay Impresoras Asignadas
                                 </h1>
                                 <p className="text-sm text-gray-500">
                                     NIT: {clienteNit}
