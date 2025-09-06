@@ -13,7 +13,7 @@ interface CreateContractFormProps {
     clienteNit: string;
 }
 
-export const CreateCounter = ({
+export const TakeCounter = ({
     onClose,
     onSuccess,
     clienteNit,
@@ -37,7 +37,6 @@ export const CreateCounter = ({
         setData(data);
         setMonth(month);
         setYear(year);
-        // Inicializa el array para el envío masivo con la misma longitud que los datos recibidos
         setRegisterMassiveData(new Array(data.length));
     };
 
@@ -143,15 +142,20 @@ export const CreateCounter = ({
     return (
         <div>
             {dataForm.length === 0 ? (
-                <Slider onSuccess={successHandler} clientNit={clienteNit} />
+                <Slider
+                    onSuccess={successHandler}
+                    clientNit={clienteNit}
+                    Titulo="Obtención de Contadores"
+                    Subtitulo="Seleccione un periodo para visualizar"
+                />
             ) : (
                 <div>
                     <div className="mb-4">
                         <h2 className="text-2xl font-bold text-slate-800">
-                            Resumen de Contadores a Registrar
+                            Obten todos los contadores asociados al cliente
                         </h2>
                         <p className="mt-1 text-slate-500">
-                            Revise los datos cargados para cada equipo.
+                            Revisa los contadores actuales y anteriores
                         </p>
                     </div>
 
