@@ -10,6 +10,7 @@ import { StatCard } from "@/components/ui/StatCard";
 import { useDebounce } from "@/utilities/useDebounce";
 import { searchCustomerByNameOrNIT } from "@/services/customerService";
 import { CreateCounter } from "@/components/ui/CreateCounter";
+import { TakeCounter } from "@/components/ui/TakeCounter";
 import { CustomerType } from "@/types/customerType";
 import {
     FiPlus,
@@ -38,6 +39,7 @@ const ClientManagementPage = () => {
     const [isModalEditOpen, setIsModalEditOpen] = useState(false);
     const [isModalOpenFile, setIsModalOpenFile] = useState(false);
     const [isModalCounterOpen, setIsModalCounterOpen] = useState(false);
+    const [isModalTakeCounterOpen, setIsModalTakeCounterOpen] = useState(false);
     const [openMenuNit, setOpenMenuNit] = useState<number | null>(null);
     const [counterUser, setCounterUser] = useState<string>("");
     const menuRef = useRef<HTMLDivElement | null>(null);
@@ -66,6 +68,9 @@ const ClientManagementPage = () => {
     const handleOpenCounterModal = () => setIsModalCounterOpen(true);
     const handleCloseCounterModal = () => setIsModalCounterOpen(false);
 
+    const handleOpenTakeCounterModal = () => setIsModalTakeCounterOpen(true);
+    const handleCloseTakeCounterModal = () => setIsModalTakeCounterOpen(false);
+
     const handleOpenPrintersFile = () => setIsModalPrintersFile(true);
     const handleClosePrintersFile = () => setIsModalPrintersFile(false);
 
@@ -73,6 +78,19 @@ const ClientManagementPage = () => {
         setSelectedClient(client);
         setIsModalEditOpen(true);
     };
+
+    const handleLookForTakeCounter = (nit: number) => {
+        setIsModalTakeCounterOpen(true);
+        setCounterUser(nit.toString());
+    };
+
+    const handleTakeCounterSuccess = (message: string) => {
+        toast.success(message);
+        fetchClients();
+    };
+
+    const handleDownloadRecipt = (nit: number) => {};
+
     const handleCloseModalEdit = () => {
         setIsModalEditOpen(false);
     };
@@ -603,8 +621,8 @@ const ClientManagementPage = () => {
                                                                                 e
                                                                             ) => {
                                                                                 e.preventDefault();
-                                                                                handleOpenModalEdit(
-                                                                                    client
+                                                                                handleLookForTakeCounter(
+                                                                                    client.nit
                                                                                 );
                                                                                 setOpenMenuNit(
                                                                                     null
@@ -716,6 +734,17 @@ const ClientManagementPage = () => {
                         <CreateCounter
                             onClose={handleCloseCounterModal}
                             onSuccess={handleCounterSuccess}
+                            clienteNit={counterUser}
+                        />
+                    </Modal2>
+                    {/* <TakeCounter /> */}
+                    <Modal2
+                        isOpen={isModalTakeCounterOpen}
+                        onClose={handleCloseTakeCounterModal}
+                    >
+                        <TakeCounter
+                            onClose={handleCloseTakeCounterModal}
+                            onSuccess={handleTakeCounterSuccess}
                             clienteNit={counterUser}
                         />
                     </Modal2>

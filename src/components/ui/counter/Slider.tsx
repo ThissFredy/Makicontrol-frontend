@@ -12,6 +12,8 @@ interface AddCounters1Props {
         year: number
     ) => void;
     clientNit: string;
+    Titulo?: string;
+    Subtitulo?: string;
 }
 
 // --- Nombres de los meses para mostrar en la UI ---
@@ -30,7 +32,12 @@ const monthNames = [
     "Diciembre",
 ];
 
-export const Slider = ({ onSuccess, clientNit }: AddCounters1Props) => {
+export const Slider = ({
+    onSuccess,
+    clientNit,
+    Titulo = "Registro de Contadores Mensuales",
+    Subtitulo = "Seleccione un periodo para ingresar las lecturas",
+}: AddCounters1Props) => {
     // --- Estados para guardar el año y mes seleccionados ---
     const currentYear = new Date().getFullYear();
     const [loading, setLoading] = useState(false);
@@ -61,12 +68,8 @@ export const Slider = ({ onSuccess, clientNit }: AddCounters1Props) => {
         <div>
             {/* --- Encabezado --- */}
             <div className="mb-8 text-center">
-                <h2 className="text-2xl font-bold text-slate-800">
-                    Registro de Contadores Mensuales
-                </h2>
-                <p className="mt-1 text-slate-500">
-                    Seleccione un periodo para ingresar las lecturas
-                </p>
+                <h2 className="text-2xl font-bold text-slate-800">{Titulo}</h2>
+                <p className="mt-1 text-slate-500">{Subtitulo}</p>
             </div>
 
             <div className="space-y-8">
