@@ -5,9 +5,10 @@ interface ModalProps {
     isOpen: boolean;
     onClose: () => void;
     children: React.ReactNode;
+    props?: string;
 }
 
-export const Modal = ({ isOpen, onClose, children }: ModalProps) => {
+export const Modal = ({ isOpen, onClose, children, props }: ModalProps) => {
     useEffect(() => {
         const handleEscape = (event: KeyboardEvent) => {
             if (event.key === "Escape") {
@@ -24,7 +25,8 @@ export const Modal = ({ isOpen, onClose, children }: ModalProps) => {
 
     return (
         <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 transition-opacity"
+            className={`fixed inset-0 z-50 flex items-center justify-center bg-black/60 transition-opacity
+            ${props}`}
             role="dialog"
             aria-modal="true"
         >

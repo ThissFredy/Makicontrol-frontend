@@ -78,7 +78,7 @@ export const Slider = ({ onSuccess, clientNit }: AddCounters1Props) => {
                     >
                         <div className="flex justify-between items-center">
                             <span>Año</span>
-                            <span className="text-lg font-bold text-[#E87A3E] bg-[#E87A3E]/10 rounded-md px-2">
+                            <span className="text-lg font-bold text-blue-600 bg-blue-100 rounded-md px-2">
                                 {year}
                             </span>
                         </div>
@@ -90,7 +90,7 @@ export const Slider = ({ onSuccess, clientNit }: AddCounters1Props) => {
                         max={currentYear}
                         value={year}
                         onChange={(e) => setYear(parseInt(e.target.value))}
-                        className="w-full h-2 mt-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#E87A3E]"
+                        className="w-full h-2 mt-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
                     />
                 </div>
 
@@ -102,7 +102,7 @@ export const Slider = ({ onSuccess, clientNit }: AddCounters1Props) => {
                     >
                         <div className="flex justify-between items-center">
                             <span>Mes</span>
-                            <span className="text-lg font-bold text-[#E87A3E] bg-[#E87A3E]/10 rounded-md px-2">
+                            <span className="text-lg font-bold text-blue-600 bg-blue-100 rounded-md px-2">
                                 {monthNames[month - 1]}
                             </span>
                         </div>
@@ -114,7 +114,7 @@ export const Slider = ({ onSuccess, clientNit }: AddCounters1Props) => {
                         max="12"
                         value={month}
                         onChange={(e) => setMonth(parseInt(e.target.value))}
-                        className="w-full h-2 mt-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#E87A3E]"
+                        className="w-full h-2 mt-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
                     />
                 </div>
             </div>

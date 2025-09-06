@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { getCustomersService as getCustomers } from "@/services/customerService";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
@@ -14,14 +14,16 @@ import { CustomerType } from "@/types/customerType";
 import {
     FiPlus,
     FiSearch,
-    FiEye,
     FiEdit,
     FiFile,
     FiPrinter,
+    FiMoreHorizontal,
+    FiBook,
+    FiDollarSign,
+    FiDownload,
 } from "react-icons/fi";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { Tooltip } from "@/components/ui/Tooltip";
 import { AssignPrintersFromFile } from "@/components/ui/AssignPrintersFromFile";
 import { BsCash } from "react-icons/bs";
 import { Modal2 } from "@/components/ui/Modal2";
@@ -36,7 +38,10 @@ const ClientManagementPage = () => {
     const [isModalEditOpen, setIsModalEditOpen] = useState(false);
     const [isModalOpenFile, setIsModalOpenFile] = useState(false);
     const [isModalCounterOpen, setIsModalCounterOpen] = useState(false);
+    const [openMenuNit, setOpenMenuNit] = useState<number | null>(null);
     const [counterUser, setCounterUser] = useState<string>("");
+    const menuRef = useRef<HTMLDivElement | null>(null);
+    const menuButtonRefs = useRef<(HTMLButtonElement | null)[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [isModalPrintersFile, setIsModalPrintersFile] = useState(false);
     const [loadingClients, setLoadingClients] = React.useState<boolean>(false);
@@ -187,6 +192,50 @@ const ClientManagementPage = () => {
             return false;
         }
     };
+
+    // * UseEffect for listening the menuRef
+    useEffect(() => {
+        // Función para cerrar el menú si se hace clic fuera de él
+        const handleClickOutside = (event: MouseEvent) => {
+            const openMenuIndex = clients?.findIndex(
+                (client) => client.nit === openMenuNit
+            );
+
+            const openMenuButton =
+                openMenuIndex !== -1 && openMenuIndex !== undefined
+                    ? menuButtonRefs.current[openMenuIndex]
+                    : null;
+
+            if (
+                openMenuButton &&
+                openMenuButton.contains(event.target as Node)
+            ) {
+                return;
+            }
+
+            if (
+                menuRef.current &&
+                !menuRef.current.contains(event.target as Node)
+            ) {
+                setOpenMenuNit(null);
+            }
+        };
+
+        const handleScroll = () => {
+            setOpenMenuNit(null);
+        };
+
+        if (openMenuNit !== null) {
+            document.addEventListener("mousedown", handleClickOutside);
+            window.addEventListener("scroll", handleScroll, true);
+        }
+
+        // Función de limpieza: se ejecuta cuando el componente se desmonta o el menú se cierra
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+            window.removeEventListener("scroll", handleScroll, true);
+        };
+    }, [openMenuNit]);
 
     return (
         <div className="min-h-screen p-4 sm:p-8">
@@ -350,63 +399,273 @@ const ClientManagementPage = () => {
                                                 </td>
 
                                                 <td className="px-6 py-4">
-                                                    <div className="flex items-center gap-1">
-                                                        <Tooltip text="Generar Contador">
-                                                            <button
-                                                                className="border-[#8C9EC2] text-green-500 hover:bg-[#8C9EC2] hover:text-white font-semibold p-2 rounded-lg hover:cursor-pointer hover:transform hover:scale-105 transition-transform duration-200"
-                                                                onClick={() => {
-                                                                    handleLookForCounter(
+                                                    <div className="relative inline-block text-left">
+                                                        {/* Botón que abre/cierra el menú */}
+                                                        <button
+                                                            ref={(el) => {
+                                                                menuButtonRefs.current[
+                                                                    index
+                                                                ] = el;
+                                                            }}
+                                                            onClick={() =>
+                                                                setOpenMenuNit(
+                                                                    openMenuNit ===
                                                                         client.nit
-                                                                    );
-                                                                }}
-                                                            >
-                                                                <BsCash
-                                                                    size={18}
+                                                                        ? null
+                                                                        : client.nit
+                                                                )
+                                                            }
+                                                            className="p-2 rounded-full focus:outline-none"
+                                                        >
+                                                            <div className="border border-slate-300 hover:bg-slate-700 hover:transform hover:scale-120 hover:text-slate-100 transition-all duration-150 p-1.5 hover:cursor-pointer rounded-full shadow-md">
+                                                                <FiMoreHorizontal
+                                                                    size={20}
+                                                                    className=""
                                                                 />
-                                                            </button>
-                                                        </Tooltip>
-                                                        <Tooltip text="Ver Impresoras">
-                                                            <button
-                                                                className="border-[#8C9EC2] text-red-500 hover:bg-[#8C9EC2] hover:text-white font-semibold p-2 rounded-lg hover:cursor-pointer hover:transform hover:scale-105 transition-transform duration-200"
-                                                                onClick={() => {
-                                                                    handleViewPrinters(
-                                                                        client.nit
-                                                                    );
-                                                                }}
+                                                            </div>
+                                                        </button>
+
+                                                        {/* Menú desplegable, se muestra condicionalmente */}
+
+                                                        {openMenuNit ===
+                                                            client.nit && (
+                                                            <div
+                                                                ref={menuRef}
+                                                                className={`
+                                                                            origin-top-right absolute right-0 w-80 rounded-md shadow-2xl bg-white z-10
+                                                                            transition-all duration-200
+                                                                            ${
+                                                                                openMenuNit ===
+                                                                                client.nit
+                                                                                    ? "opacity-100 scale-100"
+                                                                                    : "opacity-0 scale-95 pointer-events-none"
+                                                                            }
+                                                                            `}
                                                             >
-                                                                <FiPrinter
-                                                                    size={18}
-                                                                />
-                                                            </button>
-                                                        </Tooltip>
-                                                        <Tooltip text="Ver Contrato">
-                                                            <button
-                                                                className="border-[#8C9EC2] text-yellow-500 hover:bg-[#8C9EC2] hover:text-white font-semibold p-2 rounded-lg hover:cursor-pointer hover:transform hover:scale-105 transition-transform duration-200"
-                                                                onClick={() => {
-                                                                    handleLookForContract(
-                                                                        client.nit
-                                                                    );
-                                                                }}
-                                                            >
-                                                                <FiEye
-                                                                    size={18}
-                                                                />
-                                                            </button>
-                                                        </Tooltip>
-                                                        <Tooltip text="Editar">
-                                                            <button
-                                                                className="border-[#8C9EC2] text-blue-500 hover:bg-[#8C9EC2] hover:text-white font-semibold p-2 rounded-lg hover:cursor-pointer hover:transform hover:scale-105 transition-transform duration-200"
-                                                                onClick={() => {
-                                                                    handleOpenModalEdit(
-                                                                        client
-                                                                    );
-                                                                }}
-                                                            >
-                                                                <FiEdit
-                                                                    size={18}
-                                                                />
-                                                            </button>
-                                                        </Tooltip>
+                                                                <div
+                                                                    className="py-1 "
+                                                                    role="none"
+                                                                >
+                                                                    <div className="w-full text-left px-4 py-2">
+                                                                        <div className="font-semibold text-slate-900">
+                                                                            {
+                                                                                client.nombre
+                                                                            }
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="overflow-hidden m-2">
+                                                                        <div className="h-0.5 w-full bg-gray-900"></div>
+                                                                    </div>
+                                                                    {/* Generar Contador */}
+                                                                    <div className="m-3 hover:scale-105 hover:font-bold transition-all duration-150">
+                                                                        <a
+                                                                            href="#"
+                                                                            onClick={(
+                                                                                e
+                                                                            ) => {
+                                                                                e.preventDefault();
+                                                                                handleLookForCounter(
+                                                                                    client.nit
+                                                                                );
+                                                                                setOpenMenuNit(
+                                                                                    null
+                                                                                );
+                                                                            }}
+                                                                            className="text-slate-700 group flex items-center px-4 py-2 text-sm"
+                                                                            role="menuitem"
+                                                                        >
+                                                                            <div className="bg-blue-100 rounded mr-3 p-2">
+                                                                                <BsCash className="h-5 w-5 text-blue-700" />
+                                                                            </div>
+                                                                            <div>
+                                                                                <div className="font-semibold">
+                                                                                    Generar
+                                                                                    contador
+                                                                                </div>
+                                                                                <div className="text-xs text-slate-500">
+                                                                                    Crear
+                                                                                    nuevo
+                                                                                    reporte
+                                                                                </div>
+                                                                            </div>
+                                                                        </a>
+                                                                    </div>
+
+                                                                    {/* Ver Impresoras */}
+                                                                    <div className="m-3 hover:scale-105 hover:font-bold transition-all duration-150">
+                                                                        <a
+                                                                            href="#"
+                                                                            onClick={(
+                                                                                e
+                                                                            ) => {
+                                                                                e.preventDefault();
+                                                                                handleViewPrinters(
+                                                                                    client.nit
+                                                                                );
+                                                                                setOpenMenuNit(
+                                                                                    null
+                                                                                ); // Cierra el menú
+                                                                            }}
+                                                                            className="text-slate-700 group flex items-center px-4 py-2 text-sm"
+                                                                            role="menuitem"
+                                                                        >
+                                                                            <div className="bg-yellow-100 rounded mr-3 p-2">
+                                                                                <FiPrinter className="h-5 w-5 text-yellow-700" />
+                                                                            </div>
+                                                                            <div>
+                                                                                <div className="font-semibold">
+                                                                                    Ver
+                                                                                    impresoras
+                                                                                </div>
+                                                                                <div className="text-xs text-slate-500">
+                                                                                    Lista
+                                                                                    de
+                                                                                    impresoras
+                                                                                    asociadas
+                                                                                </div>
+                                                                            </div>
+                                                                        </a>
+                                                                    </div>
+                                                                    {/* Ver Contrato */}
+                                                                    <div className="m-3 hover:scale-105 hover:font-bold transition-all duration-150">
+                                                                        <a
+                                                                            href="#"
+                                                                            onClick={(
+                                                                                e
+                                                                            ) => {
+                                                                                e.preventDefault();
+                                                                                handleLookForContract(
+                                                                                    client.nit
+                                                                                );
+                                                                                setOpenMenuNit(
+                                                                                    null
+                                                                                ); // Cierra el menú
+                                                                            }}
+                                                                            className="text-slate-700 group flex items-center px-4 py-2 text-sm"
+                                                                            role="menuitem"
+                                                                        >
+                                                                            <div className="bg-green-100 rounded mr-3 p-2">
+                                                                                <FiBook className="h-5 w-5 text-green-700" />
+                                                                            </div>
+                                                                            <div>
+                                                                                <div className="font-semibold">
+                                                                                    Ver
+                                                                                    contrato
+                                                                                </div>
+                                                                                <div className="text-xs text-slate-500">
+                                                                                    Ver
+                                                                                    contrato
+                                                                                    asociado
+                                                                                </div>
+                                                                            </div>
+                                                                        </a>
+                                                                    </div>
+                                                                    {/* Editar Cliente */}
+                                                                    <div className="m-3 hover:scale-105 hover:font-bold transition-all duration-150">
+                                                                        <a
+                                                                            href="#"
+                                                                            onClick={(
+                                                                                e
+                                                                            ) => {
+                                                                                e.preventDefault();
+                                                                                handleOpenModalEdit(
+                                                                                    client
+                                                                                );
+                                                                                setOpenMenuNit(
+                                                                                    null
+                                                                                ); // Cierra el menú
+                                                                            }}
+                                                                            className="text-slate-700 group flex items-center px-4 py-2 text-sm"
+                                                                            role="menuitem"
+                                                                        >
+                                                                            <div className="bg-purple-100 rounded mr-3 p-2">
+                                                                                <FiEdit className="h-5 w-5 text-purple-700" />
+                                                                            </div>
+                                                                            <div>
+                                                                                <div className="font-semibold">
+                                                                                    Editar
+                                                                                    cliente
+                                                                                </div>
+                                                                                <div className="text-xs text-slate-500">
+                                                                                    Modificar
+                                                                                    datos
+                                                                                    del
+                                                                                    cliente
+                                                                                </div>
+                                                                            </div>
+                                                                        </a>
+                                                                    </div>
+                                                                    {/* Ver contador */}
+                                                                    <div className="m-3 hover:scale-105 hover:font-bold transition-all duration-150">
+                                                                        <a
+                                                                            href="#"
+                                                                            onClick={(
+                                                                                e
+                                                                            ) => {
+                                                                                e.preventDefault();
+                                                                                handleOpenModalEdit(
+                                                                                    client
+                                                                                );
+                                                                                setOpenMenuNit(
+                                                                                    null
+                                                                                ); // Cierra el menú
+                                                                            }}
+                                                                            className="text-slate-700 group flex items-center px-4 py-2 text-sm"
+                                                                            role="menuitem"
+                                                                        >
+                                                                            <div className="bg-green-100 rounded mr-3 p-2">
+                                                                                <FiDollarSign className="h-5 w-5 text-green-700" />
+                                                                            </div>
+                                                                            <div>
+                                                                                <div className="font-semibold">
+                                                                                    Ver
+                                                                                    contadores
+                                                                                </div>
+                                                                                <div className="text-xs text-slate-500">
+                                                                                    Ver
+                                                                                    datos
+                                                                                    de
+                                                                                    los
+                                                                                    contadores
+                                                                                </div>
+                                                                            </div>
+                                                                        </a>
+                                                                    </div>
+                                                                    {/* Facturar */}
+                                                                    <div className="m-3 hover:scale-105 hover:font-bold transition-all duration-150">
+                                                                        <a
+                                                                            href="#"
+                                                                            onClick={(
+                                                                                e
+                                                                            ) => {
+                                                                                e.preventDefault();
+                                                                                handleOpenModalEdit(
+                                                                                    client
+                                                                                );
+                                                                                setOpenMenuNit(
+                                                                                    null
+                                                                                );
+                                                                            }}
+                                                                            className="text-slate-700 group flex items-center px-4 py-2 text-sm"
+                                                                            role="menuitem"
+                                                                        >
+                                                                            <div className="bg-red-100 rounded mr-3 p-2">
+                                                                                <FiDownload className="h-5 w-5 text-red-700" />
+                                                                            </div>
+                                                                            <div>
+                                                                                <div className="font-semibold">
+                                                                                    Facturar
+                                                                                </div>
+                                                                                <div className="text-xs text-slate-500">
+                                                                                    Generar
+                                                                                    factura
+                                                                                </div>
+                                                                            </div>
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </td>
                                             </tr>
@@ -416,7 +675,6 @@ const ClientManagementPage = () => {
                             </div>
                         </main>
                     </div>
-                    {/* 👇 Renderiza el Modal aquí, fuera del flujo principal */}
                     <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
                         <CreateClientForm
                             onClose={handleCloseModal}
@@ -451,7 +709,6 @@ const ClientManagementPage = () => {
                             onSuccess={handleFilePrintersUploadSuccess}
                         />
                     </Modal>
-                    {/* 👇Modal for counters */}
                     <Modal2
                         isOpen={isModalCounterOpen}
                         onClose={handleCloseCounterModal}
