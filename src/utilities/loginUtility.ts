@@ -28,7 +28,7 @@ export const setTokenCookie = (
         return {
             status: false,
             message:
-                "No se pudo guardar el token: no se proporcionó un token válido",
+                "They didn't provide a token, please check your credentials",
             data: null,
         } as OperationType<null>;
     }
