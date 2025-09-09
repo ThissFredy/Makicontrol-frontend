@@ -154,3 +154,15 @@ La aplicación estará disponible en **http://localhost:3000** en un entorno de 
 -----
 
 ## **📂 Estructura del Proyecto**
+
+El repositorio sigue una estructura organizada para facilitar el mantenimiento y la escalabilidad.
+```
+/
+├── app/              # Enrutador y páginas de la aplicación
+├── components/       # Componentes reutilizables de la UI
+│   └── ui/           # Componentes de UI genéricos (botones, inputs, etc.)
+├── services/         # Funciones para las llamadas a la API (ej. counterService.ts)
+├── types/            # Definiciones de interfaces de TypeScript (ej. counterType.ts)
+├── utilities/        # Funciones de ayuda y lógica de validación (ej. validateCounter.ts)
+└── public/           # Archivos estáticos como imágenes y fuentes
+```
