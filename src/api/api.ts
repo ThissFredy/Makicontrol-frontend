@@ -27,7 +27,7 @@ export async function apiService<T>(
 
     if (token) {
         defaultHeaders["Authorization"] = `Bearer ${token}`;
-    }else {
+    } else {
         console.warn("No se encontró token de autenticación.");
     }
     try {
