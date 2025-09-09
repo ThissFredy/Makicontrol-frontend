@@ -10,7 +10,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
  * @param endpoint El endpoint al que se llamará (ej. '/users').
  * @param options Opciones de la petición fetch (method, body, headers, etc.).
  * @returns Una promesa que resuelve a un objeto ApiResponse con los datos o un error.
- */
+*/
 export async function apiService<T>(
     endpoint: string,
     options?: RequestInit
@@ -27,6 +27,8 @@ export async function apiService<T>(
 
     if (token) {
         defaultHeaders["Authorization"] = `Bearer ${token}`;
+    }else {
+        console.warn("No se encontró token de autenticación.");
     }
     try {
         const response = await fetch(url, {

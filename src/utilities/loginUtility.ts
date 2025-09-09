@@ -12,8 +12,8 @@ export const setTokenCookie = (
     if (data.token) {
         Cookies.set(TOKEN_KEY, data.token, {
             expires: 3,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "strict",
+            // secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
         });
 
         useAuthStore.getState().setToken(data.token);
