@@ -28,7 +28,7 @@ export const setTokenCookie = (
         return {
             status: false,
             message:
-                "They didn't provide a token, please check your credentials",
+                "No token was provided, please check your credentials",
             data: null,
         } as OperationType<null>;
     }
