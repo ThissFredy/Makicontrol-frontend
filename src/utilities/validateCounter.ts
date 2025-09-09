@@ -6,7 +6,7 @@ export function validateCounterCreateArray(
 ): ErrorFieldType[] {
     const errors: ErrorFieldType[] = [];
 
-    var flag: boolean = false;
+    let flag: boolean = false;
 
     for (const item of data) {
         if (typeof item.cantidad !== "string" || !/^\d+$/.test(item.cantidad)) {
@@ -28,7 +28,7 @@ export function validateCounterCreateArray(
 }
 
 export function validateCounterCreate(data: RegisterCounterType) {
-    var errors: ErrorFieldType = {
+    let errors: ErrorFieldType = {
         isError: false,
         field: {
             name: "",
@@ -36,7 +36,7 @@ export function validateCounterCreate(data: RegisterCounterType) {
         },
     };
 
-    var flag: boolean = false;
+    let flag: boolean = false;
 
     if (typeof data.cantidad !== "string" || !/^\d+$/.test(data.cantidad)) {
         flag = true;

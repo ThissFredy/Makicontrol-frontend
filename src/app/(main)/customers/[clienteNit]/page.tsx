@@ -8,7 +8,7 @@ import {
 import type { printerType } from "@/types/printerType";
 import { useParams } from "next/navigation";
 import { toast } from "react-hot-toast";
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { useState } from "react";
 import { Modal } from "@/components/ui/Modal";
 import Link from "next/link";
@@ -33,24 +33,21 @@ const ContractDetails = () => {
     );
     const [error, setError] = useState<string>("");
 
-    const fetchContract = async () => {
+    const fetchContract = useCallback(async () => {
         const response = await getPrintersByNitService(
             clienteNit?.toString() || ""
         );
-        console.log("Response from getPrintersByNitService:", response);
         if (response.status) {
-            console.log("Contract fetched successfully:", response);
             setPrinters(response.data);
         } else {
-            console.error("Error fetching contract:", response.message);
             setError(response.message);
         }
         setLoading(false);
-    };
+    }, [clienteNit]);
 
     useEffect(() => {
         fetchContract();
-    }, [clienteNit, isModalCreateOpen]);
+    }, [fetchContract, isModalCreateOpen]);
 
     const handleOpenModal = (printer: printerType) => {
         setSelectedContract(printer);
