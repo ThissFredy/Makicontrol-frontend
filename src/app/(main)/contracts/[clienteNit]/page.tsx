@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import { useCallback, useState } from "react";
 import {
     IoChevronBack,
     IoDocumentTextOutline,
@@ -13,7 +13,6 @@ import { CreateDetailsContract } from "@/components/ui/CreateDetailsContract";
 import { useParams } from "next/navigation";
 import { toast } from "react-hot-toast";
 import { useEffect } from "react";
-import { useState } from "react";
 import { Modal } from "@/components/ui/Modal";
 import Link from "next/link";
 import { FiPenTool } from "react-icons/fi";
@@ -21,9 +20,9 @@ import { Tooltip } from "@/components/ui/Tooltip";
 
 const ContractDetails = () => {
     const { clienteNit } = useParams();
-    const [param] = React.useState<string>(clienteNit as string);
+    const [param] = useState<string>(clienteNit as string);
 
-    const [contracts, setContracts] = React.useState<ContractDetailType[]>([]);
+    const [contracts, setContracts] = useState<ContractDetailType[]>([]);
 
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -32,23 +31,21 @@ const ContractDetails = () => {
         useState<ContractDetailType>({} as ContractDetailType);
     const [error, setError] = useState<string>("");
 
-    const fetchContract = async () => {
+    const fetchContract = useCallback(async () => {
         const response = await getContractDetailsByIdService(
             Number(clienteNit)
         );
         if (response.status) {
-            console.log("Contract fetched successfully:", response);
             setContracts(response.data);
         } else {
-            console.error("Error fetching contract:", response.message);
             setError(response.message);
         }
         setLoading(false);
-    };
+    }, [clienteNit]);
 
     useEffect(() => {
         fetchContract();
-    }, [clienteNit, isModalCreateOpen]);
+    }, [clienteNit]);
 
     const handleOpenModal = (contract: ContractDetailType) => {
         setSelectedContract(contract);

@@ -42,6 +42,8 @@ const ClientManagementPage = () => {
     const [isModalTakeCounterOpen, setIsModalTakeCounterOpen] = useState(false);
     const [openMenuNit, setOpenMenuNit] = useState<number | null>(null);
     const [counterUser, setCounterUser] = useState<string>("");
+    const [menuPositionClass, setMenuPositionClass] =
+        useState("origin-top-right");
     const menuRef = useRef<HTMLDivElement | null>(null);
     const menuButtonRefs = useRef<(HTMLButtonElement | null)[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
@@ -65,10 +67,10 @@ const ClientManagementPage = () => {
     const handleOpenModalFile = () => setIsModalOpenFile(true);
     const handleCloseModalFile = () => setIsModalOpenFile(false);
 
-    const handleOpenCounterModal = () => setIsModalCounterOpen(true);
+    // const handleOpenCounterModal = () => setIsModalCounterOpen(true);
     const handleCloseCounterModal = () => setIsModalCounterOpen(false);
 
-    const handleOpenTakeCounterModal = () => setIsModalTakeCounterOpen(true);
+    // const handleOpenTakeCounterModal = () => setIsModalTakeCounterOpen(true);
     const handleCloseTakeCounterModal = () => setIsModalTakeCounterOpen(false);
 
     const handleOpenPrintersFile = () => setIsModalPrintersFile(true);
@@ -89,7 +91,7 @@ const ClientManagementPage = () => {
         fetchClients();
     };
 
-    const handleDownloadRecipt = (nit: number) => {};
+    // const handleDownloadRecipt = (nit: number) => {};
 
     const handleCloseModalEdit = () => {
         setIsModalEditOpen(false);
@@ -211,9 +213,8 @@ const ClientManagementPage = () => {
         }
     };
 
-    // * UseEffect for listening the menuRef
+    // * UseEffect for listening the menuRef and calculating its position
     useEffect(() => {
-        // Función para cerrar el menú si se hace clic fuera de él
         const handleClickOutside = (event: MouseEvent) => {
             const openMenuIndex = clients?.findIndex(
                 (client) => client.nit === openMenuNit
@@ -239,21 +240,44 @@ const ClientManagementPage = () => {
             }
         };
 
-        const handleScroll = () => {
-            setOpenMenuNit(null);
-        };
-
         if (openMenuNit !== null) {
             document.addEventListener("mousedown", handleClickOutside);
-            window.addEventListener("scroll", handleScroll, true);
+
+            setTimeout(() => {
+                if (menuRef.current) {
+                    const menuRect = menuRef.current.getBoundingClientRect();
+
+                    // --- INICIO DEL CAMBIO ---
+
+                    // 1. Buscamos el footer por su ID.
+                    const footer = document.querySelector("#app-footer");
+
+                    // 2. Determinamos el límite. Si el footer existe, el límite es su borde superior.
+                    //    Si no existe, usamos la altura de la ventana como antes (esto hace el código más robusto).
+                    const boundary = footer
+                        ? footer.getBoundingClientRect().top
+                        : window.innerHeight;
+
+                    // 3. Comparamos la parte inferior del menú con el nuevo límite.
+                    if (menuRect.bottom + 500 > boundary) {
+                        // --- FIN DEL CAMBIO ---
+
+                        // ...le decimos que se abra hacia arriba
+                        setMenuPositionClass(
+                            "origin-bottom-right bottom-full mb-2"
+                        );
+                    } else {
+                        // ...de lo contrario, usamos la posición por defecto (hacia abajo)
+                        setMenuPositionClass("origin-top-right");
+                    }
+                }
+            }, 0);
         }
 
-        // Función de limpieza: se ejecuta cuando el componente se desmonta o el menú se cierra
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
-            window.removeEventListener("scroll", handleScroll, true);
         };
-    }, [openMenuNit]);
+    }, [openMenuNit, clients]);
 
     return (
         <div className="min-h-screen p-4 sm:p-8">
@@ -450,15 +474,16 @@ const ClientManagementPage = () => {
                                                             <div
                                                                 ref={menuRef}
                                                                 className={`
-                                                                            origin-top-right absolute right-0 w-80 rounded-md shadow-2xl bg-white z-10
-                                                                            transition-all duration-200
-                                                                            ${
-                                                                                openMenuNit ===
-                                                                                client.nit
-                                                                                    ? "opacity-100 scale-100"
-                                                                                    : "opacity-0 scale-95 pointer-events-none"
-                                                                            }
-                                                                            `}
+                                                                        absolute right-0 w-80 rounded-md shadow-2xl bg-white z-10
+                                                                        transition-all duration-200
+                                                                        ${menuPositionClass}
+                                                                        ${
+                                                                            openMenuNit ===
+                                                                            client.nit
+                                                                                ? "opacity-100 scale-100"
+                                                                                : "opacity-0 scale-95 pointer-events-none"
+                                                                        }
+                                                                    `}
                                                             >
                                                                 <div
                                                                     className="py-1 "

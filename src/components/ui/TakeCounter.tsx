@@ -132,8 +132,11 @@ export const TakeCounter = ({
                     response.message || "Error al registrar contadores"
                 );
             }
-        } catch (error) {
-            toast.error("Error en la conexión al registrar contadores.");
+        } catch (e) {
+            toast.error(
+                "Error en la conexión al registrar contadores: " +
+                    (e as Error).message
+            );
         } finally {
             setLoading(false);
         }

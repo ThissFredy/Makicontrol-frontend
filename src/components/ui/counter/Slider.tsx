@@ -58,8 +58,8 @@ export const Slider = ({
                     year
                 );
             else toast.error(response.message || "Error al cargar contadores");
-        } catch (error) {
-            toast.error("Error al cargar contadores:");
+        } catch (e) {
+            toast.error("Error al cargar contadores: " + (e as Error).message);
         }
         setLoading(false);
     };
