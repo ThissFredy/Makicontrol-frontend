@@ -34,8 +34,7 @@ export async function apiService<T>(
                 "Error de autenticación detectado (401/403). Deslogueando..."
             );
             await logoutApi();
-            window.location.href = "/login"; // Redirige al login
-            // Devolvemos una promesa pendiente para detener la ejecución del código posterior
+            window.location.href = "/login";
             return new Promise(() => {});
         }
         const data = await response.json();

@@ -7,7 +7,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
  * Función genérica para manejar todas las peticiones al proxy.
  */
 async function handler(request: NextRequest) {
-    // 1. Obtener el token de la cookie. La lógica es la misma para todos los métodos.
+    // Obtener el token de la cookie. La lógica es la misma para todos los métodos.
     const token = request.cookies.get("auth-token")?.value;
     if (!token) {
         return NextResponse.json(
@@ -20,13 +20,13 @@ async function handler(request: NextRequest) {
     const path = request.nextUrl.pathname;
     const backendUrl = path;
 
-    // 3. Preparar los encabezados para el backend.
+    // Preparar los encabezados para el backend.
     const headers = new Headers({
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
     });
 
-    // 4. Manejar el body solo si es necesario (POST, PUT, etc.).
+    // Manejar el body solo si es necesario (POST, PUT, etc.).
     // Esto evita errores en peticiones GET o DELETE sin cuerpo.
     let body: BodyInit | null = null;
     if (["POST", "PUT", "PATCH"].includes(request.method)) {

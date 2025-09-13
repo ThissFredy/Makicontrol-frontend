@@ -773,6 +773,7 @@ const ClientManagementPage = () => {
                             onSuccess={handleFilePrintersUploadSuccess}
                         />
                     </Modal>
+                    {/* <CreateCounter /> */}
                     <Modal2
                         isOpen={isModalCounterOpen}
                         onClose={handleCloseCounterModal}
