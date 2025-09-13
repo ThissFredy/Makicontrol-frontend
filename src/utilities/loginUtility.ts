@@ -3,8 +3,6 @@ import type { LoginResponse } from "@/types/loginType";
 import type { OperationType } from "@/types/operationType";
 import type { UserToken } from "@/types/userType";
 import { useAuthStore } from "@/store/authStore";
-import { NextRequest } from "next/server";
-import { get, request } from "http";
 
 const TOKEN_KEY = "auth-token";
 

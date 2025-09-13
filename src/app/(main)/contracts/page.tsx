@@ -10,8 +10,6 @@ import type { ContractType } from "@/types/contractType";
 import { CreateContractsFromFile } from "@/components/ui/CreateContractFromFile";
 import { CreateDetailsFromFile } from "@/components/ui/CreateDetailsFromFile";
 import { useSearchParams } from "next/navigation";
-import { Tooltip } from "@/components/ui/Tooltip";
-
 import {
     searchCustomerByNitAndStatusService,
     searchCustomerByNITService,

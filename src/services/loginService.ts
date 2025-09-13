@@ -27,7 +27,7 @@ export async function loginService(
             data: null,
         } as OperationType<null>;
     } catch (error) {
-        console.error("Error en loginService:");
+        console.error("Error en loginService:", error);
         return {
             status: false,
             message: "Error al iniciar sesión",

@@ -18,7 +18,7 @@ async function handler(request: NextRequest) {
 
     // 2. Construir la URL completa del backend, incluyendo los parámetros de búsqueda.
     const path = request.nextUrl.pathname;
-    const backendUrl = path;
+    const backendUrl = `${API_BASE_URL}${path}`;
 
     // Preparar los encabezados para el backend.
     const headers = new Headers({
@@ -34,10 +34,10 @@ async function handler(request: NextRequest) {
             // Pasamos el cuerpo de la petición original al backend.
             body = JSON.stringify(await request.json());
         } catch (error) {
-            // El body podría estar vacío o no ser un JSON válido.
+            console.error("[NEXTJS] Invalid JSON body", error);
             return NextResponse.json(
-                { message: "Invalid JSON body" },
-                { status: 400 }
+                { message: "[NEXTJS] Invalid JSON body" },
+                { status: 400 },
             );
         }
     }
@@ -61,9 +61,8 @@ async function handler(request: NextRequest) {
     return NextResponse.json(data, { status: response.status });
 }
 
-// Ahora, cada export es una simple llamada al handler. ¡Mucho más limpio!
 export const GET = handler;
 export const POST = handler;
 export const PUT = handler;
 export const DELETE = handler;
-export const PATCH = handler; // Añadimos PATCH por si lo necesitas en el futuro.
+export const PATCH = handler;

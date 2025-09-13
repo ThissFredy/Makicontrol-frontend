@@ -79,6 +79,7 @@ const ClientManagementPage = () => {
     // const handleOpenTakeCounterModal = () => setIsModalTakeCounterOpen(true);
     const handleCloseTakeCounterModal = () => setIsModalTakeCounterOpen(false);
 
+    // Download Receipt
     const handleOpenDownloadReceiptModal = () =>
         setIsModalDownloadReceiptOpen(true);
     const handleCloseDownloadReceiptModal = () =>
