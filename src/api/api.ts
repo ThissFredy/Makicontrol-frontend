@@ -1,9 +1,8 @@
 import { ApiResponse } from "@/types/apiType";
-import { getTokenCookie } from "@/utilities/loginUtility"; // Importamos la función para obtener la cookie
+import { getTokenCookie} from "@/utilities/loginUtility"; // Importamos la función para obtener la cookie
 import { removeTokenCookie } from "@/utilities/loginUtility";
 
-// Obtén la URL base de la API desde las variables de entorno
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_BASE_URL = "/api";
 
 /**
  * Realiza una petición a la API de forma genérica y tipada.
@@ -16,7 +15,6 @@ export async function apiService<T>(
     options?: RequestInit
 ): Promise<ApiResponse<T>> {
     const url = `${API_BASE_URL}${endpoint}`;
-    const token = getTokenCookie();
 
     const defaultHeaders: Record<string, string> = {
         "Content-Type": "application/json",
@@ -25,11 +23,6 @@ export async function apiService<T>(
 
     console.log("Llamando a la API:", url, "con opciones:", options);
 
-    if (token) {
-        defaultHeaders["Authorization"] = `Bearer ${token}`;
-    } else {
-        console.warn("Authentication token not found");
-    }
     try {
         const response = await fetch(url, {
             ...options,

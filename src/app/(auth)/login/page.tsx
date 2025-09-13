@@ -54,7 +54,6 @@ const LoginForm = () => {
             toast.success(response.message || "Inicio de sesión exitoso");
         } else {
             toast.error(response.message || "Error al iniciar sesión");
-            console.log("Toast2");
         }
     };
 
