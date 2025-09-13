@@ -1,7 +1,13 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { FiChevronDown, FiFileText, FiLogOut, FiUsers } from "react-icons/fi";
+import {
+    FiActivity,
+    FiChevronDown,
+    FiFileText,
+    FiLogOut,
+    FiUsers,
+} from "react-icons/fi";
 import { useState, useRef } from "react";
 import { removeTokenCookie } from "@/utilities/loginUtility";
 import { toast } from "react-hot-toast";
@@ -56,6 +62,13 @@ const Header2 = () => {
                             <FiFileText size={18} />
                             <span className="">Contratos</span>
                         </Link>
+                        <Link
+                            href="/reports"
+                            className="flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors hover:text-white duration-200 hover:transform hover:scale-105 transition-transform duration-200"
+                        >
+                            <FiActivity size={18} />
+                            <span className="">Reportes</span>
+                        </Link>
                     </nav>
                     <nav className="flex items-center space-x-6 ml-10 md:hidden text-[#8C9EC2]">
                         <Link
@@ -70,6 +83,12 @@ const Header2 = () => {
                             className="flex items-center space-x-2 px-4 py-2 hover:text-white rounded-lg transition-colors duration-200"
                         >
                             <FiFileText size={18} />
+                        </Link>
+                        <Link
+                            href="/reports"
+                            className="flex items-center space-x-2 px-4 py-2 hover:text-white rounded-lg transition-colors duration-200"
+                        >
+                            <FiActivity size={18} />
                         </Link>
                     </nav>
                 </div>

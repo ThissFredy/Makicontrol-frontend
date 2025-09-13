@@ -1,22 +1,15 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/Button";
-import { getReadyService } from "@/services/counterService";
-import type { GetReadyType } from "@/types/counterType";
+import { downloadReceiptService } from "@/services/customerService";
 import { toast } from "react-hot-toast";
 
 interface AddCounters1Props {
-    onSuccess: (
-        message: string,
-        response: GetReadyType[],
-        month: number,
-        year: number
-    ) => void;
+    onSuccess: (message: string) => void;
     clientNit: string;
     Titulo?: string;
     Subtitulo?: string;
 }
 
-// --- Nombres de los meses para mostrar en la UI ---
 const monthNames = [
     "Enero",
     "Febrero",
@@ -38,7 +31,6 @@ export const SliderCheckout = ({
     Titulo = "Registro de Contadores Mensuales",
     Subtitulo = "Seleccione un periodo para ingresar las lecturas",
 }: AddCounters1Props) => {
-    // --- Estados para guardar el año y mes seleccionados ---
     const currentYear = new Date().getFullYear();
     const [loading, setLoading] = useState(false);
     const currentMonth = new Date().getMonth() + 1;
@@ -46,18 +38,31 @@ export const SliderCheckout = ({
     const [year, setYear] = useState(currentYear);
     const [month, setMonth] = useState(currentMonth);
 
-    const handleLoadCounters = async () => {
+    const handleDownloadReceipt = async () => {
         setLoading(true);
         try {
-            const response = await getReadyService(clientNit, year, month);
-            if (response.status)
+            const response = await downloadReceiptService(
+                parseInt(clientNit),
+                year,
+                month
+            );
+            if (response.status && response.data) {
+                const { blob, estadoFactura } = response.data;
+
+                const fileURL = URL.createObjectURL(blob);
+                window.open(fileURL, "_blank");
+
+                setTimeout(() => {
+                    URL.revokeObjectURL(fileURL);
+                }, 100);
+
                 onSuccess(
-                    "Contadores cargados con éxito",
-                    response.data,
-                    month,
-                    year
+                    estadoFactura
+                        ? "Copia de factura descargada"
+                        : "Factura generada correctamente"
                 );
-            else toast.error(response.message || "Error al cargar contadores");
+            } else
+                toast.error(response.message || "Error al cargar contadores");
         } catch (e) {
             toast.error("Error al cargar contadores: " + (e as Error).message);
         }
@@ -126,7 +131,7 @@ export const SliderCheckout = ({
             <div className="mt-10">
                 <Button
                     className="w-full"
-                    onClick={handleLoadCounters}
+                    onClick={handleDownloadReceipt}
                     disabled={loading}
                 >
                     {loading ? "Cargando..." : "Cargar Contadores"}

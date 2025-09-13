@@ -73,6 +73,49 @@ export async function apiServiceFile<T>(
     endpoint: string,
     options?: RequestInit
 ): Promise<ApiResponse<T>> {
-    // Simplemente reutilizamos la lógica de apiService que ya incluye el manejo de errores.
     return apiService<T>(endpoint, options);
+}
+
+/**
+ * Servicio de API especializado para descargar archivos.
+ */
+export async function downloadApi(
+    endpoint: string,
+    options?: RequestInit
+): Promise<Response> {
+    const url = `/api${endpoint}`; // Asumiendo que llamas a tu proxy de Next.js
+
+    const defaultHeaders: Record<string, string> = {
+        ...(options?.headers as Record<string, string>),
+    };
+
+    console.log(
+        "Llamando a la API de descarga (proxy):",
+        url,
+        "con opciones:",
+        options
+    );
+
+    try {
+        const response = await fetch(url, {
+            ...options,
+            headers: defaultHeaders,
+            credentials: "include",
+        });
+
+        if (response.status === 401 || response.status === 403) {
+            console.log(
+                "Error de autenticación detectado (401/403). Deslogueando..."
+            );
+            await logoutApi();
+            window.location.href = "/login";
+            return new Promise(() => {});
+        }
+
+        return response;
+    } catch (error) {
+        console.error("Error de red en apiDownloadService:", error);
+        // En caso de un error de red, lanzamos la excepción para que el servicio la maneje.
+        throw new Error("Error de red o servidor al intentar la descarga.");
+    }
 }
