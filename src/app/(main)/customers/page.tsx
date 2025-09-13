@@ -1,6 +1,9 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
-import { getCustomersService as getCustomers } from "@/services/customerService";
+import {
+    getCustomersService as getCustomers,
+    downloadReceiptService,
+} from "@/services/customerService";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { CreateClientForm } from "@/components/ui/CreateClientForm";
@@ -11,6 +14,7 @@ import { useDebounce } from "@/utilities/useDebounce";
 import { searchCustomerByNameOrNIT } from "@/services/customerService";
 import { CreateCounter } from "@/components/ui/CreateCounter";
 import { TakeCounter } from "@/components/ui/TakeCounter";
+import { SliderCheckout } from "@/components/ui/Checkout/Slider";
 import { CustomerType } from "@/types/customerType";
 import {
     FiPlus,
@@ -40,6 +44,8 @@ const ClientManagementPage = () => {
     const [isModalOpenFile, setIsModalOpenFile] = useState(false);
     const [isModalCounterOpen, setIsModalCounterOpen] = useState(false);
     const [isModalTakeCounterOpen, setIsModalTakeCounterOpen] = useState(false);
+    const [isModalDownloadReceiptOpen, setIsModalDownloadReceiptOpen] =
+        useState(false);
     const [openMenuNit, setOpenMenuNit] = useState<number | null>(null);
     const [counterUser, setCounterUser] = useState<string>("");
     const [menuPositionClass, setMenuPositionClass] =
@@ -73,6 +79,11 @@ const ClientManagementPage = () => {
     // const handleOpenTakeCounterModal = () => setIsModalTakeCounterOpen(true);
     const handleCloseTakeCounterModal = () => setIsModalTakeCounterOpen(false);
 
+    const handleOpenDownloadReceiptModal = () =>
+        setIsModalDownloadReceiptOpen(true);
+    const handleCloseDownloadReceiptModal = () =>
+        setIsModalDownloadReceiptOpen(false);
+
     const handleOpenPrintersFile = () => setIsModalPrintersFile(true);
     const handleClosePrintersFile = () => setIsModalPrintersFile(false);
 
@@ -91,7 +102,17 @@ const ClientManagementPage = () => {
         fetchClients();
     };
 
-    // const handleDownloadRecipt = (nit: number) => {};
+    // Success after Receipt Download
+    const handleDownloadReceiptSuccess = (message: string) => {
+        toast.success(message);
+        fetchClients();
+    };
+
+    // Download Recipt
+    const handleDownloadRecipt = (nit: number) => {
+        setIsModalDownloadReceiptOpen(true);
+        setCounterUser(nit.toString());
+    };
 
     const handleCloseModalEdit = () => {
         setIsModalEditOpen(false);
@@ -682,8 +703,8 @@ const ClientManagementPage = () => {
                                                                                 e
                                                                             ) => {
                                                                                 e.preventDefault();
-                                                                                handleOpenModalEdit(
-                                                                                    client
+                                                                                handleDownloadRecipt(
+                                                                                    client.nit
                                                                                 );
                                                                                 setOpenMenuNit(
                                                                                     null
@@ -771,6 +792,18 @@ const ClientManagementPage = () => {
                             onClose={handleCloseTakeCounterModal}
                             onSuccess={handleTakeCounterSuccess}
                             clienteNit={counterUser}
+                        />
+                    </Modal2>
+                    {/* Download Receipt */}
+                    <Modal2
+                        isOpen={isModalDownloadReceiptOpen}
+                        onClose={handleCloseDownloadReceiptModal}
+                    >
+                        <SliderCheckout
+                            onSuccess={handleDownloadReceiptSuccess}
+                            clientNit={counterUser}
+                            Titulo="Facturación de Servicios"
+                            Subtitulo="Seleccione un periodo para generar la factura"
                         />
                     </Modal2>
                 </div>

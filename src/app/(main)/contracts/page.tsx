@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, Suspense } from "react";
+import React, { useEffect, useState, Suspense, useRef } from "react";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { CreateContractForm } from "@/components/ui/CreateContractForm";
@@ -25,6 +25,7 @@ import {
     FiArrowDown,
     FiFile,
     FiCheck,
+    FiMoreHorizontal,
     FiX,
 } from "react-icons/fi";
 import { toast } from "react-hot-toast";
@@ -42,6 +43,11 @@ const ContractsPage = () => {
     const [isModalOpenFile, setIsModalOpenFile] = useState(false);
     const [isModalOpenDetailsFile, setIsModalOpenDetailsFile] = useState(false);
     const [loading, setLoading] = React.useState<boolean>(true);
+    const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+    const [menuPositionClass, setMenuPositionClass] =
+        useState("origin-top-right");
+    const menuRef = useRef<HTMLDivElement | null>(null);
+    const menuButtonRefs = useRef<(HTMLButtonElement | null)[]>([]);
     const [loadingContracts, setLoadingContracts] = useState<boolean>(false);
     const [selectedContract, setSelectedContract] = useState<ContractType>({
         clienteNit: "",
@@ -229,6 +235,59 @@ const ContractsPage = () => {
 
         loadContracts();
     }, [debouncedSearchTerms, loading]);
+
+    // * Handle click outside for menu
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            const openMenuIndex = contracts?.findIndex(
+                (c) => c.clienteNit === openMenuId
+            );
+
+            const openMenuButton =
+                openMenuIndex !== -1 && openMenuIndex !== undefined
+                    ? menuButtonRefs.current[openMenuIndex]
+                    : null;
+
+            if (
+                openMenuButton &&
+                openMenuButton.contains(event.target as Node)
+            ) {
+                return;
+            }
+
+            if (
+                menuRef.current &&
+                !menuRef.current.contains(event.target as Node)
+            ) {
+                setOpenMenuId(null);
+            }
+        };
+
+        if (openMenuId !== null) {
+            document.addEventListener("mousedown", handleClickOutside);
+            setTimeout(() => {
+                if (menuRef.current) {
+                    const menuRect = menuRef.current.getBoundingClientRect();
+                    const footer = document.querySelector("#app-footer");
+                    const boundary = footer
+                        ? footer.getBoundingClientRect().top
+                        : window.innerHeight;
+                    if (menuRect.bottom + 200 > boundary) {
+                        // Se ajustó el offset
+                        setMenuPositionClass(
+                            "origin-bottom-right bottom-full mb-2"
+                        );
+                    } else {
+                        setMenuPositionClass("origin-top-right");
+                    }
+                }
+            }, 0);
+        }
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [openMenuId, contracts]);
 
     const fetchContracts = async () => {
         try {
@@ -536,34 +595,136 @@ const ContractsPage = () => {
                                                 </td>
                                                 <td className="px-2 py-4 justify-center">
                                                     <div className="flex justify-center">
-                                                        <Tooltip text="Ver Detalles">
+                                                        <div className="relative inline-block text-left">
                                                             <button
-                                                                className="border-[#8C9EC2] text-yellow-500 hover:bg-[#8C9EC2] p-2 hover:text-white font-semibold rounded-lg hover:cursor-pointer hover:transform hover:scale-105 transition-transform duration-200"
+                                                                ref={(el) => {
+                                                                    menuButtonRefs.current[
+                                                                        index
+                                                                    ] = el;
+                                                                }}
                                                                 onClick={() =>
-                                                                    handleViewDetails(
-                                                                        contract.clienteNit
+                                                                    setOpenMenuId(
+                                                                        openMenuId ===
+                                                                            contract.clienteNit
+                                                                            ? null
+                                                                            : contract.clienteNit
                                                                     )
                                                                 }
+                                                                className="p-2 rounded-full focus:outline-none"
                                                             >
-                                                                <FiEye
-                                                                    size={18}
-                                                                />
+                                                                <div className="border border-slate-300 hover:bg-slate-700 hover:transform hover:scale-120 hover:text-slate-100 transition-all duration-150 p-1.5 hover:cursor-pointer rounded-full shadow-md">
+                                                                    <FiMoreHorizontal
+                                                                        size={
+                                                                            20
+                                                                        }
+                                                                    />
+                                                                </div>
                                                             </button>
-                                                        </Tooltip>
-                                                        <Tooltip text="Editar">
-                                                            <button
-                                                                className="border-[#8C9EC2] text-blue-500 hover:bg-[#8C9EC2] p-2 hover:text-white font-semibold rounded-lg hover:cursor-pointer hover:transform hover:scale-105 transition-transform duration-200"
-                                                                onClick={() => {
-                                                                    handleOpenModalEdit(
-                                                                        contract
-                                                                    );
-                                                                }}
-                                                            >
-                                                                <FiEdit
-                                                                    size={18}
-                                                                />
-                                                            </button>
-                                                        </Tooltip>
+
+                                                            {openMenuId ===
+                                                                contract.clienteNit && (
+                                                                <div
+                                                                    ref={
+                                                                        menuRef
+                                                                    }
+                                                                    className={`absolute right-0 w-80 rounded-md shadow-2xl bg-white z-10 transition-all duration-200 ${menuPositionClass} ${
+                                                                        openMenuId ===
+                                                                        contract.clienteNit
+                                                                            ? "opacity-100 scale-100"
+                                                                            : "opacity-0 scale-95 pointer-events-none"
+                                                                    }`}
+                                                                >
+                                                                    <div
+                                                                        className="py-1"
+                                                                        role="none"
+                                                                    >
+                                                                        <div className="w-full text-left px-4 py-2">
+                                                                            <div className="font-semibold text-slate-900">
+                                                                                Contrato:{" "}
+                                                                                {
+                                                                                    contract.clienteNit
+                                                                                }
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="overflow-hidden m-2">
+                                                                            <div className="h-0.5 w-full bg-gray-900"></div>
+                                                                        </div>
+
+                                                                        {/* Acción: Ver Detalles */}
+                                                                        <div className="m-3 hover:scale-105 hover:font-bold transition-all duration-150">
+                                                                            <a
+                                                                                href="#"
+                                                                                onClick={(
+                                                                                    e
+                                                                                ) => {
+                                                                                    e.preventDefault();
+                                                                                    handleViewDetails(
+                                                                                        contract.clienteNit
+                                                                                    );
+                                                                                    setOpenMenuId(
+                                                                                        null
+                                                                                    );
+                                                                                }}
+                                                                                className="text-slate-700 group flex items-center px-4 py-2 text-sm"
+                                                                                role="menuitem"
+                                                                            >
+                                                                                <div className="bg-yellow-100 rounded mr-3 p-2">
+                                                                                    <FiEye className="h-5 w-5 text-yellow-700" />
+                                                                                </div>
+                                                                                <div>
+                                                                                    <div className="font-semibold">
+                                                                                        Ver
+                                                                                        Detalles
+                                                                                    </div>
+                                                                                    <div className="text-xs text-slate-500">
+                                                                                        Inspeccionar
+                                                                                        detalles
+                                                                                        del
+                                                                                        contrato
+                                                                                    </div>
+                                                                                </div>
+                                                                            </a>
+                                                                        </div>
+
+                                                                        {/* Acción: Editar Contrato */}
+                                                                        <div className="m-3 hover:scale-105 hover:font-bold transition-all duration-150">
+                                                                            <a
+                                                                                href="#"
+                                                                                onClick={(
+                                                                                    e
+                                                                                ) => {
+                                                                                    e.preventDefault();
+                                                                                    handleOpenModalEdit(
+                                                                                        contract
+                                                                                    );
+                                                                                    setOpenMenuId(
+                                                                                        null
+                                                                                    );
+                                                                                }}
+                                                                                className="text-slate-700 group flex items-center px-4 py-2 text-sm"
+                                                                                role="menuitem"
+                                                                            >
+                                                                                <div className="bg-purple-100 rounded mr-3 p-2">
+                                                                                    <FiEdit className="h-5 w-5 text-purple-700" />
+                                                                                </div>
+                                                                                <div>
+                                                                                    <div className="font-semibold">
+                                                                                        Editar
+                                                                                        Contrato
+                                                                                    </div>
+                                                                                    <div className="text-xs text-slate-500">
+                                                                                        Modificar
+                                                                                        datos
+                                                                                        del
+                                                                                        contrato
+                                                                                    </div>
+                                                                                </div>
+                                                                            </a>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 </td>
                                             </tr>

@@ -6,7 +6,11 @@ import { getCustomers } from "@/api/customerApi";
 import { createCustomerApi } from "@/api/customerApi";
 import { updateCustomerApi, uploadCustomersFileApi } from "@/api/customerApi";
 import { OperationType } from "@/types/operationType";
-import { getCustomerByNIT, getCustomerByName } from "@/api/customerApi";
+import {
+    getCustomerByNIT,
+    getCustomerByName,
+    downloadReceiptApi,
+} from "@/api/customerApi";
 /**
  * Fetches the list of customers from the API.
  * @returns A promise that resolves to an array of CustomerType.
@@ -166,6 +170,37 @@ export async function uploadCustomersFileService(
 ): Promise<OperationType<null>> {
     try {
         const response = await uploadCustomersFileApi(formData);
+
+        if (!response.success) {
+            return {
+                status: false,
+                message: response.message || "Error al procesar el archivo",
+                data: null,
+            } as OperationType<null>;
+        }
+
+        return {
+            status: response.success,
+            message: response.message || "Archivo procesado exitosamente",
+            data: null,
+        } as OperationType<null>;
+    } catch (error) {
+        console.error("Error en el servicio de subida de archivo:", error);
+        return {
+            status: false,
+            message: "Error al procesar el archivo",
+            data: null,
+        } as OperationType<null>;
+    }
+}
+
+export async function downloadReceiptService(
+    nit: number,
+    anio: number,
+    month: number
+): Promise<OperationType<null>> {
+    try {
+        const response = await downloadReceiptApi(nit, anio, month);
 
         if (!response.success) {
             return {

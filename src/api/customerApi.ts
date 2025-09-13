@@ -76,3 +76,18 @@ export async function uploadCustomersFileApi(
 
     return response;
 }
+
+export async function downloadReceiptApi(
+    nit: number,
+    anio: number,
+    month: number
+): Promise<ApiResponse<Blob>> {
+    const response = await apiService<Blob>(
+        `/api/factura/generar?clienteNit=${nit}&anio=${anio}&mes=${month}`,
+        {
+            method: "GET",
+        }
+    );
+
+    return response;
+}

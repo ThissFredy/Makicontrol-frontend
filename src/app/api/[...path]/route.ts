@@ -17,9 +17,8 @@ async function handler(request: NextRequest) {
     }
 
     // 2. Construir la URL completa del backend, incluyendo los parámetros de búsqueda.
-    const path = request.nextUrl.pathname.replace("/api", "");
-    const searchParams = request.nextUrl.search;
-    const backendUrl = `${API_BASE_URL}${path}${searchParams}`;
+    const path = request.nextUrl.pathname;
+    const backendUrl = path;
 
     // 3. Preparar los encabezados para el backend.
     const headers = new Headers({
