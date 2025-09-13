@@ -10,10 +10,13 @@ async function handler(request: NextRequest) {
     // 1. Obtener el token de la cookie. La lógica es la misma para todos los métodos.
     const token = request.cookies.get("auth-token")?.value;
     if (!token) {
-        return NextResponse.json({ message: "Not authorized" }, { status: 401 });
+        return NextResponse.json(
+            { message: "Not authorized" },
+            { status: 401 }
+        );
     }
 
-    // 2. Construir la URL completa del backend, incluyendo los parámetros de búsqueda (ej. ?page=2).
+    // 2. Construir la URL completa del backend, incluyendo los parámetros de búsqueda.
     const path = request.nextUrl.pathname.replace("/api", "");
     const searchParams = request.nextUrl.search;
     const backendUrl = `${API_BASE_URL}${path}${searchParams}`;
@@ -21,7 +24,7 @@ async function handler(request: NextRequest) {
     // 3. Preparar los encabezados para el backend.
     const headers = new Headers({
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
     });
 
     // 4. Manejar el body solo si es necesario (POST, PUT, etc.).
@@ -33,7 +36,10 @@ async function handler(request: NextRequest) {
             body = JSON.stringify(await request.json());
         } catch (error) {
             // El body podría estar vacío o no ser un JSON válido.
-            return NextResponse.json({ message: "Invalid JSON body" }, { status: 400 });
+            return NextResponse.json(
+                { message: "Invalid JSON body" },
+                { status: 400 }
+            );
         }
     }
 
@@ -42,11 +48,10 @@ async function handler(request: NextRequest) {
         method: request.method,
         headers,
         body,
-        // Duplex es necesario para pasar el body en Node.js >= 18
         // @ts-ignore
-        duplex: 'half'
+        duplex: "half",
     });
-    
+
     // 6. Devolver la respuesta del backend al cliente.
     // Maneja el caso de que la respuesta no tenga contenido (ej. status 204).
     if (response.status === 204) {

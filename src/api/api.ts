@@ -1,6 +1,5 @@
 import { ApiResponse } from "@/types/apiType";
-import { getTokenCookie} from "@/utilities/loginUtility"; // Importamos la función para obtener la cookie
-import { removeTokenCookie } from "@/utilities/loginUtility";
+import { logoutApi } from "@/api/loginApi"; // Importamos la nueva función de logout
 
 const API_BASE_URL = "/api";
 
@@ -9,7 +8,7 @@ const API_BASE_URL = "/api";
  * @param endpoint El endpoint al que se llamará (ej. '/users').
  * @param options Opciones de la petición fetch (method, body, headers, etc.).
  * @returns Una promesa que resuelve a un objeto ApiResponse con los datos o un error.
-*/
+ */
 export async function apiService<T>(
     endpoint: string,
     options?: RequestInit
@@ -21,7 +20,7 @@ export async function apiService<T>(
         ...(options?.headers as Record<string, string>),
     };
 
-    console.log("Llamando a la API:", url, "con opciones:", options);
+    console.log("Llamando a la API (proxy):", url, "con opciones:", options);
 
     try {
         const response = await fetch(url, {
@@ -31,8 +30,13 @@ export async function apiService<T>(
         });
 
         if (response.status === 401 || response.status === 403) {
-            removeTokenCookie();
-            window.location.href = "/login"; // Redirigir al login
+            console.log(
+                "Error de autenticación detectado (401/403). Deslogueando..."
+            );
+            await logoutApi();
+            window.location.href = "/login"; // Redirige al login
+            // Devolvemos una promesa pendiente para detener la ejecución del código posterior
+            return new Promise(() => {});
         }
         const data = await response.json();
 
@@ -64,55 +68,12 @@ export async function apiService<T>(
     }
 }
 
+// La función apiServiceFile ahora es idéntica a apiService, se podría unificar
+// pero la mantenemos por si en el futuro tiene lógica específica para archivos.
 export async function apiServiceFile<T>(
     endpoint: string,
     options?: RequestInit
 ): Promise<ApiResponse<T>> {
-    const url = `${API_BASE_URL}${endpoint}`;
-    const token = getTokenCookie();
-
-    const defaultHeaders: Record<string, string> = {
-        ...(options?.headers as Record<string, string>),
-    };
-
-    console.log("Llamando a la API:", url, "con opciones:", options);
-
-    if (token) {
-        defaultHeaders["Authorization"] = `Bearer ${token}`;
-    }
-    try {
-        const response = await fetch(url, {
-            ...options,
-            headers: defaultHeaders,
-            credentials: "include",
-        });
-
-        const data = await response.json();
-
-        console.log("Respuesta de la API:", data);
-
-        if (response.status < 200 || response.status >= 300) {
-            const error = data.errors[0] || "Error en la petición";
-            return {
-                success: false,
-                message: data.message ? data.message : error,
-                error: data.message || "Unknown error",
-            };
-        }
-
-        return {
-            success: true,
-            message: data.message || "Operación exitosa",
-            data: data as T,
-            error: "",
-        };
-    } catch (error) {
-        console.error(error);
-        const errorMessage = "Error de red o servidor";
-        return {
-            success: false,
-            message: errorMessage,
-            error: "NetworkError",
-        };
-    }
+    // Simplemente reutilizamos la lógica de apiService que ya incluye el manejo de errores.
+    return apiService<T>(endpoint, options);
 }

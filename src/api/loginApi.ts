@@ -1,6 +1,5 @@
 import { LoginCredentials, LoginResponse } from "@/types/loginType";
-// Ya no necesitamos el apiService genérico aquí
-// import { apiService } from "@/api/api"; 
+import { apiService } from "@/api/api";
 import { ApiResponse } from "@/types/apiType";
 
 // Obtenemos la URL real del backend, la misma que usa tu proxy
@@ -29,23 +28,19 @@ export async function loginApi(
         const data = await response.json();
 
         if (!response.ok) {
-            // Si el backend devuelve un error (ej. 401, 400), lo manejamos
             return {
                 success: false,
                 message: data.message || "Credenciales incorrectas",
                 error: data.errors || "Error de autenticación",
             };
         }
-        
-        // Si el login es exitoso, el navegador ya habrá procesado
-        // el encabezado 'Set-Cookie' del backend.
+
         return {
             success: true,
             message: "Login exitoso",
             data: data as LoginResponse,
             error: "",
         };
-
     } catch (error) {
         console.error("Error de red en loginApi:", error);
         return {
@@ -54,4 +49,15 @@ export async function loginApi(
             error: "NetworkError",
         };
     }
+}
+
+/**
+ * Llama al endpoint de logout a través del proxy de Next.js.
+ * Esto asegura que la cookie HttpOnly sea eliminada por el servidor.
+ * @return {Promise<ApiResponse<unknown>>} La respuesta de la API.
+ */
+export async function logoutApi(): Promise<ApiResponse<unknown>> {
+    return apiService("/auth/logout", {
+        method: "POST",
+    });
 }
