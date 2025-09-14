@@ -57,7 +57,33 @@ export async function loginApi(
  * @return {Promise<ApiResponse<unknown>>} La respuesta de la API.
  */
 export async function logoutApi(): Promise<ApiResponse<unknown>> {
-    return apiService("/auth/logout", {
-        method: "POST",
-    });
+    const url = `/auth/logout`;
+    try {
+        const response = await apiService(url, {
+            method: "POST",
+        });
+        
+        if (!response.success) {
+            return {
+                success: false,
+                message: "Error durante el logout",
+                data: null,
+                error: "LogoutError",
+            };
+        }
+
+        return {
+            success: true,
+            message: "Logout successful",
+            data: null,
+            error: "",
+        }
+    } catch (error) {
+        console.error("Error en logoutApi:", error);
+        return {
+            success: false,
+            message: "Error durante el logout",
+            error: "LogoutError",
+        };
+    }
 }

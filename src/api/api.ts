@@ -28,6 +28,7 @@ export async function apiService<T>(
             headers: defaultHeaders,
             credentials: "include",
         });
+        console.log("Respuesta de la API (proxy):", response);
 
         if (response.status === 401 || response.status === 403) {
             console.log(

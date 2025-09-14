@@ -10,7 +10,6 @@ import { cookies } from "next/headers";
 export async function POST() {
     const cookieStore = await cookies();
 
-    // Invalidamos la cookie 'auth-token' estableciendo su edad máxima a 0
     cookieStore.set("auth-token", "", {
         httpOnly: true,
         path: "/",

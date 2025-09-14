@@ -9,7 +9,7 @@ import {
     FiUsers,
 } from "react-icons/fi";
 import { useState, useRef } from "react";
-import { removeTokenCookie } from "@/utilities/loginUtility";
+import {logoutService} from "@/services/loginService"
 import { toast } from "react-hot-toast";
 import { useAuthStore } from "@/store/authStore";
 import { useRouter } from "next/navigation";
@@ -20,12 +20,18 @@ const Header2 = () => {
     const menuRef = useRef<HTMLDivElement>(null);
     const { user, logout } = useAuthStore();
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
         try {
-            removeTokenCookie();
+            const response = await logoutService();
             logout();
+            if (!response.status) {
+                toast.error(response.message || "Error al cerrar sesión");
+                return;
+            }
             toast.success("Sesión cerrada correctamente");
             router.push("/login");
+            setShowUserMenu(false);
+            return;
         } catch (error) {
             toast.error("Error al cerrar sesión");
             console.error("Error al cerrar sesión:", error);
