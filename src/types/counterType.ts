@@ -13,4 +13,5 @@ export interface RegisterCounterType {
     mes: string;
     tipoOperacion: string;
     cantidad: string;
+    contadorAnterior?: string;
 }

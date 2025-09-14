@@ -6,6 +6,7 @@ import type { ErrorFieldType } from "@/types/errorType";
 import { registerCountersService } from "@/services/counterService";
 import { validateCounterCreateArray } from "@/utilities/validateCounter";
 import { Button } from "@/components/ui/Button";
+import { CurrencyInput } from "./CurrencyInput";
 
 interface CreateContractFormProps {
     onClose: () => void;
@@ -24,7 +25,7 @@ export const CreateCounter = ({
     const [year, setYear] = useState<number>(new Date().getFullYear());
     const [error, setError] = useState<ErrorFieldType[]>([]);
     const [registerMassiveData, setRegisterMassiveData] = useState<
-        RegisterCounterType[]
+        (RegisterCounterType | undefined)[]
     >([]);
 
     const successHandler = (
@@ -37,7 +38,6 @@ export const CreateCounter = ({
         setData(data);
         setMonth(month);
         setYear(year);
-        // Inicializa el array para el envío masivo con la misma longitud que los datos recibidos
         setRegisterMassiveData(new Array(data.length));
     };
 
@@ -45,6 +45,7 @@ export const CreateCounter = ({
         e: React.ChangeEvent<HTMLInputElement>,
         index: number
     ) => {
+        const currentValue = e.target.value;
         // Actualiza el estado visual (dataForm)
         setData((prev) => {
             const updatedData = [...prev];
@@ -58,13 +59,18 @@ export const CreateCounter = ({
         // Actualiza el estado de los datos a enviar (registerMassiveData)
         setRegisterMassiveData((prev) => {
             const updatedData = [...prev];
-            updatedData[index] = {
-                serialImpresora: dataForm[index].serial,
-                anio: year.toString(),
-                mes: month.toString(),
-                tipoOperacion: dataForm[index].tipoOperacion,
-                cantidad: e.target.value,
-            };
+            if (currentValue === "") {
+                updatedData[index] = undefined;
+            }else{
+                updatedData[index] = {
+                    serialImpresora: dataForm[index].serial,
+                    anio: year.toString(),
+                    mes: String(month).padStart(2, "0"),
+                    tipoOperacion: dataForm[index].tipoOperacion,
+                    cantidad: e.target.value,
+                    contadorAnterior: dataForm[index].contadorAnterior,
+                };
+            }
             return updatedData;
         });
     };
@@ -123,8 +129,10 @@ export const CreateCounter = ({
             return;
         }
 
+        const dataToSend = validData.map(({ contadorAnterior, ...rest }) => rest);
+
         try {
-            const response = await registerCountersService(validData);
+            const response = await registerCountersService(dataToSend);
             if (response.status) {
                 onSuccess("Contadores registrados con éxito");
                 onClose();
@@ -158,9 +166,9 @@ export const CreateCounter = ({
                         </p>
                     </div>
 
-                    <div className="max-h-[80vh] overflow-y-auto space-y-4 p-4 bg-slate-50 rounded-lg border">
+                    <div className="max-h-[65vh] overflow-y-auto space-y-4 p-4 bg-slate-50 rounded-lg border">
                         {/* --- Contenedor Grid Responsive --- */}
-                        <div className="flex gap-6 overflow-x-auto overflow-y-hidden">
+                        <div className="flex gap-6 overflow-x-auto">
                             {/* Mapeo sobre los datos agrupados */}
                             {Object.keys(groupedData).map((serial) => {
                                 const group = groupedData[serial];
@@ -239,8 +247,7 @@ export const CreateCounter = ({
                                                                     type="number"
                                                                     className="font-mono bg-slate-100 px-2 py-1 rounded-md text-slate-800 w-28 text-right border focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
                                                                     value={
-                                                                        item.contadorActual ||
-                                                                        ""
+                                                                        item.contadorActual
                                                                     }
                                                                     placeholder="0"
                                                                     onChange={(
