@@ -52,6 +52,7 @@ const ClientManagementPage = () => {
         useState("origin-top-right");
     const menuRef = useRef<HTMLDivElement | null>(null);
     const menuButtonRefs = useRef<(HTMLButtonElement | null)[]>([]);
+    const tableContainerRef = useRef<HTMLDivElement | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [isModalPrintersFile, setIsModalPrintersFile] = useState(false);
     const [loadingClients, setLoadingClients] = React.useState<boolean>(false);
@@ -237,6 +238,8 @@ const ClientManagementPage = () => {
 
     // * UseEffect for listening the menuRef and calculating its position
     useEffect(() => {
+        const tableContainer = tableContainerRef.current;
+
         const handleClickOutside = (event: MouseEvent) => {
             const openMenuIndex = clients?.findIndex(
                 (client) => client.nit === openMenuNit
@@ -263,41 +266,40 @@ const ClientManagementPage = () => {
         };
 
         if (openMenuNit !== null) {
+            if (tableContainer) {
+                tableContainer.style.overflowY = "visible";
+            }
             document.addEventListener("mousedown", handleClickOutside);
 
             setTimeout(() => {
                 if (menuRef.current) {
                     const menuRect = menuRef.current.getBoundingClientRect();
+                    const boundary = window.innerHeight;
 
-                    // --- INICIO DEL CAMBIO ---
-
-                    // 1. Buscamos el footer por su ID.
-                    const footer = document.querySelector("#app-footer");
-
-                    // 2. Determinamos el límite. Si el footer existe, el límite es su borde superior.
-                    //    Si no existe, usamos la altura de la ventana como antes (esto hace el código más robusto).
-                    const boundary = footer
-                        ? footer.getBoundingClientRect().top
-                        : window.innerHeight;
-
-                    // 3. Comparamos la parte inferior del menú con el nuevo límite.
-                    if (menuRect.bottom + 500 > boundary) {
-                        // --- FIN DEL CAMBIO ---
-
-                        // ...le decimos que se abra hacia arriba
+                    // Check if the bottom of the menu is off-screen
+                    if (menuRect.bottom > boundary) {
+                        // If so, open it upwards
                         setMenuPositionClass(
                             "origin-bottom-right bottom-full mb-2"
                         );
                     } else {
-                        // ...de lo contrario, usamos la posición por defecto (hacia abajo)
+                        // Otherwise, open it downwards
                         setMenuPositionClass("origin-top-right");
                     }
                 }
             }, 0);
+        } else {
+            if (tableContainer) {
+                tableContainer.style.overflowY = "auto";
+            }
         }
 
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
+            // Ensure overflow is reset on cleanup
+            if (tableContainer) {
+                tableContainer.style.overflowY = "auto";
+            }
         };
     }, [openMenuNit, clients]);
 
@@ -380,7 +382,10 @@ const ClientManagementPage = () => {
                             </div>
 
                             {/* Tabla de Clientes */}
-                            <div className="overflow-x-auto rounded-lg">
+                            <div
+                                ref={tableContainerRef}
+                                className="overflow-x-auto rounded-lg"
+                            >
                                 <table className="w-full text-md text-left text-slate-500">
                                     <thead className="text-xs text-slate-700 uppercase bg-[#253763]">
                                         <tr>
