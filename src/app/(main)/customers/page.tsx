@@ -14,7 +14,7 @@ import { useDebounce } from "@/utilities/useDebounce";
 import { searchCustomerByNameOrNIT } from "@/services/customerService";
 import { CreateCounter } from "@/components/ui/CreateCounter";
 import { TakeCounter } from "@/components/ui/TakeCounter";
-import { SliderCheckout } from "@/components/ui/Checkout/Slider";
+import { SliderCheckout } from "@/components/ui/Checkout/SliderCheckout";
 import { CustomerType } from "@/types/customerType";
 import {
     FiPlus,
@@ -106,12 +106,12 @@ const ClientManagementPage = () => {
     // Success after Receipt Download
     const handleDownloadReceiptSuccess = (message: string) => {
         toast.success(message);
-        fetchClients();
+        handleCloseDownloadReceiptModal();
     };
 
-    // Download Recipt
-    const handleDownloadRecipt = (nit: number) => {
-        setIsModalDownloadReceiptOpen(true);
+    // Download Receipt
+    const handleDownloadReceipt = (nit: number) => {
+        handleOpenDownloadReceiptModal();
         setCounterUser(nit.toString());
     };
 
@@ -496,7 +496,7 @@ const ClientManagementPage = () => {
                                                             <div
                                                                 ref={menuRef}
                                                                 className={`
-                                                                        absolute right-0 w-80 rounded-md shadow-2xl bg-white z-10
+                                                                        absolute right-0 w-80 rounded-md shadow-2xl bg-white z-1000
                                                                         transition-all duration-200
                                                                         ${menuPositionClass}
                                                                         ${
@@ -673,7 +673,7 @@ const ClientManagementPage = () => {
                                                                                 );
                                                                                 setOpenMenuNit(
                                                                                     null
-                                                                                ); // Cierra el menú
+                                                                                );
                                                                             }}
                                                                             className="text-slate-700 group flex items-center px-4 py-2 text-sm"
                                                                             role="menuitem"
@@ -704,7 +704,7 @@ const ClientManagementPage = () => {
                                                                                 e
                                                                             ) => {
                                                                                 e.preventDefault();
-                                                                                handleDownloadRecipt(
+                                                                                handleDownloadReceipt(
                                                                                     client.nit
                                                                                 );
                                                                                 setOpenMenuNit(

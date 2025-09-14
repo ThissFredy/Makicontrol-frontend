@@ -1,6 +1,6 @@
 import type { CustomerType } from "@/types/customerType";
 import type { ApiResponse } from "@/types/apiType";
-import { apiService, apiServiceFile } from "@/api/api";
+import { apiService, downloadApi, apiServiceFile } from "@/api/api";
 
 /**
  * Llama al endpoint de clientes de la API y devuelve una lista de clientes.
@@ -81,8 +81,8 @@ export async function downloadReceiptApi(
     nit: number,
     anio: number,
     month: number
-): Promise<ApiResponse<Blob>> {
-    const response = await apiService<Blob>(
+): Promise<any> {
+    const response = await downloadApi(
         `/api/factura/generar?clienteNit=${nit}&anio=${anio}&mes=${month}`,
         {
             method: "GET",

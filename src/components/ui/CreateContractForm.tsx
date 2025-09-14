@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { validateCreate } from "@/utilities/validateContract";
 import type { ErrorFieldType } from "@/types/errorType";
+import { CurrencyInput } from "@/components/ui/CurrencyInput";
 import { toast } from "react-hot-toast";
 import {
     createContractService,
@@ -221,12 +222,12 @@ export const CreateContractForm = ({
                 >
                     Valor del Canon (opcional)
                 </label>
-                <input
-                    type="text"
+                <CurrencyInput
                     id="valorCanon"
                     name="valorCanon"
-                    value={dataForm.valorCanon}
                     onChange={handleChange}
+                    value={dataForm.valorCanon}
+                    input={true}
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
                 <span className="text-red-500 text-sm">

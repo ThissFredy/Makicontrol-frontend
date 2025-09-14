@@ -6,6 +6,7 @@ import { getCustomers } from "@/api/customerApi";
 import { createCustomerApi } from "@/api/customerApi";
 import { updateCustomerApi, uploadCustomersFileApi } from "@/api/customerApi";
 import { OperationType } from "@/types/operationType";
+import type { DownloadFileType } from "@/types/downloadFile";
 import {
     getCustomerByNIT,
     getCustomerByName,
@@ -198,23 +199,39 @@ export async function downloadReceiptService(
     nit: number,
     anio: number,
     month: number
-): Promise<OperationType<null>> {
+): Promise<OperationType<DownloadFileType | null>> {
     try {
         const response = await downloadReceiptApi(nit, anio, month);
 
-        if (!response.success) {
+        if (!response.ok) {
             return {
                 status: false,
-                message: response.message || "Error al procesar el archivo",
+                message: response.message || "Error al obtener el archivo",
                 data: null,
             } as OperationType<null>;
         }
 
+        // Leer cabecera
+        const estadoFactura = response.headers.get("X-Estado-Factura");
+        const disposition = response.headers.get("Content-Disposition");
+        let filename = `factura-${nit}-${anio}-${month}.pdf`; // Filename
+
+        if (disposition && disposition.includes("attachment")) {
+            const filenameMatch = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(
+                disposition
+            );
+            if (filenameMatch && filenameMatch[1]) {
+                filename = filenameMatch[1];
+            }
+        }
+
+        const blob = await response.blob();
+
         return {
             status: response.success,
             message: response.message || "Archivo procesado exitosamente",
-            data: null,
-        } as OperationType<null>;
+            data: { blob, filename, estadoFactura },
+        } as OperationType<DownloadFileType>;
     } catch (error) {
         console.error("Error en el servicio de subida de archivo:", error);
         return {

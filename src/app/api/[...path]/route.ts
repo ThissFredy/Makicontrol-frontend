@@ -1,11 +1,8 @@
-// app/api/[...path]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 
+// URL de tu backend real
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
-/**
- * Función genérica para manejar todas las peticiones al proxy.
- */
 async function handler(request: NextRequest) {
     // Obtener el token de la cookie. La lógica es la misma para todos los métodos.
     const token = request.cookies.get("auth-token")?.value;
@@ -22,37 +19,78 @@ async function handler(request: NextRequest) {
 
     // Preparar los encabezados para el backend.
     const headers = new Headers({
-        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
     });
 
     // Manejar el body solo si es necesario (POST, PUT, etc.).
     // Esto evita errores en peticiones GET o DELETE sin cuerpo.
     let body: BodyInit | null = null;
+
     if (["POST", "PUT", "PATCH"].includes(request.method)) {
         try {
-            // Pasamos el cuerpo de la petición original al backend.
-            body = JSON.stringify(await request.json());
+            const response = await fetch(backendUrl, {
+                method: request.method,
+                headers,
+            });
+
+            if (!response.ok) {
+                const errorData = await response
+                    .json()
+                    .catch(() => ({ message: "Error en el backend" }));
+                return NextResponse.json(errorData, {
+                    status: response.status,
+                });
+            }
+
+            const blob = await response.blob();
+
+            const responseToClient = new NextResponse(blob, {
+                status: response.status,
+                statusText: response.statusText,
+            });
+
+            responseToClient.headers.set(
+                "Content-Type",
+                response.headers.get("Content-Type") ||
+                    "application/octet-stream"
+            );
+            responseToClient.headers.set(
+                "Content-Disposition",
+                response.headers.get("Content-Disposition") || "attachment"
+            );
+
+            const estadoFactura = response.headers.get("X-Estado-Factura");
+            if (estadoFactura) {
+                responseToClient.headers.set("X-Estado-Factura", estadoFactura);
+            }
+
+            return responseToClient;
         } catch (error) {
             console.error("[NEXTJS] Invalid JSON body", error);
             return NextResponse.json(
                 { message: "[NEXTJS] Invalid JSON body" },
-                { status: 400 },
+                { status: 400 }
             );
         }
     }
 
-    // 5. Realizar la llamada al backend real.
+    console.log("Proxy: Manejando petición JSON a:", backendUrl);
+
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set("Authorization", `Bearer ${token}`);
+
+    if (["POST", "PUT", "PATCH"].includes(request.method)) {
+        body = await request.text();
+    }
+
     const response = await fetch(backendUrl, {
         method: request.method,
-        headers,
+        headers: requestHeaders,
         body,
         // @ts-ignore
         duplex: "half",
     });
 
-    // 6. Devolver la respuesta del backend al cliente.
-    // Maneja el caso de que la respuesta no tenga contenido (ej. status 204).
     if (response.status === 204) {
         return new NextResponse(null, { status: 204 });
     }

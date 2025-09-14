@@ -9,6 +9,7 @@ import { useDebounce } from "@/utilities/useDebounce";
 import type { ContractType } from "@/types/contractType";
 import { CreateContractsFromFile } from "@/components/ui/CreateContractFromFile";
 import { CreateDetailsFromFile } from "@/components/ui/CreateDetailsFromFile";
+import { CurrencyInput } from "@/components/ui/CurrencyInput";
 import { useSearchParams } from "next/navigation";
 import {
     searchCustomerByNitAndStatusService,
@@ -527,14 +528,24 @@ const ContractsPage = () => {
                                                     </div>
                                                 </td>
                                                 <td className="px-2 py-4">
-                                                    {formatNumber(
-                                                        contract.valorCanon
-                                                    )}
+                                                    <CurrencyInput
+                                                        id="valorCanon"
+                                                        name="valorCanon"
+                                                        value={
+                                                            contract.valorCanon
+                                                        }
+                                                        input={false}
+                                                    />
                                                 </td>
                                                 <td className="px-2 py-4">
-                                                    {formatNumber(
-                                                        contract.valorBaseEquipo
-                                                    )}
+                                                    <CurrencyInput
+                                                        id="valorCanon"
+                                                        name="valorCanon"
+                                                        value={
+                                                            contract.valorBaseEquipo
+                                                        }
+                                                        input={false}
+                                                    />
                                                 </td>
                                                 <td className="px-2 py-4">
                                                     {contract.periodo}
