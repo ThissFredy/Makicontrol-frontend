@@ -1,5 +1,6 @@
 import { LoginCredentials, LoginResponse } from "@/types/loginType";
-import { apiService } from "@/api/api";
+// Ya no necesitamos el apiService genérico aquí
+// import { apiService } from "@/api/api"; 
 import { ApiResponse } from "@/types/apiType";
 
 // Obtenemos la URL real del backend, la misma que usa tu proxy
@@ -34,7 +35,6 @@ export async function loginApi(
                 error: data.errors || "Error de autenticación",
             };
         }
-
         return {
             success: true,
             message: "Login exitoso",
