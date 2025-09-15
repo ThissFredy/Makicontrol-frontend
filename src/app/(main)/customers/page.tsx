@@ -461,7 +461,7 @@ const ClientManagementPage = () => {
                     </Modal2>
                 </div>
             )}
-             {/* * MENU */}
+             {/* * MENU FOR CLIENTE */}
             {/* Solo se renderiza si hay un menú abierto y un cliente seleccionado */}
             {openMenuNit && activeClientForMenu && ReactDOM.createPortal(
                 <div
