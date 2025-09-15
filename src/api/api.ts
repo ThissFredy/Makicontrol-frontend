@@ -1,6 +1,7 @@
 import { ApiResponse } from "@/types/apiType";
 import { logoutApi } from "@/api/loginApi"; // Importamos la nueva función de logout
 
+
 const API_BASE_URL = "/api";
 
 /**
