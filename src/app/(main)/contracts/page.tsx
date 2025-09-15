@@ -458,7 +458,7 @@ const ContractsPage = () => {
                         </div>
 
                         <div className="m-3 hover:scale-105 hover:font-bold transition-all duration-150">
-                            <button onClick={() => { handleViewDetails(activeContractForMenu.clienteNit); closeMenu(); }} className="w-full text-slate-700 group flex items-center px-4 py-2 text-sm">
+                            <button onClick={() => { handleViewDetails(activeContractForMenu.clienteNit); closeMenu(); }} className="w-full text-slate-700 group flex items-center px-4 py-2 text-sm hover:cursor-pointer">
                                 <div className="bg-yellow-100 rounded mr-3 p-2"><FiEye className="h-5 w-5 text-yellow-700" /></div>
                                 <div>
                                     <div className="font-semibold text-left">Ver Detalles</div>
@@ -468,7 +468,7 @@ const ContractsPage = () => {
                         </div>
 
                         <div className="m-3 hover:scale-105 hover:font-bold transition-all duration-150">
-                            <button onClick={() => { handleOpenModalEdit(activeContractForMenu); closeMenu(); }} className="w-full text-slate-700 group flex items-center px-4 py-2 text-sm">
+                            <button onClick={() => { handleOpenModalEdit(activeContractForMenu); closeMenu(); }} className="w-full text-slate-700 group flex items-center px-4 py-2 text-sm hover:cursor-pointer">
                                 <div className="bg-purple-100 rounded mr-3 p-2"><FiEdit className="h-5 w-5 text-purple-700" /></div>
                                 <div>
                                     <div className="font-semibold text-left">Editar Contrato</div>

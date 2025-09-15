@@ -1,6 +1,5 @@
 import { LoginCredentials, LoginResponse } from "@/types/loginType";
-// Ya no necesitamos el apiService genérico aquí
-// import { apiService } from "@/api/api"; 
+import { apiService } from "@/api/api"; 
 import { ApiResponse } from "@/types/apiType";
 
 // Obtenemos la URL real del backend, la misma que usa tu proxy
