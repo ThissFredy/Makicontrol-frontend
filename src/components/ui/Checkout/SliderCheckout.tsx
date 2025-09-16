@@ -74,7 +74,10 @@ export const SliderCheckout = ({
                 toast.error("No se pudo generar la factura");
             }
         } catch (e) {
-            toast.error("Error del servidor, intente más tarde" + ((e instanceof Error && e.message) ? `: ${e.message}` : ""));
+            toast.error(
+                "Error del servidor, intente más tarde" +
+                    (e instanceof Error && e.message ? `: ${e.message}` : "")
+            );
         }
         setLoading(false);
     };
