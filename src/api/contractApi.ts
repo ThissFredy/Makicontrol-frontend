@@ -5,7 +5,7 @@ import type {
     CreateContractDetailType,
 } from "@/types/contractType";
 import type { ApiResponse } from "@/types/apiType";
-import { apiService, apiServiceFile } from "@/api/api";
+import { apiService } from "@/api/api";
 
 /**
  * Llama al endpoint de contratos de la API y devuelve una lista de contratos.
@@ -117,7 +117,7 @@ export async function uploadContractsFileApi(
     file: FormData
 ): Promise<ApiResponse<string>> {
     console.log("Subiendo archivo de contratos:", file);
-    const response = await apiServiceFile<string>("/api/contratos/upload", {
+    const response = await apiService<string>("/api/contratos/upload", {
         method: "POST",
         body: file,
     });
@@ -129,13 +129,10 @@ export async function uploadDetailsContractsFileApi(
     file: FormData
 ): Promise<ApiResponse<string>> {
     console.log("Subiendo archivo de detalles de contratos:", file);
-    const response = await apiServiceFile<string>(
-        "/api/detalleContrato/upload",
-        {
-            method: "POST",
-            body: file,
-        }
-    );
+    const response = await apiService<string>("/api/detalleContrato/upload", {
+        method: "POST",
+        body: file,
+    });
 
     return response;
 }

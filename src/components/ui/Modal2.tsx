@@ -29,7 +29,7 @@ export const Modal2 = ({ isOpen, onClose, children }: ModalProps) => {
             aria-modal="true"
         >
             <div
-                className="relative w-full max-w-5xl transform rounded-xl bg-white p-6 shadow-xl transition-all"
+                className="relative sm:w-full md:w-2xl lg:w-3xl transform rounded-xl bg-white p-6 shadow-xl transition-all"
                 onClick={(e) => e.stopPropagation()}
             >
                 <button

@@ -4,7 +4,7 @@ import { formatCurrency } from "@/utilities/moneyUtility";
 interface CurrencyInputProps {
     value: number | string;
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
-    [key: string]: any;
+    [key: string]: any; // eslint-disable-line @typescript-eslint/no-explicit-any
     input: boolean;
 }
 
@@ -13,6 +13,7 @@ export const CurrencyInput = ({
     value,
     onChange,
     input = true,
+    name,
     ...props
 }: CurrencyInputProps) => {
     const [displayValue, setDisplayValue] = useState<string>(
@@ -26,13 +27,19 @@ export const CurrencyInput = ({
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const rawValue = e.target.value;
         const numericString = rawValue.replace(/[^0-9]/g, "");
-        const numericValue = parseInt(numericString, 10) || 0;
 
         if (onChange) {
-            onChange(e);
+            const syntheticEvent = {
+                target: {
+                    name: name,
+                    value: numericString,
+                },
+            } as React.ChangeEvent<HTMLInputElement>;
+
+            onChange(syntheticEvent);
         }
 
-        setDisplayValue(formatCurrency(numericValue));
+        setDisplayValue(formatCurrency(numericString));
     };
 
     const handleBlur = () => {

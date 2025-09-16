@@ -1,8 +1,5 @@
 import { ApiResponse } from "@/types/apiType";
-import { logoutApi } from "@/api/loginApi"; // Importamos la nueva función de logout
-
-
-const API_BASE_URL = "/api";
+import { logoutApi } from "@/api/loginApi";
 
 /**
  * Realiza una petición a la API de forma genérica y tipada.
@@ -10,44 +7,47 @@ const API_BASE_URL = "/api";
  * @param options Opciones de la petición fetch (method, body, headers, etc.).
  * @returns Una promesa que resuelve a un objeto ApiResponse con los datos o un error.
  */
+// en tu archivo de servicios de api
+
 export async function apiService<T>(
     endpoint: string,
     options?: RequestInit
 ): Promise<ApiResponse<T>> {
-    const url = `${API_BASE_URL}${endpoint}`;
+    const url = `/api${endpoint}`; // Llamamos a nuestro proxy
 
-    const defaultHeaders: Record<string, string> = {
-        "Content-Type": "application/json",
-        ...(options?.headers as Record<string, string>),
-    };
+    const isFormData = options?.body instanceof FormData;
 
-    console.log("Llamando a la API (proxy):", url, "con opciones:", options);
+    // Clonamos los headers para poder modificarlos
+    const headers = new Headers(options?.headers);
+
+    if (isFormData) {
+        // SI ES FORMDATA, BORRAMOS EL CONTENT-TYPE.
+        // El navegador lo pondrá automáticamente con el boundary correcto.
+        headers.delete("Content-Type");
+    } else if (!headers.has("Content-Type")) {
+        // Si no es FormData y no hay Content-Type, asumimos que es JSON.
+        headers.set("Content-Type", "application/json");
+    }
 
     try {
         const response = await fetch(url, {
             ...options,
-            headers: defaultHeaders,
+            headers: headers, // Usamos los headers modificados
             credentials: "include",
         });
-        console.log("Respuesta de la API (proxy):", response);
 
         if (response.status === 401 || response.status === 403) {
-            console.log(
-                "Error de autenticación detectado (401/403). Deslogueando..."
-            );
-            await logoutApi();
-            window.location.href = "/login";
+            // ... tu lógica de logout ...
             return new Promise(() => {});
         }
+
         const data = await response.json();
 
-        console.log("Respuesta de la API:", data);
-
-        if (response.status < 200 || response.status >= 300) {
-            const error = data.errors[0] || "Error en la petición";
+        if (!response.ok) {
+            const error = data.errors?.[0] || "Error en la petición";
             return {
                 success: false,
-                message: data.message ? data.message : error,
+                message: data.message || error,
                 error: data.errors || "Unknown error",
             };
         }
@@ -59,23 +59,13 @@ export async function apiService<T>(
             error: "",
         };
     } catch (error) {
-        console.error(error);
-        const errorMessage = "Error de red o servidor";
+        console.error("Error de red en apiService:", error);
         return {
             success: false,
-            message: errorMessage,
-            error: "NetworkError",
+            message: "Error de red o servidor",
+            error: error instanceof Error ? error.message : "Unknown error",
         };
     }
-}
-
-// La función apiServiceFile ahora es idéntica a apiService, se podría unificar
-// pero la mantenemos por si en el futuro tiene lógica específica para archivos.
-export async function apiServiceFile<T>(
-    endpoint: string,
-    options?: RequestInit
-): Promise<ApiResponse<T>> {
-    return apiService<T>(endpoint, options);
 }
 
 /**

@@ -19,77 +19,16 @@ async function handler(request: NextRequest) {
     const backendUrl = `${API_BASE_URL}${path}${searchParams}`;
 
     // Preparar los encabezados para el backend.
-    const headers = new Headers({
-        Authorization: `Bearer ${token}`,
-    });
-
-    // Manejar el body solo si es necesario (POST, PUT, etc.).
-    // Esto evita errores en peticiones GET o DELETE sin cuerpo.
-    let body: BodyInit | null = null;
-
-    if (["POST", "PUT", "PATCH"].includes(request.method)) {
-        try {
-            const response = await fetch(backendUrl, {
-                method: request.method,
-                headers,
-            });
-
-            if (!response.ok) {
-                const errorData = await response
-                    .json()
-                    .catch(() => ({ message: "Error en el backend" }));
-                return NextResponse.json(errorData, {
-                    status: response.status,
-                });
-            }
-
-            const blob = await response.blob();
-
-            const responseToClient = new NextResponse(blob, {
-                status: response.status,
-                statusText: response.statusText,
-            });
-
-            responseToClient.headers.set(
-                "Content-Type",
-                response.headers.get("Content-Type") ||
-                    "application/octet-stream"
-            );
-            responseToClient.headers.set(
-                "Content-Disposition",
-                response.headers.get("Content-Disposition") || "attachment"
-            );
-
-            const estadoFactura = response.headers.get("X-Estado-Factura");
-            if (estadoFactura) {
-                responseToClient.headers.set("X-Estado-Factura", estadoFactura);
-            }
-
-            return responseToClient;
-        } catch (error) {
-            console.error("[NEXTJS] Invalid JSON body", error);
-            return NextResponse.json(
-                { message: "[NEXTJS] Invalid JSON body" },
-                { status: 400 }
-            );
-        }
-    }
-
-    console.log("Proxy: Manejando petición JSON a:", backendUrl);
-
     const requestHeaders = new Headers(request.headers);
     requestHeaders.set("Authorization", `Bearer ${token}`);
 
-    if (["POST", "PUT", "PATCH"].includes(request.method)) {
-        body = await request.text();
-    }
+    // Manejar el body solo si es necesario (POST, PUT, etc.).
+    // Esto evita errores en peticiones GET o DELETE sin cuerpo.
 
     const response = await fetch(backendUrl, {
         method: request.method,
         headers: requestHeaders,
-        body,
-        // @ts-ignore
-        duplex: "half",
+        body: request.body,
     });
 
     if (response.status === 204) {
@@ -105,4 +44,3 @@ export const POST = handler;
 export const PUT = handler;
 export const DELETE = handler;
 export const PATCH = handler;
-

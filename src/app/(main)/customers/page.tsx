@@ -2,10 +2,7 @@
 import React, { useEffect, useState, useRef } from "react";
 // Importa ReactDOM para usar Portals
 import ReactDOM from "react-dom";
-import {
-    getCustomersService as getCustomers,
-    downloadReceiptService,
-} from "@/services/customerService";
+import { getCustomersService as getCustomers } from "@/services/customerService";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { CreateClientForm } from "@/components/ui/CreateClientForm";
@@ -48,7 +45,7 @@ const ClientManagementPage = () => {
     const [isModalTakeCounterOpen, setIsModalTakeCounterOpen] = useState(false);
     const [isModalDownloadReceiptOpen, setIsModalDownloadReceiptOpen] =
         useState(false);
-        
+
     // State para el NIT del menú abierto
     const [openMenuNit, setOpenMenuNit] = useState<number | null>(null);
     const [counterUser, setCounterUser] = useState<string>("");
@@ -60,7 +57,7 @@ const ClientManagementPage = () => {
     const menuButtonRefs = useRef<(HTMLButtonElement | null)[]>([]);
     // Ya no necesitamos la ref del contenedor de la tabla para el overflow
     // const tableContainerRef = useRef<HTMLDivElement | null>(null);
-    
+
     const [loading, setLoading] = useState<boolean>(true);
     const [isModalPrintersFile, setIsModalPrintersFile] = useState(false);
     const [loadingClients, setLoadingClients] = React.useState<boolean>(false);
@@ -102,7 +99,7 @@ const ClientManagementPage = () => {
         setIsModalTakeCounterOpen(true);
         setCounterUser(nit.toString());
     };
-    
+
     const handleTakeCounterSuccess = (message: string) => {
         toast.success(message);
         fetchClients();
@@ -212,7 +209,7 @@ const ClientManagementPage = () => {
 
         loadClients();
     }, [debouncedSearchTerm, loading]);
-    
+
     // Función para obtener todos los clientes
     const fetchClients = async () => {
         try {
@@ -231,7 +228,7 @@ const ClientManagementPage = () => {
             return false;
         }
     };
-    
+
     // ** LÓGICA DEL MENÚ REFACTORIZADA **
     // Cierra el menú
     const closeMenu = () => setOpenMenuNit(null);
@@ -250,11 +247,16 @@ const ClientManagementPage = () => {
             // **LA CLAVE ESTÁ AQUÍ: Obtenemos la posición actual del scroll**
             const scrollY = window.scrollY;
 
-            const menuWidth = 320; 
+            const menuWidth = 320;
             const menuHeight = 420;
             const margin = 8;
 
-            const style: { top?: number; bottom?: number; left?: number; right?: number } = {};
+            const style: {
+                top?: number;
+                bottom?: number;
+                left?: number;
+                right?: number;
+            } = {};
 
             // **Posicionamiento Vertical: Añadimos `scrollY` a los cálculos**
             if (rect.bottom + menuHeight > window.innerHeight) {
@@ -280,7 +282,10 @@ const ClientManagementPage = () => {
     // useEffect para cerrar el menú si se hace clic fuera
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+            if (
+                menuRef.current &&
+                !menuRef.current.contains(event.target as Node)
+            ) {
                 closeMenu();
             }
         };
@@ -293,9 +298,11 @@ const ClientManagementPage = () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, [openMenuNit]);
-    
+
     // Buscamos el cliente activo para pasar sus datos al menú
-    const activeClientForMenu = clients?.find(client => client.nit === openMenuNit);
+    const activeClientForMenu = clients?.find(
+        (client) => client.nit === openMenuNit
+    );
 
     return (
         <div className="min-h-screen p-4 sm:p-8">
@@ -380,17 +387,45 @@ const ClientManagementPage = () => {
                                 <table className="w-full text-md text-left text-slate-500">
                                     <thead className="text-xs text-slate-700 uppercase bg-[#253763]">
                                         <tr>
-                                            <th scope="col" className="px-6 py-3 text-white">Nombre / NIT</th>
-                                            <th scope="col" className="px-6 py-3 text-white">Dirección</th>
-                                            <th scope="col" className="px-6 py-3 text-white">Teléfono</th>
-                                            <th scope="col" className="px-6 py-3 text-white">Correo Electrónico</th>
-                                            <th scope="col" className="px-6 py-3 text-white">Acciones</th>
+                                            <th
+                                                scope="col"
+                                                className="px-6 py-3 text-white"
+                                            >
+                                                Nombre / NIT
+                                            </th>
+                                            <th
+                                                scope="col"
+                                                className="px-6 py-3 text-white"
+                                            >
+                                                Dirección
+                                            </th>
+                                            <th
+                                                scope="col"
+                                                className="px-6 py-3 text-white"
+                                            >
+                                                Teléfono
+                                            </th>
+                                            <th
+                                                scope="col"
+                                                className="px-6 py-3 text-white"
+                                            >
+                                                Correo Electrónico
+                                            </th>
+                                            <th
+                                                scope="col"
+                                                className="px-6 py-3 text-white"
+                                            >
+                                                Acciones
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {loadingClients ? (
                                             <tr className="bg-white border-b">
-                                                <td colSpan={6} className="px-6 py-4 text-center text-slate-500">
+                                                <td
+                                                    colSpan={6}
+                                                    className="px-6 py-4 text-center text-slate-500"
+                                                >
                                                     <div className="flex items-center justify-center h-64">
                                                         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-blue-500"></div>
                                                     </div>
@@ -399,33 +434,57 @@ const ClientManagementPage = () => {
                                         ) : (
                                             clients?.length === 0 && (
                                                 <tr className="bg-white border-b">
-                                                    <td colSpan={6} className="px-6 py-4 text-center text-slate-500">
-                                                        No hay clientes registrados.
+                                                    <td
+                                                        colSpan={6}
+                                                        className="px-6 py-4 text-center text-slate-500"
+                                                    >
+                                                        No hay clientes
+                                                        registrados.
                                                     </td>
                                                 </tr>
                                             )
                                         )}
                                         {clients?.map((client, index) => (
-                                            <tr key={`${client.nit}-${index}`} className="bg-white border-b hover:bg-slate-50">
+                                            <tr
+                                                key={`${client.nit}-${index}`}
+                                                className="bg-white border-b hover:bg-slate-50"
+                                            >
                                                 <td className="px-6 py-4 font-medium text-slate-900">
                                                     <div>{client.nombre}</div>
                                                     <div className="text-slate-700 font-normal">
                                                         {client.nit}
                                                     </div>
                                                 </td>
-                                                <td className="px-6 py-4 text-[#000000]">{client.direccion}</td>
-                                                <td className="px-6 py-4 text-[#000000]">{client.telefono}</td>
-                                                <td className="px-6 py-4 text-[#000000]">{client.correo}</td>
+                                                <td className="px-6 py-4 text-[#000000]">
+                                                    {client.direccion}
+                                                </td>
+                                                <td className="px-6 py-4 text-[#000000]">
+                                                    {client.telefono}
+                                                </td>
+                                                <td className="px-6 py-4 text-[#000000]">
+                                                    {client.correo}
+                                                </td>
                                                 <td className="px-6 py-4">
                                                     {/* El div relativo es para el botón, el menú ya no estará aquí */}
                                                     <div className="relative inline-block text-left">
                                                         <button
-                                                            ref={(el) => { menuButtonRefs.current[index] = el; }}
-                                                            onClick={() => handleToggleMenu(client.nit, index)} // Pasamos nit e index
+                                                            ref={(el) => {
+                                                                menuButtonRefs.current[
+                                                                    index
+                                                                ] = el;
+                                                            }}
+                                                            onClick={() =>
+                                                                handleToggleMenu(
+                                                                    client.nit,
+                                                                    index
+                                                                )
+                                                            } // Pasamos nit e index
                                                             className="p-2 rounded-full focus:outline-none"
                                                         >
                                                             <div className="border border-slate-300 hover:bg-slate-700 hover:transform hover:scale-120 hover:text-slate-100 transition-all duration-150 p-1.5 hover:cursor-pointer rounded-full shadow-md">
-                                                                <FiMoreHorizontal size={20} />
+                                                                <FiMoreHorizontal
+                                                                    size={20}
+                                                                />
                                                             </div>
                                                         </button>
                                                         {/* El menú desplegable se ha movido fuera de la tabla a un Portal */}
@@ -438,104 +497,236 @@ const ClientManagementPage = () => {
                             </div>
                         </main>
                     </div>
-                     <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
-                        <CreateClientForm onClose={handleCloseModal} onSuccess={handleCreationSuccess} />
+                    <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
+                        <CreateClientForm
+                            onClose={handleCloseModal}
+                            onSuccess={handleCreationSuccess}
+                        />
                     </Modal>
-                    <Modal isOpen={isModalEditOpen} onClose={handleCloseModalEdit}>
-                        <EditClientForm onClose={handleCloseModalEdit} onSuccess={handleEditationSuccess} initialData={selectedClient} />
+                    <Modal
+                        isOpen={isModalEditOpen}
+                        onClose={handleCloseModalEdit}
+                    >
+                        <EditClientForm
+                            onClose={handleCloseModalEdit}
+                            onSuccess={handleEditationSuccess}
+                            initialData={selectedClient}
+                        />
                     </Modal>
-                    <Modal isOpen={isModalOpenFile} onClose={handleCloseModalFile}>
-                        <CreateClientFromFile onClose={handleCloseModalFile} onSuccess={handleFileUploadSuccess} />
+                    <Modal
+                        isOpen={isModalOpenFile}
+                        onClose={handleCloseModalFile}
+                    >
+                        <CreateClientFromFile
+                            onClose={handleCloseModalFile}
+                            onSuccess={handleFileUploadSuccess}
+                        />
                     </Modal>
-                    <Modal isOpen={isModalPrintersFile} onClose={handleClosePrintersFile}>
-                        <AssignPrintersFromFile onClose={handleClosePrintersFile} onSuccess={handleFilePrintersUploadSuccess} />
+                    <Modal
+                        isOpen={isModalPrintersFile}
+                        onClose={handleClosePrintersFile}
+                    >
+                        <AssignPrintersFromFile
+                            onClose={handleClosePrintersFile}
+                            onSuccess={handleFilePrintersUploadSuccess}
+                        />
                     </Modal>
-                    <Modal2 isOpen={isModalCounterOpen} onClose={handleCloseCounterModal}>
-                        <CreateCounter onClose={handleCloseCounterModal} onSuccess={handleCounterSuccess} clienteNit={counterUser} />
+                    <Modal2
+                        isOpen={isModalCounterOpen}
+                        onClose={handleCloseCounterModal}
+                    >
+                        <CreateCounter
+                            onClose={handleCloseCounterModal}
+                            onSuccess={handleCounterSuccess}
+                            clienteNit={counterUser}
+                        />
                     </Modal2>
-                    <Modal2 isOpen={isModalTakeCounterOpen} onClose={handleCloseTakeCounterModal}>
-                        <TakeCounter onClose={handleCloseTakeCounterModal} onSuccess={handleTakeCounterSuccess} clienteNit={counterUser} />
+                    <Modal2
+                        isOpen={isModalTakeCounterOpen}
+                        onClose={handleCloseTakeCounterModal}
+                    >
+                        <TakeCounter
+                            onClose={handleCloseTakeCounterModal}
+                            onSuccess={handleTakeCounterSuccess}
+                            clienteNit={counterUser}
+                        />
                     </Modal2>
-                    <Modal2 isOpen={isModalDownloadReceiptOpen} onClose={handleCloseDownloadReceiptModal}>
-                        <SliderCheckout onSuccess={handleDownloadReceiptSuccess} clientNit={counterUser} Titulo="Facturación de Servicios" Subtitulo="Seleccione un periodo para generar la factura" />
+                    <Modal2
+                        isOpen={isModalDownloadReceiptOpen}
+                        onClose={handleCloseDownloadReceiptModal}
+                    >
+                        <SliderCheckout
+                            onSuccess={handleDownloadReceiptSuccess}
+                            clientNit={counterUser}
+                            Titulo="Facturación de Servicios"
+                            Subtitulo="Seleccione un periodo para generar la factura"
+                        />
                     </Modal2>
                 </div>
             )}
-             {/* * MENU FOR CLIENTE */}
+            {/* * MENU FOR CLIENTE */}
             {/* Solo se renderiza si hay un menú abierto y un cliente seleccionado */}
-            {openMenuNit && activeClientForMenu && ReactDOM.createPortal(
-                <div
-                    ref={menuRef}
-                    style={menuStyle}
-                    className="absolute w-80 max-w-[95vw] rounded-md shadow-2xl bg-white z-50"
-                >
-                    <div className="py-1" role="none">
-                        <div className="w-full text-left px-4 py-2">
-                            <div className="font-semibold text-slate-900">{activeClientForMenu.nombre}</div>
-                        </div>
-                        <div className="overflow-hidden m-2">
-                            <div className="h-0.5 w-full bg-gray-900"></div>
-                        </div>
-                        
-                        {/* Opciones del menú (usando <button> para accesibilidad) */}
-                        <div className="m-3 hover:scale-105 hover:font-bold transition-all duration-150">
-                            <button onClick={() => { handleLookForCounter(activeClientForMenu.nit); closeMenu(); }} className="w-full text-slate-700 group flex items-center px-4 py-2 text-sm hover:cursor-pointer">
-                                <div className="bg-blue-100 rounded mr-3 p-2"><BsCash className="h-5 w-5 text-blue-700" /></div>
-                                <div>
-                                    <div className="font-semibold text-left">Generar contador</div>
-                                    <div className="text-xs text-slate-500 text-left">Crear nuevo reporte</div>
+            {openMenuNit &&
+                activeClientForMenu &&
+                ReactDOM.createPortal(
+                    <div
+                        ref={menuRef}
+                        style={menuStyle}
+                        className="absolute w-80 max-w-[95vw] rounded-md shadow-2xl bg-white z-50"
+                    >
+                        <div className="py-1" role="none">
+                            <div className="w-full text-left px-4 py-2">
+                                <div className="font-semibold text-slate-900">
+                                    {activeClientForMenu.nombre}
                                 </div>
-                            </button>
+                            </div>
+                            <div className="overflow-hidden m-2">
+                                <div className="h-0.5 w-full bg-gray-900"></div>
+                            </div>
+
+                            {/* Opciones del menú (usando <button> para accesibilidad) */}
+                            <div className="m-3 hover:scale-105 hover:font-bold transition-all duration-150">
+                                <button
+                                    onClick={() => {
+                                        handleLookForCounter(
+                                            activeClientForMenu.nit
+                                        );
+                                        closeMenu();
+                                    }}
+                                    className="w-full text-slate-700 group flex items-center px-4 py-2 text-sm hover:cursor-pointer"
+                                >
+                                    <div className="bg-blue-100 rounded mr-3 p-2">
+                                        <BsCash className="h-5 w-5 text-blue-700" />
+                                    </div>
+                                    <div>
+                                        <div className="font-semibold text-left">
+                                            Generar contador
+                                        </div>
+                                        <div className="text-xs text-slate-500 text-left">
+                                            Crear nuevo reporte
+                                        </div>
+                                    </div>
+                                </button>
+                            </div>
+                            <div className="m-3 hover:scale-105 hover:font-bold transition-all duration-150">
+                                <button
+                                    onClick={() => {
+                                        handleViewPrinters(
+                                            activeClientForMenu.nit
+                                        );
+                                        closeMenu();
+                                    }}
+                                    className="w-full text-slate-700 group flex items-center px-4 py-2 text-sm hover:cursor-pointer "
+                                >
+                                    <div className="bg-yellow-100 rounded mr-3 p-2">
+                                        <FiPrinter className="h-5 w-5 text-yellow-700" />
+                                    </div>
+                                    <div>
+                                        <div className="font-semibold text-left">
+                                            Ver impresoras
+                                        </div>
+                                        <div className="text-xs text-slate-500 text-left">
+                                            Lista de impresoras asociadas
+                                        </div>
+                                    </div>
+                                </button>
+                            </div>
+                            <div className="m-3 hover:scale-105 hover:font-bold transition-all duration-150">
+                                <button
+                                    onClick={() => {
+                                        handleLookForContract(
+                                            activeClientForMenu.nit
+                                        );
+                                        closeMenu();
+                                    }}
+                                    className="w-full text-slate-700 group flex items-center px-4 py-2 text-sm hover:cursor-pointer "
+                                >
+                                    <div className="bg-green-100 rounded mr-3 p-2">
+                                        <FiBook className="h-5 w-5 text-green-700" />
+                                    </div>
+                                    <div>
+                                        <div className="font-semibold text-left">
+                                            Ver contrato
+                                        </div>
+                                        <div className="text-xs text-slate-500 text-left">
+                                            Ver contrato asociado
+                                        </div>
+                                    </div>
+                                </button>
+                            </div>
+                            <div className="m-3 hover:scale-105 hover:font-bold transition-all duration-150">
+                                <button
+                                    onClick={() => {
+                                        handleOpenModalEdit(
+                                            activeClientForMenu
+                                        );
+                                        closeMenu();
+                                    }}
+                                    className="w-full text-slate-700 group flex items-center px-4 py-2 text-sm hover:cursor-pointer "
+                                >
+                                    <div className="bg-purple-100 rounded mr-3 p-2">
+                                        <FiEdit className="h-5 w-5 text-purple-700" />
+                                    </div>
+                                    <div>
+                                        <div className="font-semibold text-left">
+                                            Editar cliente
+                                        </div>
+                                        <div className="text-xs text-slate-500 text-left">
+                                            Modificar datos del cliente
+                                        </div>
+                                    </div>
+                                </button>
+                            </div>
+                            <div className="m-3 hover:scale-105 hover:font-bold transition-all duration-150">
+                                <button
+                                    onClick={() => {
+                                        handleLookForTakeCounter(
+                                            activeClientForMenu.nit
+                                        );
+                                        closeMenu();
+                                    }}
+                                    className="w-full text-slate-700 group flex items-center px-4 py-2 text-sm hover:cursor-pointer "
+                                >
+                                    <div className="bg-green-100 rounded mr-3 p-2">
+                                        <FiDollarSign className="h-5 w-5 text-green-700" />
+                                    </div>
+                                    <div>
+                                        <div className="font-semibold text-left">
+                                            Ver contadores
+                                        </div>
+                                        <div className="text-xs text-slate-500 text-left">
+                                            Ver datos de los contadores
+                                        </div>
+                                    </div>
+                                </button>
+                            </div>
+                            <div className="m-3 hover:scale-105 hover:font-bold transition-all duration-150">
+                                <button
+                                    onClick={() => {
+                                        handleDownloadReceipt(
+                                            activeClientForMenu.nit
+                                        );
+                                        closeMenu();
+                                    }}
+                                    className="w-full text-slate-700 group flex items-center px-4 py-2 text-sm hover:cursor-pointer "
+                                >
+                                    <div className="bg-red-100 rounded mr-3 p-2">
+                                        <FiDownload className="h-5 w-5 text-red-700" />
+                                    </div>
+                                    <div>
+                                        <div className="font-semibold text-left">
+                                            Facturar
+                                        </div>
+                                        <div className="text-xs text-slate-500 text-left">
+                                            Generar factura
+                                        </div>
+                                    </div>
+                                </button>
+                            </div>
                         </div>
-                        <div className="m-3 hover:scale-105 hover:font-bold transition-all duration-150">
-                            <button onClick={() => { handleViewPrinters(activeClientForMenu.nit); closeMenu(); }} className="w-full text-slate-700 group flex items-center px-4 py-2 text-sm hover:cursor-pointer ">
-                                <div className="bg-yellow-100 rounded mr-3 p-2"><FiPrinter className="h-5 w-5 text-yellow-700" /></div>
-                                <div>
-                                    <div className="font-semibold text-left">Ver impresoras</div>
-                                    <div className="text-xs text-slate-500 text-left">Lista de impresoras asociadas</div>
-                                </div>
-                            </button>
-                        </div>
-                        <div className="m-3 hover:scale-105 hover:font-bold transition-all duration-150">
-                            <button onClick={() => { handleLookForContract(activeClientForMenu.nit); closeMenu(); }} className="w-full text-slate-700 group flex items-center px-4 py-2 text-sm hover:cursor-pointer ">
-                                <div className="bg-green-100 rounded mr-3 p-2"><FiBook className="h-5 w-5 text-green-700" /></div>
-                                <div>
-                                    <div className="font-semibold text-left">Ver contrato</div>
-                                    <div className="text-xs text-slate-500 text-left">Ver contrato asociado</div>
-                                </div>
-                            </button>
-                        </div>
-                        <div className="m-3 hover:scale-105 hover:font-bold transition-all duration-150">
-                            <button onClick={() => { handleOpenModalEdit(activeClientForMenu); closeMenu(); }} className="w-full text-slate-700 group flex items-center px-4 py-2 text-sm hover:cursor-pointer ">
-                                <div className="bg-purple-100 rounded mr-3 p-2"><FiEdit className="h-5 w-5 text-purple-700" /></div>
-                                <div>
-                                    <div className="font-semibold text-left">Editar cliente</div>
-                                    <div className="text-xs text-slate-500 text-left">Modificar datos del cliente</div>
-                                </div>
-                            </button>
-                        </div>
-                        <div className="m-3 hover:scale-105 hover:font-bold transition-all duration-150">
-                            <button onClick={() => { handleLookForTakeCounter(activeClientForMenu.nit); closeMenu(); }} className="w-full text-slate-700 group flex items-center px-4 py-2 text-sm hover:cursor-pointer ">
-                                <div className="bg-green-100 rounded mr-3 p-2"><FiDollarSign className="h-5 w-5 text-green-700" /></div>
-                                <div>
-                                    <div className="font-semibold text-left">Ver contadores</div>
-                                    <div className="text-xs text-slate-500 text-left">Ver datos de los contadores</div>
-                                </div>
-                            </button>
-                        </div>
-                         <div className="m-3 hover:scale-105 hover:font-bold transition-all duration-150">
-                            <button onClick={() => { handleDownloadReceipt(activeClientForMenu.nit); closeMenu(); }} className="w-full text-slate-700 group flex items-center px-4 py-2 text-sm hover:cursor-pointer ">
-                                <div className="bg-red-100 rounded mr-3 p-2"><FiDownload className="h-5 w-5 text-red-700" /></div>
-                                <div>
-                                    <div className="font-semibold text-left">Facturar</div>
-                                    <div className="text-xs text-slate-500 text-left">Generar factura</div>
-                                </div>
-                            </button>
-                        </div>
-                    </div>
-                </div>,
-                document.body // El menú se renderiza al final del <body> del documento
-            )}
+                    </div>,
+                    document.body
+                )}
         </div>
     );
 };

@@ -9,7 +9,7 @@ import {
     FiUsers,
 } from "react-icons/fi";
 import { useState, useRef } from "react";
-import {logoutService} from "@/services/loginService"
+import { logoutService } from "@/services/loginService";
 import { toast } from "react-hot-toast";
 import { useAuthStore } from "@/store/authStore";
 import { useRouter } from "next/navigation";

@@ -76,6 +76,7 @@ export const CreateContractForm = ({
     const handleChange = async (
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
     ) => {
+        console.log("Evento de cambio:", e.target.name, e.target.value);
         const { name, value } = e.target;
         const parsedValue = name === "nit" ? parseFloat(value) || "" : value;
 
@@ -246,12 +247,12 @@ export const CreateContractForm = ({
                 >
                     Valor Base del Equipo (opcional)
                 </label>
-                <input
-                    type="text"
+                <CurrencyInput
                     id="valorBaseEquipo"
                     name="valorBaseEquipo"
-                    value={dataForm.valorBaseEquipo}
                     onChange={handleChange}
+                    value={dataForm.valorBaseEquipo}
+                    input={true}
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
                 <span className="text-red-500 text-sm">
@@ -433,12 +434,11 @@ export const CreateContractForm = ({
                     disabled={isLoading}
                     className={`flex items-center justify-center gap-2 px-4 py-2.5 font-semibold 
                         text-white bg-slate-800 rounded-lg shadow-md hover:bg-slate-700 focus:outline-none 
-                        focus:ring-2 focus:ring-offset-2 focus:ring-slate-800 transition-colors hover:cursor-pointer
-                        ${isLoading ? "opacity-50 cursor-not-allowed" : ""}
+                        focus:ring-2 focus:ring-offset-2 focus:ring-slate-800 transition-colors
                         ${
                             errors.length > 0
-                                ? "opacity-50 cursor-not-allowed"
-                                : ""
+                                ? "opacity-50 hover:cursor-not-allowed bg-slate-800 hover:none"
+                                : "hover:cursor-pointer"
                         }
                         `}
                 >

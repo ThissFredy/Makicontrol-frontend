@@ -202,18 +202,19 @@ export async function downloadReceiptService(
 ): Promise<OperationType<DownloadFileType | null>> {
     try {
         const response = await downloadReceiptApi(nit, anio, month);
+        const { data, message } = response;
 
-        if (!response.ok) {
+        if (!data) {
             return {
                 status: false,
-                message: response.message || "Error al obtener el archivo",
+                message: message || "Error al obtener el archivo",
                 data: null,
             } as OperationType<null>;
         }
 
         // Leer cabecera
-        const estadoFactura = response.headers.get("X-Estado-Factura");
-        const disposition = response.headers.get("Content-Disposition");
+        const estadoFactura = data.headers.get("X-Estado-Factura");
+        const disposition = data.headers.get("Content-Disposition");
         let filename = `factura-${nit}-${anio}-${month}.pdf`; // Filename
 
         if (disposition && disposition.includes("attachment")) {
@@ -225,7 +226,7 @@ export async function downloadReceiptService(
             }
         }
 
-        const blob = await response.blob();
+        const blob = await data.blob();
 
         return {
             status: response.success,

@@ -7,7 +7,11 @@ import {
     registerCountersApi,
 } from "@/api/counterApi";
 import { OperationType } from "@/types/operationType";
-import type { GetReadyType, RegisterCounterType } from "@/types/counterType";
+import type {
+    GetReadyType,
+    RegisterCounterType,
+    CounterByNIT,
+} from "@/types/counterType";
 import { validateSendCounter } from "@/utilities/counterUtility";
 
 export const getReadyService = async (
@@ -48,15 +52,15 @@ export const getCountersByNitService = async (
     nit: string,
     anio: number,
     mes: number
-): Promise<OperationType<null>> => {
+): Promise<OperationType<CounterByNIT[] | null>> => {
     try {
         const response = await getCountersByNitApi(nit, anio, mes);
         if (response.success) {
             return {
                 status: true,
                 message: "Contadores obtenidos correctamente",
-                data: null,
-            } as OperationType<null>;
+                data: response.data ?? [],
+            } as OperationType<CounterByNIT[]>;
         } else {
             return {
                 status: false,

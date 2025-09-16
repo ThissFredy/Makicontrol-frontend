@@ -6,7 +6,6 @@ import type { ErrorFieldType } from "@/types/errorType";
 import { registerCountersService } from "@/services/counterService";
 import { validateCounterCreateArray } from "@/utilities/validateCounter";
 import { Button } from "@/components/ui/Button";
-import { CurrencyInput } from "./CurrencyInput";
 
 interface CreateContractFormProps {
     onClose: () => void;
@@ -61,7 +60,7 @@ export const CreateCounter = ({
             const updatedData = [...prev];
             if (currentValue === "") {
                 updatedData[index] = undefined;
-            }else{
+            } else {
                 updatedData[index] = {
                     serialImpresora: dataForm[index].serial,
                     anio: year.toString(),
@@ -129,7 +128,7 @@ export const CreateCounter = ({
             return;
         }
 
-        const dataToSend = validData.map(({ contadorAnterior, ...rest }) => rest);
+        const dataToSend = validData.map(({ ...rest }) => rest);
 
         try {
             const response = await registerCountersService(dataToSend);

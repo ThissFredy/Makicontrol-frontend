@@ -3,8 +3,8 @@ import React from "react";
 const Page = () => {
     return (
         <div>
-            <h1>Dashboard</h1>
-            <p>Bienvenido al panel de control.</p>
+            <h1>REPORTES</h1>
+            <p>REPORTES</p>
         </div>
     );
 };

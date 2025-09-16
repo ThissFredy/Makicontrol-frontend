@@ -15,3 +15,11 @@ export interface RegisterCounterType {
     cantidad: string;
     contadorAnterior?: string;
 }
+
+export interface CounterByNIT {
+    serialImpresora: string;
+    anio: number;
+    mes: number;
+    tipoOperacion: string;
+    cantidad: number;
+}

@@ -1,4 +1,4 @@
-import { apiService, apiServiceFile } from "@/api/api";
+import { apiService } from "@/api/api";
 import type { ApiResponse } from "@/types/apiType";
 import type { printerType, printerCreateType } from "@/types/printerType";
 
@@ -49,7 +49,7 @@ export async function reAssignPrintersFileApi(
 export async function assignPrintersFileApi(
     formData: FormData
 ): Promise<ApiResponse<null>> {
-    const response = await apiServiceFile<null>(`/api/impresoras/upload`, {
+    const response = await apiService<null>(`/api/impresoras/upload`, {
         method: "POST",
         body: formData,
     });

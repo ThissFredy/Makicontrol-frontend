@@ -14,6 +14,7 @@ interface EditContractFormProps {
     onSuccess: (message: string, data: ContractType) => void;
     initialData: ContractType;
 }
+import { CurrencyInput } from "@/components/ui/CurrencyInput";
 
 export const EditContractForm = ({
     onClose,
@@ -241,12 +242,12 @@ export const EditContractForm = ({
                 >
                     Valor del Canon
                 </label>
-                <input
-                    type="number"
+                <CurrencyInput
                     id="valorCanon"
                     name="valorCanon"
                     value={dataForm.valorCanon}
                     onChange={handleChange}
+                    input={true}
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
                 <span className="text-red-500 text-sm">
@@ -265,12 +266,12 @@ export const EditContractForm = ({
                 >
                     Valor Base del Equipo
                 </label>
-                <input
-                    type="number"
+                <CurrencyInput
                     id="valorBaseEquipo"
                     name="valorBaseEquipo"
                     value={dataForm.valorBaseEquipo}
                     onChange={handleChange}
+                    input={true}
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
                 <span className="text-red-500 text-sm">

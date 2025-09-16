@@ -1,18 +1,23 @@
-"use client";
-
-import { useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/Button";
+import { getCountersByNitService } from "@/services/counterService";
+import type { CounterByNIT } from "@/types/counterType";
 import { toast } from "react-hot-toast";
-import { downloadReceiptService } from "@/services/customerService";
-import { Calendar, Clock, Download, FileText } from "lucide-react";
+import { Calendar, Clock, Download, DollarSign } from "lucide-react";
 
 interface AddCounters1Props {
-    onSuccess: (message: string) => void;
+    onSuccess: (
+        message: string,
+        response: CounterByNIT[],
+        month: number,
+        year: number
+    ) => void;
     clientNit: string;
     Titulo?: string;
     Subtitulo?: string;
 }
 
+// --- Nombres de los meses para mostrar en la UI ---
 const monthNames = [
     "Enero",
     "Febrero",
@@ -28,12 +33,13 @@ const monthNames = [
     "Diciembre",
 ];
 
-export const SliderCheckout = ({
+export const SliderViewCounter = ({
     onSuccess,
     clientNit,
-    Titulo = "Registro de Contadores Mensuales",
-    Subtitulo = "Seleccione un periodo para ingresar las lecturas",
+    Titulo = "Registrar Contadores Pendientes",
+    Subtitulo = "Seleccione un periodo para cargar los contadores",
 }: AddCounters1Props) => {
+    // --- Estados para guardar el año y mes seleccionados ---
     const currentYear = new Date().getFullYear();
     const [loading, setLoading] = useState(false);
     const currentMonth = new Date().getMonth() + 1;
@@ -41,40 +47,24 @@ export const SliderCheckout = ({
     const [year, setYear] = useState(currentYear);
     const [month, setMonth] = useState(currentMonth);
 
-    const handleDownloadReceipt = async () => {
+    const handleLoadCounters = async () => {
         setLoading(true);
         try {
-            const response = await downloadReceiptService(
-                Number.parseInt(clientNit),
+            const response = await getCountersByNitService(
+                clientNit,
                 year,
                 month
             );
-            if (response.status && response.data) {
-                const { blob, estadoFactura } = response.data;
-
-                const fileURL = URL.createObjectURL(blob);
-                window.open(fileURL, "_blank");
-
-                setTimeout(() => {
-                    URL.revokeObjectURL(fileURL);
-                }, 100);
-
+            if (response.status)
                 onSuccess(
-                    estadoFactura
-                        ? "Copia de factura descargada"
-                        : "Factura generada correctamente"
+                    "Contadores cargados con éxito",
+                    response.data ?? [],
+                    month,
+                    year
                 );
-
-                toast.success(
-                    estadoFactura
-                        ? "Copia de factura descargada"
-                        : "Factura generada correctamente"
-                );
-            } else {
-                toast.error("No se pudo generar la factura");
-            }
+            else toast.error(response.message || "Error al cargar contadores");
         } catch (e) {
-            toast.error("Error del servidor, intente más tarde" + ((e instanceof Error && e.message) ? `: ${e.message}` : ""));
+            toast.error("Error al cargar contadores: " + (e as Error).message);
         }
         setLoading(false);
     };
@@ -85,7 +75,7 @@ export const SliderCheckout = ({
             <div className="mb-8 text-center">
                 <div className="flex items-center justify-center mb-4">
                     <div className="bg-primary/10 p-3 rounded-full">
-                        <FileText className="w-6 h-6 text-primary" />
+                        <DollarSign className="w-6 h-6 text-primary" />
                     </div>
                 </div>
                 <h2 className="text-3xl font-bold text-slate-800">{Titulo}</h2>
@@ -190,7 +180,7 @@ export const SliderCheckout = ({
             <div className="mt-8">
                 <Button
                     className="w-full bg-slate-800 hover:bg-slate-300 text-white hover:text-black font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                    onClick={handleDownloadReceipt}
+                    onClick={handleLoadCounters}
                     disabled={loading}
                 >
                     <div className="flex items-center justify-center gap-2">

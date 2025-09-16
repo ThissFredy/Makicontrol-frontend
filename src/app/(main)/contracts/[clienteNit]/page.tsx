@@ -45,7 +45,7 @@ const ContractDetails = () => {
 
     useEffect(() => {
         fetchContract();
-    }, [clienteNit]);
+    }, [fetchContract]);
 
     const handleOpenModal = (contract: ContractDetailType) => {
         setSelectedContract(contract);

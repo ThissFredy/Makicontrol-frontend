@@ -9,6 +9,7 @@ import {
     getCashMethodService,
 } from "@/services/contractService";
 import { useState } from "react";
+import { CurrencyInput } from "@/components/ui/CurrencyInput";
 import { toast } from "react-hot-toast";
 
 interface CreateDetailsContractProps {
@@ -218,9 +219,10 @@ export const CreateDetailsContract = ({
                 >
                     Valor Unitario
                 </label>
-                <input
+                <CurrencyInput
                     id="valorUnitario"
                     name="valorUnitario"
+                    input={true}
                     value={dataForm.valorUnitario}
                     onChange={handleChange}
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -241,9 +243,10 @@ export const CreateDetailsContract = ({
                 >
                     Valor Base
                 </label>
-                <input
+                <CurrencyInput
                     id="valorBase"
                     name="valorBase"
+                    input={true}
                     value={dataForm.valorBase}
                     onChange={handleChange}
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
