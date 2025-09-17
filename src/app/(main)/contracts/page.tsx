@@ -682,7 +682,6 @@ const ContractsPage = () => {
                             <div className="overflow-hidden m-2">
                                 <div className="h-0.5 w-full bg-gray-900"></div>
                             </div>
-
                             <div className="m-3 hover:scale-105 hover:font-bold transition-all duration-150">
                                 <button
                                     onClick={() => {
