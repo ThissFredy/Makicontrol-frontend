@@ -4,7 +4,6 @@ import React, { useEffect, useState, Suspense, useRef } from "react";
 import ReactDOM from "react-dom";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
-import { formatCurrency } from "@/utilities/moneyUtility";
 import { CreateContractForm } from "@/components/ui/CreateContractForm";
 import { EditContractForm } from "@/components/ui/EditContractForm";
 import { StatCard } from "@/components/ui/StatCard";

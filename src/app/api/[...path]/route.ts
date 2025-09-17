@@ -29,8 +29,6 @@ async function handler(request: NextRequest) {
             method: request.method,
             headers: requestHeaders,
             body: request.body, // Se pasa el stream directamente. ¡No usar .text() ni .json()!
-            // @ts-ignore - 'duplex' es necesario para streams en algunas versiones de Node/Next.js
-            duplex: "half",
         });
 
         // 5. Devolver la respuesta del backend al cliente
