@@ -3,45 +3,52 @@ import { NextRequest, NextResponse } from "next/server";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 async function handler(request: NextRequest) {
-    // 1. Obtener token de la cookie
     const token = request.cookies.get("auth-token")?.value;
+
     if (!token) {
         return NextResponse.json({ message: "No autorizado" }, { status: 401 });
     }
 
-    // 2. Construir la URL del backend real
-    // La ruta se obtiene del request, eliminando el prefijo /api
     const path = request.nextUrl.pathname.replace("/api", "");
-    const searchParams = request.nextUrl.search;
-    const backendUrl = `${API_BASE_URL}${path}${searchParams}`;
+    const backendUrl = `${API_BASE_URL}${path}${request.nextUrl.search}`;
 
-    // 3. Preparar los headers para la petición al backend
-    // Copiamos los headers originales del cliente para mantenerlos (ej. Content-Type)
     const requestHeaders = new Headers(request.headers);
     requestHeaders.set("Authorization", `Bearer ${token}`);
-
-    // Borramos el host para evitar problemas de enrutamiento
     requestHeaders.delete("host");
 
-    try {
-        // 4. Realizar la petición al backend, pasando el cuerpo como un stream
-        const response = await fetch(backendUrl, {
-            method: request.method,
-            headers: requestHeaders,
-            body: request.body, // Se pasa el stream directamente. ¡No usar .text() ni .json()!
-        });
+    const fetchOptions: RequestInit = {
+        method: request.method,
+        headers: requestHeaders,
+    };
 
-        // 5. Devolver la respuesta del backend al cliente
-        // Esto maneja tanto respuestas JSON como blobs de archivos
+    // Only set the body for methods that typically have one
+    if (request.method !== "GET" && request.method !== "HEAD") {
+        fetchOptions.body = request.body;
+        // @ts-ignore
+        fetchOptions.duplex = "half";
+    }
+
+    try {
+        console.log(`[PROXY] Forwarding ${request.method} to ${backendUrl}`);
+
+        const response = await fetch(backendUrl, fetchOptions);
+
+        console.log(
+            `[PROXY] Backend responded with status: ${response.status}`
+        );
+
         return new NextResponse(response.body, {
             status: response.status,
             statusText: response.statusText,
             headers: response.headers,
         });
     } catch (error) {
-        console.error("Error en el proxy de Next.js:", error);
+        console.error("[PROXY] CRITICAL ERROR:", error);
         return NextResponse.json(
-            { message: "Error al conectar con el servidor backend" },
+            {
+                message:
+                    "Error interno en el servidor de Next.js al procesar la petición.",
+            },
             { status: 500 }
         );
     }
