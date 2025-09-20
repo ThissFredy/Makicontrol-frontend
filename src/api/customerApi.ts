@@ -83,7 +83,7 @@ export async function downloadReceiptApi(
     month: number
 ): Promise<ApiResponse<Response>> {
     const response = await downloadApiService(
-        `/api/factura/generar?clienteNit=${nit}&anio=${anio}&mes=${month}`,
+        `/api/factura/generar-pdf?clienteNit=${nit}&anio=${anio}&mes=${month}`,
         {
             method: "GET",
         }

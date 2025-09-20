@@ -46,18 +46,13 @@ const ClientManagementPage = () => {
     const [isModalDownloadReceiptOpen, setIsModalDownloadReceiptOpen] =
         useState(false);
 
-    // State para el NIT del menú abierto
     const [openMenuNit, setOpenMenuNit] = useState<number | null>(null);
     const [counterUser, setCounterUser] = useState<string>("");
 
-    // NUEVO: State para guardar el estilo de posición del menú (top, left)
     const [menuStyle, setMenuStyle] = useState({});
 
     const menuRef = useRef<HTMLDivElement | null>(null);
     const menuButtonRefs = useRef<(HTMLButtonElement | null)[]>([]);
-    // Ya no necesitamos la ref del contenedor de la tabla para el overflow
-    // const tableContainerRef = useRef<HTMLDivElement | null>(null);
-
     const [loading, setLoading] = useState<boolean>(true);
     const [isModalPrintersFile, setIsModalPrintersFile] = useState(false);
     const [loadingClients, setLoadingClients] = React.useState<boolean>(false);
