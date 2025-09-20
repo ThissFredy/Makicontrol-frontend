@@ -25,6 +25,7 @@ async function handler(request: NextRequest) {
     if (request.method !== "GET" && request.method !== "HEAD") {
         fetchOptions.body = request.body;
         // @ts-expect-error
+
         fetchOptions.duplex = "half";
     }
 
