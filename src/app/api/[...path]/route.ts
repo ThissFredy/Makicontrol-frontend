@@ -24,7 +24,7 @@ async function handler(request: NextRequest) {
     // Only set the body for methods that typically have one
     if (request.method !== "GET" && request.method !== "HEAD") {
         fetchOptions.body = request.body;
-        // @ts-ignore
+        // @ts-expect-error
         fetchOptions.duplex = "half";
     }
 
