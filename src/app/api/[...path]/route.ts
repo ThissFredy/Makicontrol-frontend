@@ -16,7 +16,11 @@ async function handler(request: NextRequest) {
     requestHeaders.set("Authorization", `Bearer ${token}`);
     requestHeaders.delete("host");
 
-    const fetchOptions: RequestInit = {
+    type RequestInitWithDuplex = RequestInit & {
+        duplex?: "half" | "full" | "auto";
+    };
+
+    const fetchOptions: RequestInitWithDuplex = {
         method: request.method,
         headers: requestHeaders,
     };
@@ -24,8 +28,7 @@ async function handler(request: NextRequest) {
     // Only set the body for methods that typically have one
     if (request.method !== "GET" && request.method !== "HEAD") {
         fetchOptions.body = request.body;
-        // @ts-expect-error
-        fetchOptions.duplex = "half";
+        fetchOptions.duplex = "half" as "half";
     }
 
     try {
