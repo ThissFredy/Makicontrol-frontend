@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
+type RequestInitWithDuplex = RequestInit & {
+    duplex?: "half" | "full" | "auto";
+};
+
 async function handler(request: NextRequest) {
     const token = request.cookies.get("auth-token")?.value;
 
@@ -16,10 +20,6 @@ async function handler(request: NextRequest) {
     requestHeaders.set("Authorization", `Bearer ${token}`);
     requestHeaders.delete("host");
 
-    type RequestInitWithDuplex = RequestInit & {
-        duplex?: "half" | "full" | "auto";
-    };
-
     const fetchOptions: RequestInitWithDuplex = {
         method: request.method,
         headers: requestHeaders,
@@ -28,7 +28,7 @@ async function handler(request: NextRequest) {
     // Only set the body for methods that typically have one
     if (request.method !== "GET" && request.method !== "HEAD") {
         fetchOptions.body = request.body;
-        fetchOptions.duplex = "half" as "half";
+        fetchOptions.duplex = "half" as const;
     }
 
     try {
