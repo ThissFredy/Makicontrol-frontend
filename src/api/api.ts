@@ -17,18 +17,13 @@ export async function apiService<T>(
 ): Promise<ApiResponse<T>> {
     const url = `${API_PROXY_PREFIX}${endpoint}`;
 
-    // Determina si el cuerpo es FormData
     const isFormData = options.body instanceof FormData;
 
-    // Clona los headers para poder modificarlos de forma segura
     const headers = new Headers(options.headers);
 
     if (isFormData) {
-        // Si es FormData, BORRAMOS el Content-Type.
-        // El navegador lo establecerá automáticamente con el 'boundary' correcto.
         headers.delete("Content-Type");
     } else if (!headers.has("Content-Type")) {
-        // Si no es FormData y no se ha especificado un Content-Type, asumimos JSON.
         headers.set("Content-Type", "application/json");
     }
 
@@ -55,7 +50,6 @@ export async function apiService<T>(
             return new Promise(() => {});
         }
 
-        // Si la respuesta no tiene contenido (ej. DELETE exitoso), retornamos éxito
         if (response.status === 204) {
             return {
                 success: true,

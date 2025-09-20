@@ -52,24 +52,19 @@ export const SliderCheckout = ({
             if (response.status && response.data) {
                 const { blob, estadoFactura } = response.data;
 
-                const fileURL = URL.createObjectURL(blob);
-                window.open(fileURL, "_blank");
-
-                setTimeout(() => {
-                    URL.revokeObjectURL(fileURL);
-                }, 100);
-
                 onSuccess(
-                    estadoFactura
-                        ? "Copia de factura descargada"
+                    estadoFactura === "consultada"
+                        ? "Factura consultada correctamente"
                         : "Factura generada correctamente"
                 );
+                setTimeout(() => {
+                    const fileURL = URL.createObjectURL(blob);
+                    window.open(fileURL, "_blank");
 
-                toast.success(
-                    estadoFactura
-                        ? "Copia de factura descargada"
-                        : "Factura generada correctamente"
-                );
+                    setTimeout(() => {
+                        URL.revokeObjectURL(fileURL);
+                    }, 100);
+                }, 1500);
             } else {
                 toast.error("No se pudo generar la factura");
             }

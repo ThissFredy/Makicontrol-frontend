@@ -212,8 +212,7 @@ export async function downloadReceiptService(
             } as OperationType<null>;
         }
 
-        // Leer cabecera
-        const estadoFactura = data.headers.get("X-Estado-Factura");
+        const estadoFactura = data.headers.get("X-Factura-Estado");
         const disposition = data.headers.get("Content-Disposition");
         let filename = `factura-${nit}-${anio}-${month}.pdf`; // Filename
 
