@@ -8,6 +8,7 @@ import {
 import type { ContractDetailType } from "@/types/contractType";
 import { getContractDetailsByIdService } from "@/services/contractService";
 import { formatCurrency, formatNumber } from "@/utilities/moneyUtility";
+import { CurrencyInput } from "@/components/ui/CurrencyInput";
 import { EditDetailsContract } from "@/components/ui/EditDetailsContract";
 import { CreateDetailsContract } from "@/components/ui/CreateDetailsContract";
 import { useParams } from "next/navigation";
@@ -153,7 +154,6 @@ const ContractDetails = () => {
                                         {formatNumber(
                                             contract.limiteIncluido ?? 0
                                         )}{" "}
-                                        unidades
                                     </p>
                                 </div>
 
@@ -163,9 +163,10 @@ const ContractDetails = () => {
                                         Valor Base
                                     </p>
                                     <p className="text-base font-semibold text-gray-800">
-                                        {formatCurrency(
-                                            contract.valorBase ?? 0
-                                        )}
+                                        <CurrencyInput
+                                            input={false}
+                                            value={contract.valorBase ?? 0}
+                                        />
                                     </p>
                                 </div>
 
@@ -175,9 +176,10 @@ const ContractDetails = () => {
                                         Valor Unitario Excedente
                                     </p>
                                     <p className="text-base font-semibold text-gray-800">
-                                        {formatCurrency(
-                                            contract.valorUnitario ?? 0
-                                        )}
+                                        <CurrencyInput
+                                            input={false}
+                                            value={contract.valorUnitario ?? 0}
+                                        />
                                     </p>
                                 </div>
 
