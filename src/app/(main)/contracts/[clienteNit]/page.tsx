@@ -7,7 +7,7 @@ import {
 } from "react-icons/io5";
 import type { ContractDetailType } from "@/types/contractType";
 import { getContractDetailsByIdService } from "@/services/contractService";
-import { formatCurrency, formatNumber } from "@/utilities/moneyUtility";
+import { formatNumber } from "@/utilities/moneyUtility";
 import { CurrencyInput } from "@/components/ui/CurrencyInput";
 import { EditDetailsContract } from "@/components/ui/EditDetailsContract";
 import { CreateDetailsContract } from "@/components/ui/CreateDetailsContract";
