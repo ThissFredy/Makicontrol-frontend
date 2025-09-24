@@ -9,6 +9,7 @@ import {
     Tooltip,
     Legend,
     ArcElement,
+    type ChartData,
 } from "chart.js";
 import { Bar, Doughnut } from "react-chartjs-2";
 import { useRouter } from "next/navigation";
@@ -50,8 +51,12 @@ const Reports = () => {
     const router = useRouter();
 
     // Data for Charts
-    const [barChartData, setBarChartData] = useState<any>({ datasets: [] });
-    const [doughnutChartData, setDoughnutChartData] = useState<any>({
+    const [barChartData, setBarChartData] = useState<ChartData<"bar">>({
+        datasets: [],
+    });
+    const [doughnutChartData, setDoughnutChartData] = useState<
+        ChartData<"doughnut">
+    >({
         datasets: [],
     });
 
@@ -190,16 +195,12 @@ const Reports = () => {
             y: {
                 beginAtZero: true,
                 ticks: {
-                    callback: function (
-                        tickValue: string | number,
-                        index: number,
-                        ticks: any
-                    ) {
+                    callback: function (tickValue: string | number) {
                         const value =
                             typeof tickValue === "number"
                                 ? tickValue
                                 : Number(tickValue);
-                        return `$${value / 100} COP`;
+                        return `$${value / 1000000}M COP`;
                     },
                 },
             },
@@ -327,8 +328,24 @@ const Reports = () => {
                                 />
                             </div>
                             <div className="mt-4 space-y-2">
-                                {doughnutChartData.labels?.map(
-                                    (label: string, index: number) => (
+                                {(
+                                    doughnutChartData.labels as
+                                        | string[]
+                                        | undefined
+                                )?.map((label, index) => {
+                                    // Safely access datasets[0]
+                                    const dataset =
+                                        doughnutChartData.datasets?.[0];
+                                    // Safely access backgroundColor and data arrays
+                                    const bgColors = Array.isArray(
+                                        dataset?.backgroundColor
+                                    )
+                                        ? dataset.backgroundColor
+                                        : [];
+                                    const dataArr = Array.isArray(dataset?.data)
+                                        ? dataset.data
+                                        : [];
+                                    return (
                                         <div
                                             key={label}
                                             className="flex items-center justify-between text-sm"
@@ -338,11 +355,8 @@ const Reports = () => {
                                                     className="w-3 h-3 rounded-full"
                                                     style={{
                                                         backgroundColor:
-                                                            doughnutChartData
-                                                                .datasets[0]
-                                                                .backgroundColor[
-                                                                index
-                                                            ],
+                                                            bgColors[index] ??
+                                                            "#ccc",
                                                     }}
                                                 ></span>
                                                 <span className="text-slate-600">
@@ -350,14 +364,11 @@ const Reports = () => {
                                                 </span>
                                             </div>
                                             <span className="font-medium text-slate-800">
-                                                {
-                                                    doughnutChartData
-                                                        .datasets[0].data[index]
-                                                }
+                                                {dataArr[index] ?? 0}
                                             </span>
                                         </div>
-                                    )
-                                )}
+                                    );
+                                })}
                             </div>
                         </div>
                     </section>

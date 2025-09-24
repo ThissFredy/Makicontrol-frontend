@@ -44,7 +44,7 @@ export async function getReportData(): Promise<
         totalFacturado: [
             // Datos de 2024
             { ano: 2024, mes: 1, total: 95000 },
-            { ano: 2024, mes: 2, total: 110000 },
+            { ano: 2024, mes: 2, total: 1100000 },
             { ano: 2024, mes: 3, total: 85000 },
             { ano: 2024, mes: 4, total: 115000 },
             { ano: 2024, mes: 5, total: 98000 },
@@ -57,12 +57,12 @@ export async function getReportData(): Promise<
             // mes 12 de 2024 sin datos a propósito
 
             // Datos de 2025
-            { ano: 2025, mes: 1, total: 115000 },
-            { ano: 2025, mes: 2, total: 120000 },
-            { ano: 2025, mes: 3, total: 105000 },
-            { ano: 2025, mes: 4, total: 130000 },
-            { ano: 2025, mes: 5, total: 118000 },
-            { ano: 2025, mes: 6, total: 155000 },
+            { ano: 2025, mes: 1, total: 1150000 },
+            { ano: 2025, mes: 2, total: 1200000 },
+            { ano: 2025, mes: 3, total: 1050000 },
+            { ano: 2025, mes: 4, total: 1300000 },
+            { ano: 2025, mes: 5, total: 1180000 },
+            { ano: 2025, mes: 6, total: 1550000 },
         ],
         clientes: [
             { clienteNit: "1", estadoFacturado: "Facturado" },
