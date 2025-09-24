@@ -12,6 +12,7 @@ import { StatCard } from "@/components/ui/StatCard";
 import { useDebounce } from "@/utilities/useDebounce";
 import { searchCustomerByNameOrNIT } from "@/services/customerService";
 import { CreateCounter } from "@/components/ui/CreateCounter";
+import { useSearchParams } from "next/navigation";
 import { TakeCounter } from "@/components/ui/TakeCounter";
 import { SliderCheckout } from "@/components/ui/Checkout/SliderCheckout";
 import { CustomerType } from "@/types/customerType";
@@ -34,13 +35,14 @@ import { Modal2 } from "@/components/ui/Modal2";
 
 const ClientManagementPage = () => {
     const router = useRouter();
-    const [clients, setClients] = React.useState<CustomerType[]>();
-    const [lengthClients, setLengthClients] = React.useState<number>(
+    const [clients, setClients] = useState<CustomerType[]>();
+    const [lengthClients, setLengthClients] = useState<number>(
         clients?.length || 0
     );
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalEditOpen, setIsModalEditOpen] = useState(false);
     const [isModalOpenFile, setIsModalOpenFile] = useState(false);
+    const searchParams = useSearchParams();
     const [isModalCounterOpen, setIsModalCounterOpen] = useState(false);
     const [isModalTakeCounterOpen, setIsModalTakeCounterOpen] = useState(false);
     const [isModalDownloadReceiptOpen, setIsModalDownloadReceiptOpen] =
@@ -55,8 +57,8 @@ const ClientManagementPage = () => {
     const menuButtonRefs = useRef<(HTMLButtonElement | null)[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [isModalPrintersFile, setIsModalPrintersFile] = useState(false);
-    const [loadingClients, setLoadingClients] = React.useState<boolean>(false);
-    const [selectedClient, setSelectedClient] = React.useState<CustomerType>({
+    const [loadingClients, setLoadingClients] = useState<boolean>(false);
+    const [selectedClient, setSelectedClient] = useState<CustomerType>({
         nombre: "",
         nit: 0,
         direccion: "",
@@ -134,6 +136,13 @@ const ClientManagementPage = () => {
             );
         });
     };
+
+    useEffect(() => {
+        const searchQuery = searchParams.get("search");
+        if (searchQuery) {
+            setSearchTerm(searchQuery);
+        }
+    }, [searchParams]);
 
     const handleLookForCounter = (nit: number) => {
         setIsModalCounterOpen(true);
@@ -375,10 +384,7 @@ const ClientManagementPage = () => {
                                 </div>
                             </div>
 
-                            <div
-                                // Ya no se necesita la ref aquí
-                                className="overflow-x-auto rounded-lg"
-                            >
+                            <div className="overflow-x-auto rounded-lg">
                                 <table className="w-full text-md text-left text-slate-500">
                                     <thead className="text-xs text-slate-700 uppercase bg-[#253763]">
                                         <tr>

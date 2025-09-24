@@ -3,11 +3,9 @@ export interface ReportType {
         mes: number;
         ano: number;
         total: number;
-    };
-    clientes: [
-        {
-            clienteNit: string;
-            estadoFacturado: string;
-        }
-    ];
+    }[];
+    clientes: {
+        clienteNit: string;
+        estadoFacturado: string;
+    }[];
 }
